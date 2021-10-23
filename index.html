@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+  </script>
+  <script>
+    var url = "http://127.0.0.1:8000/user/Joseph__Carrino"
+    $.ajax({
+      type: 'GET',
+      url: url,
+      crossDomain: true,
+      success: function( data ) {
+        console.log(data.toString());
+        $("#base").text(JSON.stringify(data, null, 4));
+  }
+});
+    </script>
+  <title>Document</title>
 </head>
-<script>
-    var settings = {
-        "url": "http://api.twitter.com/1.1/statuses/show.json?id=1449399350786940934",
-        "method": "GET",
-        "timeout": 0,
-    };
-
-    $.ajax({settings, headers: {'Authorization' : 'Bearer AAAAAAAAAAAAAAAAAAAAAMEAUwEAAAAA1xY%2F32bSU4v5kwxoncHszvMJHx4%3D8gqEEFr90qe45rDMfubNdiMWfZwkkECKAK9SVgs5e6NdQOouCN'}}).done(function (response) {
-    console.log(response);
-    });
-</script>
 <body>
-    <h1>Hello World!</h1>
+  <div><h1>Hello World!</h1></div>
+  <div id= "base"></div>
 </body>
 </html>
