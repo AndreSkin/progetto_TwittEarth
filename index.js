@@ -39,7 +39,7 @@ app.use(express.json());
 /*API*/
 app.get('/user/:id', (req, res) => {
   T.get('statuses/user_timeline', {screen_name: req.params.id},(err, data, new_res) => {
-    console.log(data[0].created_at);
+    //console.log(data[0].created_at);
     res.status(200).json(data);
   })
 });

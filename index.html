@@ -4,27 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous">
   </script>
   <script>
-    var url = "http://127.0.0.1:8000/user/Joseph__Carrino"
+  function userTimeline(){
+    $("#base").empty();
+    var user= document.getElementById('searchUser').value
+    var url = "http://127.0.0.1:8000/user/" + user
     $.ajax({
       type: 'GET',
       url: url,
       crossDomain: true,
       success: function( data ) {
-        console.log(data.toString());
-        $("#base").text(JSON.stringify(data, null, 4));
+        for (let tweet of data){
+          let newT = $("<div>");
+          newT+= "id: " + tweet['id'].toString() +"<br>";
+          newT+= "text: " + tweet['text'] + "<br>";
+          if (tweet['place'] != null)
+            newT+= "location: " + tweet['place']['full_name'] +"<br>";
+          newT+= "<br>";
+          $("#base").append(newT);
+        }
+      }
+    });
   }
-});
     </script>
-  <title>Document</title>
+  <title>TwittEarth</title>
 </head>
 <body>
-  <div><h1>Hello World!</h1></div>
+  <div><h1>TwittEarth</h1></div>
+  <div id= "userTimeline">
+    <h3>Inserisci il nome utente</h3>
+    <input id="searchUser" type="text" placeholder="Nome utente..." name="searchUser">
+    <button onclick="userTimeline()"><i class="fa fa-search"></i></button>
+  </div>
   <div id= "base"></div>
 </body>
 </html>
