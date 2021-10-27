@@ -72,7 +72,7 @@ function userTimeline(){
     type: 'GET',
     url: url,
     crossDomain: true,
-    success: function( data ) {g
+    success: function( data ) {
       for (let tweet of data){
         let newT = $("<div>");
         newT+= "id: " + tweet['id'].toString() +"<br>";
