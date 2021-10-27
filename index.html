@@ -67,7 +67,7 @@ window.onload = function(){
 function userTimeline(){
   $("#base").empty();
   var user= document.getElementById('searchbar').value
-  var url = "http://127.0.0.1:8000/user/" + user
+  var url = "http://site202136.tw.cs.unibo.it/user/" + user
   $.ajax({
     type: 'GET',
     url: url,
