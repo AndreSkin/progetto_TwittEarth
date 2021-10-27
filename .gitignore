@@ -2,3 +2,5 @@ node_modules/
 package-lock.json
 .innometrics.db
 Documenti/
+.innometrics.db-journal
+.~lock.Sprint_0_Review.odp%23
