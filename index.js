@@ -5,6 +5,7 @@ const Twit = require('twit');
 
 const b_token= "AAAAAAAAAAAAAAAAAAAAAMEAUwEAAAAA1xY%2F32bSU4v5kwxoncHszvMJHx4%3D8gqEEFr90qe45rDMfubNdiMWfZwkkECKAK9SVgs5e6NdQOouCN";
 
+app.use('/', express.static(__dirname + '/'));
 app.use(cors());
 
 var T = new Twit({
