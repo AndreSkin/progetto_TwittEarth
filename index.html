@@ -10,38 +10,80 @@
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous">
   </script>
-  <script>
-  function userTimeline(){
-    $("#base").empty();
-    var user= document.getElementById('searchUser').value
-    var url = "http://127.0.0.1:8000/user/" + user
-    $.ajax({
-      type: 'GET',
-      url: url,
-      crossDomain: true,
-      success: function( data ) {
-        for (let tweet of data){
-          let newT = $("<div>");
-          newT+= "id: " + tweet['id'].toString() +"<br>";
-          newT+= "text: " + tweet['text'] + "<br>";
-          if (tweet['place'] != null)
-            newT+= "location: " + tweet['place']['full_name'] +"<br>";
-          newT+= "<br>";
-          $("#base").append(newT);
-        }
-      }
-    });
-  }
-    </script>
   <title>TwittEarth</title>
 </head>
 <body>
   <div><h1>TwittEarth</h1></div>
-  <div id= "userTimeline">
-    <h3>Inserisci il nome utente</h3>
-    <input id="searchUser" type="text" placeholder="Nome utente..." name="searchUser">
-    <button onclick="userTimeline()"><i class="fa fa-search"></i></button>
+  <div id="radios">
+    <input type="radio" id="radio_userTimeline" name="search" value="byUser" checked="checked">
+    <label for="radio_userTimeline">Search User Timeline</label><br>
+    <input type="radio" id="radio_textTweets" name="search" value="byText">
+    <label for="radio_textTweets">Search Tweets with given Text</label><br>
+    <input type="radio" id="radio_hashtagTweets" name="search" value="byHashtag">
+    <label for="radio_hashtagTweets">Search Tweets with given Hashtag</label><br>
+    <input type="radio" id="radio_location" name="search" value="byLocation">
+    <label for="radio_location">Search Tweets localized in a given Location</label><br>
+  </div>
+  <div id= "searchDiv">
+    <h3 id="searchhead">Inserisci il nome utente</h3>
+    <input id="searchbar" type="text" placeholder="Nome utente..." name="searchbar">
+    <button id= "searchbutton" onclick="userTimeline()"><i class="fa fa-search"></i></button>
   </div>
   <div id= "base"></div>
 </body>
+<script>
+function changebar(choice){
+  return function(){
+    if(choice == "user"){
+        document.getElementById('searchbar').setAttribute('placeholder', "Nome utente ...");
+        document.getElementById('searchbutton').setAttribute('onclick', "userTimeline()");
+        document.getElementById('searchhead').innerHTML = "Inserisci il nome utente";
+      } else if(choice == "text"){
+        document.getElementById('searchbar').setAttribute('placeholder', "Testo ...");
+        document.getElementById('searchbutton').setAttribute('onclick', "textTweet()");
+        document.getElementById('searchhead').innerHTML = "Inserisci il testo da cercare";
+      } else if(choice == "hashtag"){
+        document.getElementById('searchbar').setAttribute('placeholder', "Hashtag ...");
+        document.getElementById('searchbutton').setAttribute('onclick', "hashtagTweet()");
+        document.getElementById('searchhead').innerHTML = "Inserisci l'hashtag da cercare";
+      } else if(choice == "location"){
+        document.getElementById('searchbar').setAttribute('placeholder', "Località ...");
+        document.getElementById('searchbutton').setAttribute('onclick', "locationTweet()");
+        document.getElementById('searchhead').innerHTML = "Inserisci il luogo da cercare";
+      }
+    }
+}
+window.onload = function(){
+  var choice_user = document.getElementById('radio_userTimeline');
+  console.log(choice_user);
+  var choice_text = document.getElementById('radio_textTweets');
+  var choice_hashtag = document.getElementById('radio_hashtagTweets');
+  var choice_location = document.getElementById('radio_location');
+  choice_user.addEventListener('click', changebar("user"), false);
+  choice_text.addEventListener('click', changebar("text"), false);
+  choice_hashtag.addEventListener('click', changebar("hashtag"), false);
+  choice_location.addEventListener('click', changebar("location"), false);
+}
+function userTimeline(){
+  $("#base").empty();
+  var user= document.getElementById('searchbar').value
+  var url = "http://127.0.0.1:8000/user/" + user
+  $.ajax({
+    type: 'GET',
+    url: url,
+    crossDomain: true,
+    success: function( data ) {g
+      for (let tweet of data){
+        let newT = $("<div>");
+        newT+= "id: " + tweet['id'].toString() +"<br>";
+        newT+= "text: " + tweet['text'] + "<br>";
+        if (tweet['place'] != null)
+          newT+= "location: " + tweet['place']['full_name'] +"<br>";
+        newT+= "<br>";
+        $("#base").append(newT);
+      }
+    }
+  });
+}
+  </script>
 </html>
