@@ -95,7 +95,7 @@ function hashtagTweet(){
   {
     err = true;
   }
-  var url = "https://site202136.tw.cs.unibo.it/recent/" + tag.substring(1);
+  var url = "https://site202136.tw.cs.unibo.it/tag/" + tag.substring(1);
   $.ajax({
     type: 'GET',
     url: url,

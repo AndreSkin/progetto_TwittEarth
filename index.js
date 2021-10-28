@@ -27,12 +27,18 @@ app.get('/user/:id', (req, res) => {
 });
 
 app.get('/recent/:word', (req, res) => {
-  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data2, res2) => {
+  T.get('search/tweets', {q: req.params.word, result_type:'popular'},(err, data2, res2) => {
     //console.log(res2);
     res.status(200).json(data2);
   })
 });
 
+
+app.get('/tag/:word', (req, res) => {
+  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data3, res3) => {
+    res.status(200).json(data3);
+  })
+});
 
 const port = process.env.PORT || 8000
 app.listen(port, () => console.log(`Listening on port ${port}...`));
