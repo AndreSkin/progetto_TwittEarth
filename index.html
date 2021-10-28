@@ -85,5 +85,66 @@ function userTimeline(){
     }
   });
 }
+
+
+function hashtagTweet(){
+  $("#base").empty();
+  var tag = document.getElementById('searchbar').value;
+  let err = new Boolean(false);
+  if (tag[0]!='#' || tag.includes(' '))
+  {
+    err = true;
+  }
+  var url = "http://site202136.tw.cs.unibo.it/recent/" + tag.substring(1);
+  $.ajax({
+    type: 'GET',
+    url: url,
+    crossDomain: true,
+    success: function( data2 ) {
+      for (let tweet of data2['statuses']){
+        let newT = $("<div>");
+        if (err == true)
+        {
+          newT += " Non un Hashtag";
+          $("#base").append(newT);
+          return;
+        }
+        newT+= "id: " + tweet['id'].toString() +"<br>";
+        newT+= "text: " + tweet['text'] + "<br>";
+        if (tweet['place'] != null)
+          newT+= "location: " + tweet['place']['full_name'] +"<br>";
+        newT+= "<br>";
+        $("#base").append(newT);
+      }
+    }
+  });
+}
+
+
+function textTweet(){
+  $("#base").empty();
+  var frase = document.getElementById('searchbar').value
+
+  var url = "http://site202136.tw.cs.unibo.it/recent/" + frase
+  $.ajax({
+    type: 'GET',
+    url: url,
+    crossDomain: true,
+    success: function( data2 ) {
+      for (let tweet of data2['statuses']){
+        let newT = $("<div>");
+        newT+= "id: " + tweet['id'].toString() +"<br>";
+        newT+= "text: " + tweet['text'] + "<br>";
+        if (tweet['place'] != null)
+          newT+= "location: " + tweet['place']['full_name'] +"<br>";
+        newT+= "<br>";
+        $("#base").append(newT);
+      }
+    }
+  });
+}
+
+
+
   </script>
 </html>
