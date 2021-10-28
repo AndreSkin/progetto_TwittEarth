@@ -11,6 +11,14 @@
   crossorigin="anonymous">
   </script>
   <title>TwittEarth</title>
+  <style>
+    .tweet {
+      border: 1px solid black;
+      width: 25em;
+      padding: 2em;
+      margin-top: 2em;
+    }
+  </style>
 </head>
 <body>
   <div><h1>TwittEarth</h1></div>
@@ -34,6 +42,7 @@
 <script>
 function changebar(choice){
   return function(){
+    $("#base").empty();
     if(choice == "user"){
         document.getElementById('searchbar').setAttribute('placeholder', "Nome utente ...");
         document.getElementById('searchbutton').setAttribute('onclick', "userTimeline()");
@@ -75,12 +84,20 @@ function userTimeline(){
     success: function( data ) {
       for (let tweet of data){
         let newT = $("<div>");
-        newT+= "id: " + tweet['id'].toString() +"<br>";
-        newT+= "text: " + tweet['text'] + "<br>";
-        if (tweet['place'] != null)
-          newT+= "location: " + tweet['place']['full_name'] +"<br>";
-        newT+= "<br>";
+        newT.addClass("tweet");
+        let id= $("<p>");
+        id.text("id: " + tweet['id'].toString());
+        newT.append(id);
+        let content = $("<p>");
+        content.text("text: " + tweet['text']);
+        newT.append(content)
+        if (tweet['place'] != null){
+          let place = $("<p>");
+          place.text("location: " + tweet['place']['full_name']);
+          newT.append(place);
+        }
         $("#base").append(newT);
+        $("#base").append("<br>");
       }
     }
   });
@@ -103,18 +120,26 @@ function hashtagTweet(){
     success: function( data2 ) {
       for (let tweet of data2['statuses']){
         let newT = $("<div>");
+        newT.addClass("tweet");
         if (err == true)
         {
-          newT += " Non un Hashtag";
+          newT.text(" Non un Hashtag");
           $("#base").append(newT);
           return;
         }
-        newT+= "id: " + tweet['id'].toString() +"<br>";
-        newT+= "text: " + tweet['text'] + "<br>";
-        if (tweet['place'] != null)
-          newT+= "location: " + tweet['place']['full_name'] +"<br>";
-        newT+= "<br>";
+        let id= $("<p>");
+        id.text("id: " + tweet['id'].toString());
+        newT.append(id);
+        let content = $("<p>");
+        content.text("text: " + tweet['text']);
+        newT.append(content)
+        if (tweet['place'] != null){
+          let place = $("<p>");
+          place.text("location: " + tweet['place']['full_name']);
+          newT.append(place);
+        }
         $("#base").append(newT);
+        $("#base").append("<br>");
       }
     }
   });
@@ -133,12 +158,20 @@ function textTweet(){
     success: function( data2 ) {
       for (let tweet of data2['statuses']){
         let newT = $("<div>");
-        newT+= "id: " + tweet['id'].toString() +"<br>";
-        newT+= "text: " + tweet['text'] + "<br>";
-        if (tweet['place'] != null)
-          newT+= "location: " + tweet['place']['full_name'] +"<br>";
-        newT+= "<br>";
+        newT.addClass("tweet");
+        let id= $("<p>");
+        id.text("id: " + tweet['id'].toString());
+        newT.append(id);
+        let content = $("<p>");
+        content.text("text: " + tweet['text']);
+        newT.append(content)
+        if (tweet['place'] != null){
+          let place = $("<p>");
+          place.text("location: " + tweet['place']['full_name']);
+          newT.append(place);
+        }
         $("#base").append(newT);
+        $("#base").append("<br>");
       }
     }
   });
