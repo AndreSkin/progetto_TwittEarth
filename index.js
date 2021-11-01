@@ -26,6 +26,8 @@ const apiv2 = client.v2;
 app.use(express.json());
 
 /*API*/
+//API che dato uno username restituisce la timeline dei suoi Tweets
+//Out of date, ora usiamo la v2
 app.get('/user/:id', (req, res) => {
   T.get('statuses/user_timeline', {screen_name: req.params.id},(err, data, new_res) => {
     //console.log(data[0].created_at);
@@ -33,51 +35,58 @@ app.get('/user/:id', (req, res) => {
   })
 });
 
-
- app.get('/users/:name', async(req, res) => {
-let userdata= '';
-try
-{
+//API che dato uno username restituisce la timeline dei suoi Tweets
+//v2
+app.get('/users/:name', async(req, res) => {
+  let userdata= '';
+  try{
    userdata = await client.v2.userByUsername(req.params.name);
-}
-catch(error)
-{
-  console.log(error);
-}
-let userTweets='';
-try
-{
+  }
+  catch(error){
+    console.log(error);
+  }
+  let userTweets='';
+  try{
    userTweets = await client.v2.userTimeline(userdata.data.id);
-}
-catch(error)
-{
-  console.log(error);
-}
-
+  }
+  catch(error){
+    console.log(error);
+  }
   res.status(200).json(userTweets);
 });
 
-
+//API che data una stringa restituisce i tweet più popolari contenenti la data stringa
+//v1
 app.get('/recent/:word', (req, res) => {
-  T.get('search/tweets', {q: req.params.word, result_type:'popular'},(err, data2, res2) => {
+  T.get('search/tweets', {q: req.params.word, result_type:'popular'},(err, data, res) => {
     //console.log(res2);
-    res.status(200).json(data2);
+    res.status(200).json(data);
   })
 });
 
 
 app.get('/tag/:word', (req, res) => {
-  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data3, res3) => {
-    res.status(200).json(data3);
+  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data, res) => {
+    res.status(200).json(data);
   })
 });
 
 
-app.get('/geo/:id', (req, res) => {
-  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data3, res3) => {
-    res.status(200).json(data3);
+app.get('/geo/:place', (req, res) => {
+  T.get('geo/search', {query: req.params.place, max_results:'1'}, (err, data) =>{
+    console.log(data)
+    if(data != undefined){
+      let coordinates = data.result.places[0].bounding_box.coordinates;
+      coordinates = coordinates[0];
+      //Aspettiamo che skin faccia questa funzione
+      //coordinates = medium_coord(coordinates);
+      T.get('')
+    }
+    else{
+      res.status(404).json("Not found");
+    }
   })
-});
+})
 
 
 const port = process.env.PORT || 8000
