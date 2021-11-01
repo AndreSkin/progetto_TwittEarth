@@ -58,7 +58,7 @@ app.get('/users/:name', async(req, res) => {
 //API che data una stringa restituisce i tweet più popolari contenenti la data stringa
 //v1
 app.get('/recent/:word', (req, res) => {
-  T.get('search/tweets', {q: req.params.word, result_type:'popular'},(err, data, res) => {
+  T.get('search/tweets', {q: req.params.word, result_type:'popular'},(err, data, res2) => {
     //console.log(res2);
     res.status(200).json(data);
   })
@@ -66,24 +66,25 @@ app.get('/recent/:word', (req, res) => {
 
 
 app.get('/tag/:word', (req, res) => {
-  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data, res) => {
+  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data, res2) => {
     res.status(200).json(data);
   })
 });
 
-
 app.get('/geo/:place', (req, res) => {
   T.get('geo/search', {query: req.params.place, max_results:'1'}, (err, data) =>{
-    console.log(data)
-    if(data != undefined){
+    if(data.result != undefined){
       let coordinates = data.result.places[0].bounding_box.coordinates;
       coordinates = coordinates[0];
       //Aspettiamo che skin faccia questa funzione
-      //coordinates = medium_coord(coordinates);
-      T.get('')
+      //coordinates = find_medium(coordinates);
+      georeq = coordinates[0][1] + ',' + coordinates[0][0] + ',10mi';
+      T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 50, result_type: 'recent'}, (err2, data2) =>{
+        res.status(200).json(data2);
+      })
     }
     else{
-      res.status(404).json("Not found");
+      res.status(404).json(err);
     }
   })
 })

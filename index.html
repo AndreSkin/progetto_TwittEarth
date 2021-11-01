@@ -30,7 +30,7 @@
     <input type="radio" id="radio_hashtagTweets" name="search" value="byHashtag">
     <label for="radio_hashtagTweets">Search Tweets with given Hashtag</label><br>
     <input type="radio" id="radio_location" name="search" value="byLocation">
-    <label for="radio_location">Search Tweets localized in a given Location</label><br>
+    <label for="radio_location">Search Tweets of people living in a given Location</label><br>
   </div>
   <div id= "searchDiv">
     <h3 id="searchhead">Inserisci il nome utente</h3>
@@ -161,6 +161,36 @@ function textTweet(){
     crossDomain: true,
     success: function( data2 ) {
       for (let tweet of data2['statuses']){
+        let newT = $("<div>");
+        newT.addClass("tweet");
+        let id= $("<p>");
+        id.text("id: " + tweet['id'].toString());
+        newT.append(id);
+        let content = $("<p>");
+        content.text("text: " + tweet['text']);
+        newT.append(content)
+        if (tweet['place'] != null){
+          let place = $("<p>");
+          place.text("location: " + tweet['place']['full_name']);
+          newT.append(place);
+        }
+        $("#base").append(newT);
+        $("#base").append("<br>");
+      }
+    }
+  });
+}
+
+function locationTweet(){
+  $("#base").empty();
+  var location= document.getElementById('searchbar').value
+  var url = serverUrl + "geo/" + location
+  $.ajax({
+    type: 'GET',
+    url: url,
+    crossDomain: true,
+    success: function( data ) {
+      for (let tweet of data.statuses){
         let newT = $("<div>");
         newT.addClass("tweet");
         let id= $("<p>");
