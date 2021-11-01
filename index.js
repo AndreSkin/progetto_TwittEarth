@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const Twit = require('twit');
+const { TwitterApi } = require('twitter-api-v2');
 
 const b_token= "AAAAAAAAAAAAAAAAAAAAAMEAUwEAAAAA1xY%2F32bSU4v5kwxoncHszvMJHx4%3D8gqEEFr90qe45rDMfubNdiMWfZwkkECKAK9SVgs5e6NdQOouCN";
 
@@ -16,6 +17,12 @@ var T = new Twit({
 })
 
 
+// Instanciate with desired auth type (here's Bearer v2 auth)
+const twitterClient = new TwitterApi(b_token);
+const client = twitterClient.readOnly;
+const apiv1 = client.v1;
+const apiv2 = client.v2;
+
 app.use(express.json());
 
 /*API*/
@@ -25,6 +32,31 @@ app.get('/user/:id', (req, res) => {
     res.status(200).json(data);
   })
 });
+
+
+ app.get('/users/:name', async(req, res) => {
+let userdata= '';
+try
+{
+   userdata = await client.v2.userByUsername(req.params.name);
+}
+catch(error)
+{
+  console.log(error);
+}
+let userTweets='';
+try
+{
+   userTweets = await client.v2.userTimeline(userdata.data.id);
+}
+catch(error)
+{
+  console.log(error);
+}
+
+  res.status(200).json(userTweets);
+});
+
 
 app.get('/recent/:word', (req, res) => {
   T.get('search/tweets', {q: req.params.word, result_type:'popular'},(err, data2, res2) => {
@@ -39,6 +71,14 @@ app.get('/tag/:word', (req, res) => {
     res.status(200).json(data3);
   })
 });
+
+
+app.get('/geo/:id', (req, res) => {
+  T.get('search/tweets', {q: '#' + req.params.word, result_type:'popular'},(err, data3, res3) => {
+    res.status(200).json(data3);
+  })
+});
+
 
 const port = process.env.PORT || 8000
 app.listen(port, () => console.log(`Listening on port ${port}...`));
