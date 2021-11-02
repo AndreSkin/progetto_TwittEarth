@@ -38,16 +38,16 @@ app.use(express.json());
 //API che dato uno username restituisce la timeline dei suoi Tweets
 //v2
 app.get('/users/:name', async(req, res) => {
-  let userdata= '';
+  let userID= '';
   try{
-   userdata = await client.v2.userByUsername(req.params.name);
+   userID = await client.v2.userByUsername(req.params.name);
   }
   catch(error){
     console.log(error);
   }
   let userTweets='';
   try{
-   userTweets = await client.v2.userTimeline(userdata.data.id);
+   userTweets = await client.v2.userTimeline(userID.data.id);
   }
   catch(error){
     console.log(error);
