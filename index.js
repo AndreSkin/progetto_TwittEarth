@@ -28,12 +28,12 @@ app.use(express.json());
 /*API*/
 //API che dato uno username restituisce la timeline dei suoi Tweets
 //Out of date, ora usiamo la v2
-app.get('/user/:id', (req, res) => {
+/*app.get('/user/:id', (req, res) => {
   T.get('statuses/user_timeline', {screen_name: req.params.id},(err, data, new_res) => {
     //console.log(data[0].created_at);
     res.status(200).json(data);
   })
-});
+});*/
 
 //API che dato uno username restituisce la timeline dei suoi Tweets
 //v2
@@ -52,7 +52,7 @@ app.get('/users/:name', async(req, res) => {
   catch(error){
     console.log(error);
   }
-  res.status(200).json(userTweets);
+  res.status(200).json(userTweets._realData.data);
 });
 
 //API che data una stringa restituisce i tweet più popolari contenenti la data stringa

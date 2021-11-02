@@ -80,7 +80,7 @@ window.onload = function(){
 function userTimeline(){
   $("#base").empty();
   var user= document.getElementById('searchbar').value
-  var url = serverUrl + "user/" + user
+  var url = serverUrl + "users/" + user
   $.ajax({
     type: 'GET',
     url: url,
