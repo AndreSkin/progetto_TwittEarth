@@ -31,6 +31,9 @@
     <label for="radio_hashtagTweets">Search Tweets with given Hashtag</label><br>
     <input type="radio" id="radio_location" name="search" value="byLocation">
     <label for="radio_location">Search Tweets of people living in a given Location</label><br>
+    <hr>
+    <input type="checkbox" id="check_geo" name="geocheck" value="geocheck">
+    <label for="check_geo">Show only geolocalized Tweets</label><br>
   </div>
   <div id= "searchDiv">
     <h3 id="searchhead">Inserisci il nome utente</h3>
@@ -43,8 +46,10 @@
 </body>
 <script>
 
-serverUrl = "http://localhost:8000/"
-//serverUrl = "https://site202136.tw.cs.unibo.it/"
+//serverUrl = "http://localhost:8000/"
+serverUrl = "https://site202136.tw.cs.unibo.it/"
+
+var only_geo= false;
 
 function changebar(choice){
   return function(){
@@ -82,6 +87,8 @@ window.onload = function(){
   choice_text.addEventListener('click', changebar("text"), false);
   choice_hashtag.addEventListener('click', changebar("hashtag"), false);
   choice_location.addEventListener('click', changebar("location"), false);
+  var choice_geo = document.getElementById('check_geo');
+  choice_geo.addEventListener('click', () => {only_geo= !only_geo;}, false);
 }
 function userTimeline(){
   $("#base").empty();
@@ -93,21 +100,23 @@ function userTimeline(){
     crossDomain: true,
     success: function( data ) {
       for (let tweet of data){
-        let newT = $("<div>");
-        newT.addClass("tweet");
-        let id= $("<p>");
-        id.text("id: " + tweet['id'].toString());
-        newT.append(id);
-        let content = $("<p>");
-        content.text("text: " + tweet['text']);
-        newT.append(content)
-        if (tweet['place'] != null){
-          let place = $("<p>");
-          place.text("location: " + tweet['place']['full_name']);
-          newT.append(place);
+        if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
+            let newT = $("<div>");
+            newT.addClass("tweet");
+            let id= $("<p>");
+            id.text("id: " + tweet['id'].toString());
+            newT.append(id);
+            let content = $("<p>");
+            content.text("text: " + tweet['text']);
+            newT.append(content)
+            if (tweet['place'] != null){
+              let place = $("<p>");
+              place.text("location: " + tweet['place']['full_name']);
+              newT.append(place);
+            }
+            $("#base").append(newT);
+            $("#base").append("<br>");
         }
-        $("#base").append(newT);
-        $("#base").append("<br>");
       }
     }
   });
@@ -129,27 +138,29 @@ function hashtagTweet(){
     crossDomain: true,
     success: function( data2 ) {
       for (let tweet of data2['statuses']){
-        let newT = $("<div>");
-        newT.addClass("tweet");
-        if (err == true)
-        {
-          newT.text(" Non un Hashtag");
+        if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
+          let newT = $("<div>");
+          newT.addClass("tweet");
+          if (err == true)
+          {
+            newT.text(" Non un Hashtag");
+            $("#base").append(newT);
+            return;
+          }
+          let id= $("<p>");
+          id.text("id: " + tweet['id'].toString());
+          newT.append(id);
+          let content = $("<p>");
+          content.text("text: " + tweet['text']);
+          newT.append(content)
+          if (tweet['place'] != null){
+            let place = $("<p>");
+            place.text("location: " + tweet['place']['full_name']);
+            newT.append(place);
+          }
           $("#base").append(newT);
-          return;
+          $("#base").append("<br>");
         }
-        let id= $("<p>");
-        id.text("id: " + tweet['id'].toString());
-        newT.append(id);
-        let content = $("<p>");
-        content.text("text: " + tweet['text']);
-        newT.append(content)
-        if (tweet['place'] != null){
-          let place = $("<p>");
-          place.text("location: " + tweet['place']['full_name']);
-          newT.append(place);
-        }
-        $("#base").append(newT);
-        $("#base").append("<br>");
       }
     }
   });
@@ -167,21 +178,23 @@ function textTweet(){
     crossDomain: true,
     success: function( data2 ) {
       for (let tweet of data2['statuses']){
-        let newT = $("<div>");
-        newT.addClass("tweet");
-        let id= $("<p>");
-        id.text("id: " + tweet['id'].toString());
-        newT.append(id);
-        let content = $("<p>");
-        content.text("text: " + tweet['text']);
-        newT.append(content)
-        if (tweet['place'] != null){
-          let place = $("<p>");
-          place.text("location: " + tweet['place']['full_name']);
-          newT.append(place);
+          if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
+          let newT = $("<div>");
+          newT.addClass("tweet");
+          let id= $("<p>");
+          id.text("id: " + tweet['id'].toString());
+          newT.append(id);
+          let content = $("<p>");
+          content.text("text: " + tweet['text']);
+          newT.append(content)
+          if (tweet['place'] != null){
+            let place = $("<p>");
+            place.text("location: " + tweet['place']['full_name']);
+            newT.append(place);
+          }
+          $("#base").append(newT);
+          $("#base").append("<br>");
         }
-        $("#base").append(newT);
-        $("#base").append("<br>");
       }
     }
   });
@@ -197,21 +210,23 @@ function locationTweet(){
     crossDomain: true,
     success: function( data ) {
       for (let tweet of data.statuses){
-        let newT = $("<div>");
-        newT.addClass("tweet");
-        let id= $("<p>");
-        id.text("id: " + tweet['id'].toString());
-        newT.append(id);
-        let content = $("<p>");
-        content.text("text: " + tweet['text']);
-        newT.append(content)
-        if (tweet['place'] != null){
-          let place = $("<p>");
-          place.text("location: " + tweet['place']['full_name']);
-          newT.append(place);
+        if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
+          let newT = $("<div>");
+          newT.addClass("tweet");
+          let id= $("<p>");
+          id.text("id: " + tweet['id'].toString());
+          newT.append(id);
+          let content = $("<p>");
+          content.text("text: " + tweet['text']);
+          newT.append(content)
+          if (tweet['place'] != null){
+            let place = $("<p>");
+            place.text("location: " + tweet['place']['full_name']);
+            newT.append(place);
+          }
+          $("#base").append(newT);
+          $("#base").append("<br>");
         }
-        $("#base").append(newT);
-        $("#base").append("<br>");
       }
     },
     error: function( err ){
