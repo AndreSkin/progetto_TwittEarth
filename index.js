@@ -73,7 +73,7 @@ app.get('/tag/:word', (req, res) => {
 
 app.get('/geo/:place', (req, res) => {
   T.get('geo/search', {query: req.params.place, max_results:'1'}, (err, data) =>{
-    if(data.result != undefined && data.result.places[0].bounding_box != undefined && data.result.places[0].bounding_box.coordinates != undefined){
+    try{
       let coordinates = data.result.places[0].bounding_box.coordinates;
       coordinates = coordinates[0];
       //Aspettiamo che skin faccia questa funzione
@@ -83,7 +83,7 @@ app.get('/geo/:place', (req, res) => {
         res.status(200).json(data2);
       })
     }
-    else{
+    catch{
       res.status(404).json(err);
     }
   })
