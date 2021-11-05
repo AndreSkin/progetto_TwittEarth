@@ -79,15 +79,19 @@ function changebar(choice){
 }
 window.onload = function(){
   var choice_user = document.getElementById('radio_userTimeline');
-  console.log(choice_user);
   var choice_text = document.getElementById('radio_textTweets');
   var choice_hashtag = document.getElementById('radio_hashtagTweets');
   var choice_location = document.getElementById('radio_location');
+  choice_text.checked = false;
+  choice_hashtag.checked = false;
+  choice_location.checked = false;
+  choice_user.checked = true;
   choice_user.addEventListener('click', changebar("user"), false);
   choice_text.addEventListener('click', changebar("text"), false);
   choice_hashtag.addEventListener('click', changebar("hashtag"), false);
   choice_location.addEventListener('click', changebar("location"), false);
   var choice_geo = document.getElementById('check_geo');
+  choice_geo.checked = false;
   choice_geo.addEventListener('click', () => {only_geo= !only_geo;}, false);
 }
 
