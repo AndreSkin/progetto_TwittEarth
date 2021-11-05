@@ -46,8 +46,8 @@
 </body>
 <script>
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 var only_geo= false;
 
@@ -103,8 +103,8 @@ function userTimeline(){
     url: url,
     crossDomain: true,
     success: function( data ) {
-      for (let tweet of data){
-      if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
+      for (let tweet of data['data']){
+        if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
             let newT = $("<div>");
             newT.addClass("tweet");
             let id= $("<p>");
@@ -154,7 +154,7 @@ function hashtagTweet(){
     url: url,
     crossDomain: true,
     success: function( data2 ) {
-      for (let tweet of data2){
+      for (let tweet of data2['data']){
         if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
           let newT = $("<div>");
           newT.addClass("tweet");
@@ -203,32 +203,32 @@ function textTweet(){
     url: url,
     crossDomain: true,
     success: function( data ) {
-      for (let tweet of data){
-          if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-          let newT = $("<div>");
-          newT.addClass("tweet");
-          let id= $("<p>");
-          id.text("id: " + tweet['id'].toString());
-          newT.append(id);
-          let content = $("<p>");
-          content.text("text: " + tweet['text']);
-          newT.append(content)
-          if (tweet['geo'] != null){
-            let loc ='';
-              $.ajax({
-                type: 'GET',
-                url: serverUrl + "place/" + tweet['geo']['place_id'],
-                crossDomain: true,
-                success: function( data ) {
-                  loc = data['full_name'];
-                  let place = $("<p>");
-                  place.text("location: " + loc);
-                  newT.append(place);
-                }
-              });
+      for (let tweet of data['data']){
+        if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
+        let newT = $("<div>");
+        newT.addClass("tweet");
+        let id= $("<p>");
+        id.text("id: " + tweet['id'].toString());
+        newT.append(id);
+        let content = $("<p>");
+        content.text("text: " + tweet['text']);
+        newT.append(content)
+        if (tweet['geo'] != null){
+          let loc ='';
+            $.ajax({
+              type: 'GET',
+              url: serverUrl + "place/" + tweet['geo']['place_id'],
+              crossDomain: true,
+              success: function( data ) {
+                loc = data['full_name'];
+                let place = $("<p>");
+                place.text("location: " + loc);
+                newT.append(place);
+              }
+            });
           }
-          $("#base").append(newT);
-          $("#base").append("<br>");
+        $("#base").append(newT);
+        $("#base").append("<br>");
         }
       }
     }

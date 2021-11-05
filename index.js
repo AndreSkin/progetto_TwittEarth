@@ -54,7 +54,7 @@ app.get('/users/:name', async(req, res) => {
   catch(error){
     res.status(404).json(error);
   }
-  res.status(200).json(userTweets._realData.data);
+  res.status(200).json(userTweets._realData);
 });
 
 //Api v1 che dato un place id restituisce informazioni sul luogo corrispondente
@@ -89,7 +89,7 @@ app.get('/recents/:word', async(req, res) => {
   catch(error){
     res.status(404).json(error);
   }
-  res.status(200).json(recentTweets._realData.data);
+  res.status(200).json(recentTweets._realData);
 });
 
 /*
@@ -109,7 +109,7 @@ app.get('/tags/:word', async(req, res) => {
   catch(error){
     res.status(404).json(error);
   }
-  res.status(200).json(recentTweets._realData.data);
+  res.status(200).json(recentTweets._realData);
 });
 
 /*Dato un array di coordinate trova il centro*/
