@@ -245,7 +245,7 @@ function locationTweet(){
     crossDomain: true,
     success: function( data ) {
       for (let tweet of data['statuses']){
-        if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
+        if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
           let newT = $("<div>");
           newT.addClass("tweet");
           let id= $("<p>");

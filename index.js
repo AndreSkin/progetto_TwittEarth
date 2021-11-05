@@ -135,7 +135,7 @@ app.get('/geo/:place', (req, res) => {
       coordinates = coordinates[0];
       coordinates = find_medium(coordinates);
       georeq = coordinates[1] + ',' + coordinates[0] + ',10mi';
-      T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 50, result_type: 'recent'}, (err2, data2) =>{
+      T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, (err2, data2) =>{
         res.status(200).json(data2);
       })
     }
