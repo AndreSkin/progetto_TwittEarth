@@ -174,7 +174,7 @@ async function sentiment_analyze(toAnalyze){
       }
       catch (e){
         //In caso di errori (es. tweet contenenti solo un tag), ignoro il tweet
-        console.log("\n\n"+ e + "\n\n");
+        //console.log("\n\n"+ e + "\n\n");
         ignored++;
       }
     }
