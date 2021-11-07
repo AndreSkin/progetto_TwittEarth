@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const Twit = require('twit');
 const { TwitterApi } = require('twitter-api-v2');
+var sentiment = require('node-sentiment');
 
 const b_token= "AAAAAAAAAAAAAAAAAAAAAMEAUwEAAAAA1xY%2F32bSU4v5kwxoncHszvMJHx4%3D8gqEEFr90qe45rDMfubNdiMWfZwkkECKAK9SVgs5e6NdQOouCN";
 
@@ -154,6 +155,39 @@ app.get('/geoid/:id', async(req, res) => {
     res.status(404).json(error);
   }
   res.status(200).json(find_medium(luogo.bounding_box.coordinates[0]));
+});
+
+
+//Endpoint per ottenere uno score di sentiment analysis data una parola
+app.get('/sentiment/:word', async(req, res) => {
+  //Ottengo i tweets contenenti la parola data
+  let tweets= '';
+  try{
+   tweets = await client.v2.search(req.params.word, {'max_results':100});
+  }
+  catch(error){
+    res.status(404).json(error);
+  }
+  let toAnalyze = tweets._realData.data;
+
+  let TotScore = 0;
+  let ignored =0;
+
+//Di ogni tweet ottenuto analizzo il testo
+  for(let singletweet of toAnalyze){
+    try{
+      //Ottengo lo score complessivo
+      TotScore = TotScore + parseInt(sentiment(singletweet['text'])['score']);
+    }
+    catch (e){
+      //In caso di errori (es. tweet contenenti solo un tag), ignoro il tweet
+      console.log("\n\n\n"+ e + "\n\n\n");
+      ignored++;
+    }
+  }
+//Restituisco la media degli score dei tweets considerati
+  let seen = (toAnalyze.length) - ignored;
+  res.status(200).json(TotScore / seen);
 });
 
 
