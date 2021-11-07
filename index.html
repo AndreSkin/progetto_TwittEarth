@@ -238,7 +238,7 @@ function textTweet(){
     url: url,
     crossDomain: true,
     success: function( data ) {
-      if (data['sentiment']){
+      if (data['sentiment'] != null){
         let newS = $('<div>');
         newS.addClass("sentiment");
         let p= $('<p>');
