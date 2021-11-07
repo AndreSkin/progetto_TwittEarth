@@ -33,12 +33,14 @@
     <label for="radio_location">Search Tweets of people living in a given Location</label><br>
     <hr>
     <input type="checkbox" id="check_geo" name="geocheck" value="geocheck">
-    <label for="check_geo">Show only geolocalized Tweets</label><br>
+    <label for="check_geo">Show only geolocalized Tweets</label>
+    <input type="checkbox" id="check_sent" name="sentcheck" value="sentcheck" disabled>
+    <label for="check_sent">Show sentiment for word searching tweets</label><br>
   </div>
   <div id= "searchDiv">
     <h3 id="searchhead">Inserisci il nome utente</h3>
     <form id="simpleform" action="javascript:userTimeline()">
-      <input id="searchbar" type="text" placeholder="Nome utente..." name="searchbar">
+      <input id="searchbar" type="text" placeholder="Nome utente..." name="searchbar" required="true">
       <button type="submit" id= "searchbutton"><i class="fa fa-search"></i></button>
     </form>
   </div>
@@ -46,10 +48,11 @@
 </body>
 <script>
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+var only_geo = false;
+var sent_analyze = false;
 
-var only_geo= false;
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice){
   return function(){
@@ -59,25 +62,31 @@ function changebar(choice){
         //.getElementById('searchbutton').setAttribute('onclick', "userTimeline()");
         document.getElementById('simpleform').setAttribute('action', "javascript:userTimeline()");
         document.getElementById('searchhead').innerHTML = "Inserisci il nome utente";
+        document.getElementById('check_sent').disabled = true;
       } else if(choice == "text"){
         document.getElementById('searchbar').setAttribute('placeholder', "Testo ...");
         //document.getElementById('searchbutton').setAttribute('onclick', "textTweet()");
         document.getElementById('simpleform').setAttribute('action', "javascript:textTweet()");
         document.getElementById('searchhead').innerHTML = "Inserisci il testo da cercare";
+        document.getElementById('check_sent').disabled = false;
       } else if(choice == "hashtag"){
         document.getElementById('searchbar').setAttribute('placeholder', "Hashtag ...");
         //document.getElementById('searchbutton').setAttribute('onclick', "hashtagTweet()");
         document.getElementById('simpleform').setAttribute('action', "javascript:hashtagTweet()");
         document.getElementById('searchhead').innerHTML = "Inserisci l'hashtag da cercare";
+        document.getElementById('check_sent').disabled = true;
       } else if(choice == "location"){
         document.getElementById('searchbar').setAttribute('placeholder', "Località ...");
         //document.getElementById('searchbutton').setAttribute('onclick', "locationTweet()");
         document.getElementById('simpleform').setAttribute('action', "javascript:locationTweet()");
         document.getElementById('searchhead').innerHTML = "Inserisci il luogo da cercare";
+        document.getElementById('check_sent').disabled = true;
       }
     }
 }
 window.onload = function(){
+  only_geo= false;
+  sent_analyze = false;
   var choice_user = document.getElementById('radio_userTimeline');
   var choice_text = document.getElementById('radio_textTweets');
   var choice_hashtag = document.getElementById('radio_hashtagTweets');
@@ -91,8 +100,12 @@ window.onload = function(){
   choice_hashtag.addEventListener('click', changebar("hashtag"), false);
   choice_location.addEventListener('click', changebar("location"), false);
   var choice_geo = document.getElementById('check_geo');
+  var choice_sent = document.getElementById('check_sent');
+  choice_sent.checked = false;
+  choice_sent.disabled = true;
   choice_geo.checked = false;
   choice_geo.addEventListener('click', () => {only_geo= !only_geo;}, false);
+  choice_sent.addEventListener('click', () => {sent_analyze = !sent_analyze}, false)
 }
 
 function userTimeline(){
@@ -107,34 +120,52 @@ function userTimeline(){
     url: url,
     crossDomain: true,
     success: function( data ) {
-      for (let tweet of data['data']){
-        if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-            let newT = $("<div>");
-            newT.addClass("tweet");
-            let id= $("<p>");
-            id.text("id: " + tweet['id'].toString());
-            newT.append(id);
-            let content = $("<p>");
-            content.text("text: " + tweet['text']);
-            newT.append(content)
-            if (tweet['geo'] != null){
-              let loc ='';
-                $.ajax({
-                  type: 'GET',
-                  url: serverUrl + "place/" + tweet['geo']['place_id'],
-                  crossDomain: true,
-                  success: function( data ) {
-                    loc = data['full_name'];
-                    let place = $("<p>");
-                    place.text("location: " + loc);
-                    newT.append(place);
-                  }
-                });
-            }
-            $("#base").append(newT);
-            $("#base").append("<br>");
+      if (data['data']){
+        for (let tweet of data['data']){
+          if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
+              let newT = $("<div>");
+              newT.addClass("tweet");
+              let id= $("<p>");
+              id.text("id: " + tweet['id'].toString());
+              newT.append(id);
+              let content = $("<p>");
+              content.text("text: " + tweet['text']);
+              newT.append(content)
+              if (tweet['geo'] != null){
+                let loc ='';
+                  $.ajax({
+                    type: 'GET',
+                    url: serverUrl + "place/" + tweet['geo']['place_id'],
+                    crossDomain: true,
+                    success: function( data ) {
+                      loc = data['full_name'];
+                      let place = $("<p>");
+                      place.text("location: " + loc);
+                      newT.append(place);
+                    }
+                  });
+              }
+              $("#base").append(newT);
+              $("#base").append("<br>");
+          }
         }
       }
+      else{
+        let newT = $('<div>');
+        let p = $('<p>');
+        p.text("Utente non trovato");
+        newT.append(p);
+        $('#base').append('<br>');
+        $('#base').append(newT);
+      }
+    },
+    error: function( err ){
+      let newT = $("<div>");
+      let txt= $("<p>");
+      txt.text("Error: " + "Utente non trovato");
+      newT.append(txt);
+      $("#base").append(newT);
+      $("#base").append("<br>");
     }
   });
 }
@@ -200,14 +231,24 @@ function hashtagTweet(){
 function textTweet(){
   $("#base").empty();
   var frase = document.getElementById('searchbar').value
-
-  var url = serverUrl + "recents/" + frase
+  frase = frase.replace("#", "~");
+  var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze;
   $.ajax({
     type: 'GET',
     url: url,
     crossDomain: true,
     success: function( data ) {
-      for (let tweet of data['data']){
+      if (data['sentiment']){
+        let newS = $('<div>');
+        newS.addClass("sentiment");
+        let p= $('<p>');
+        p.text("Il sentimento per questa stringa è: " + data['sentiment']);
+        newS.append(p);
+        $('#base').append('<br>');
+        $("#base").append(newS);
+        $('#base').append('<br>');
+      }
+      for (let tweet of data['tweets']['data']){
         if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
         let newT = $("<div>");
         newT.addClass("tweet");

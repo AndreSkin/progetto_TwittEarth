@@ -82,7 +82,7 @@ app.get('/recent/:word', (req, res) => {
 */
 
 //Api v2 che data una stringa restituisce i tweet più recenti contenenti la data stringa
-app.get('/recents/:word', async(req, res) => {
+/*app.get('/recents/:word', async(req, res) => {
   let recentTweets= '';
   try{
    recentTweets = await client.v2.search(req.params.word, {'expansions':'geo.place_id'});
@@ -91,7 +91,7 @@ app.get('/recents/:word', async(req, res) => {
     res.status(404).json(error);
   }
   res.status(200).json(recentTweets._realData);
-});
+});*/
 
 /*
 app.get('/tag/:word', (req, res) => {
@@ -102,6 +102,7 @@ app.get('/tag/:word', (req, res) => {
 */
 
 //Api v2 che dato un hashtag restituisce i tweet più recenti che lo contengono
+
 app.get('/tags/:word', async(req, res) => {
   let recentTweets= '';
   try{
@@ -158,36 +159,59 @@ app.get('/geoid/:id', async(req, res) => {
 });
 
 
+async function sentiment_analyze(toAnalyze){
+    let TotScore = 0;
+    let ignored =0;
+
+  //Di ogni tweet ottenuto analizzo il testo
+    for(let singletweet of toAnalyze){
+      try{
+        const regEx = new RegExp('@', "g");
+        let replaced = singletweet['text'].replace(regEx,'')
+
+        //Ottengo lo score complessivo
+        TotScore = TotScore + parseFloat(sentiment(replaced)['score']);
+      }
+      catch (e){
+        //In caso di errori (es. tweet contenenti solo un tag), ignoro il tweet
+        console.log("\n\n"+ e + "\n\n");
+        ignored++;
+      }
+    }
+  //Restituisco la media degli score dei tweets considerati
+    let seen = (toAnalyze.length) - ignored;
+    return(TotScore / seen);
+}
+
 //Endpoint per ottenere uno score di sentiment analysis data una parola
-app.get('/sentiment/:word', async(req, res) => {
+app.get('/recents/:word', async(req, res) => {
   //Ottengo i tweets contenenti la parola data
   let tweets= '';
+  let query = req.params.word;
+  if (query[0] == '~') {
+    query = '#' + req.params.word.substring(1);
+  }
+
+  if (query[0] == '@') {
+    query = '@'+req.params.word.substring(1);
+  }
+
+  let toSentiment = req.query.sentiment;
   try{
-   tweets = await client.v2.search(req.params.word, {'max_results':100});
+   tweets = await client.v2.search(query, {'max_results':100, 'expansions':'geo.place_id'});
   }
   catch(error){
     res.status(404).json(error);
   }
   let toAnalyze = tweets._realData.data;
 
-  let TotScore = 0;
-  let ignored =0;
-
-//Di ogni tweet ottenuto analizzo il testo
-  for(let singletweet of toAnalyze){
-    try{
-      //Ottengo lo score complessivo
-      TotScore = TotScore + parseInt(sentiment(singletweet['text'])['score']);
-    }
-    catch (e){
-      //In caso di errori (es. tweet contenenti solo un tag), ignoro il tweet
-      console.log("\n\n\n"+ e + "\n\n\n");
-      ignored++;
-    }
+  let sentiment = null;
+  if(toSentiment == "true"){
+    sentiment = await sentiment_analyze(toAnalyze);
   }
-//Restituisco la media degli score dei tweets considerati
-  let seen = (toAnalyze.length) - ignored;
-  res.status(200).json(TotScore / seen);
+
+  let toRet = { 'sentiment' : sentiment, 'tweets' : tweets._realData};
+  res.status(200).json(toRet);
 });
 
 
