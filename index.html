@@ -254,11 +254,11 @@ function textTweet(){
     url: url,
     crossDomain: true,
     success: function( data ) {
-      if (data['sentiment'] != null){
+      if (data['sentiment']['avg'] != null){
         let newS = $('<div>');
         newS.addClass("sentiment");
         let p= $('<p>');
-        p.text("Il sentimento per questa stringa è: " + data['sentiment']);
+        p.text("Il sentimento per questa stringa è: " + data['sentiment']['avg']);
         newS.append(p);
         $('#base').append('<br>');
         $("#base").append(newS);

@@ -4,6 +4,9 @@ const cors = require('cors');
 const Twit = require('twit');
 const { TwitterApi } = require('twitter-api-v2');
 var sentiment = require('node-sentiment');
+const LanguageDetect = require('languagedetect');
+const lngDetector = new LanguageDetect();
+lngDetector.setLanguageType('iso2');
 
 const b_token= "AAAAAAAAAAAAAAAAAAAAAMEAUwEAAAAA1xY%2F32bSU4v5kwxoncHszvMJHx4%3D8gqEEFr90qe45rDMfubNdiMWfZwkkECKAK9SVgs5e6NdQOouCN";
 
@@ -158,29 +161,40 @@ app.get('/geoid/:id', async(req, res) => {
   res.status(200).json(find_medium(luogo.bounding_box.coordinates[0]));
 });
 
-
 async function sentiment_analyze(toAnalyze){
     let TotScore = 0;
     let ignored =0;
-
+    let res={};
+    let tweets ={'eval': []}
   //Di ogni tweet ottenuto analizzo il testo
     for(let singletweet of toAnalyze){
       try{
         const regEx = new RegExp('@', "g");
-        let replaced = singletweet['text'].replace(regEx,'')
+        let replaced = singletweet['text'].replace(regEx,'');
+        var lang = (lngDetector.detect(replaced ,1)[0][0]);
+        ParsedTweet = sentiment(replaced, lang)
 
         //Ottengo lo score complessivo
-        TotScore = TotScore + parseFloat(sentiment(replaced)['score']);
+        TotScore = TotScore + parseFloat(ParsedTweet['score']);
+
+        tweets.eval.push({
+          "Text": singletweet['text'],
+          "Score": ParsedTweet['score'],
+          "Pos": ParsedTweet['positive'],
+          "Neg" : ParsedTweet['negative'],
+          "Lang": lang
+        });
       }
       catch (e){
         //In caso di errori (es. tweet contenenti solo un tag), ignoro il tweet
-        //console.log("\n\n"+ e + "\n\n");
         ignored++;
       }
     }
   //Restituisco la media degli score dei tweets considerati
     let seen = (toAnalyze.length) - ignored;
-    return(TotScore / seen);
+    //console.log(ignored);
+    res={'avg':TotScore / seen,'list':tweets};
+    return(res);
 }
 
 //Endpoint per ottenere uno score di sentiment analysis data una parola
@@ -210,7 +224,7 @@ app.get('/recents/:word', async(req, res) => {
     sentiment = await sentiment_analyze(toAnalyze);
   }
 
-  let toRet = { 'sentiment' : sentiment, 'tweets' : tweets._realData};
+  let toRet = { 'sentiment' : sentiment ,'tweets' : tweets._realData};
   res.status(200).json(toRet);
 });
 
