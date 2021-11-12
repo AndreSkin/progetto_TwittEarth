@@ -18,5 +18,15 @@ pipeline {
 
            }
        }
+       stage ('Deploy') {
+            steps{
+               sshagent(credentials : ['3c95ddf2-40c7-4c59-b94c-55a7d981aacd']) {
+               sh 'ssh -o StrictHostKeyChecking=no giuseppe.carrino2@annina.cs.unibo.it'
+               sh 'ssh -v giuseppe.carrino2@annina.cs.unibo.it'
+               sh 'mkdir ciao'
+            }
+         }
+      }
+
     }
  }
