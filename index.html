@@ -87,24 +87,28 @@ function changebar(choice){
     $("#base").empty();
     if(choice == "user"){
         document.getElementById('searchbar').setAttribute('placeholder', "Nome utente ...");
+        document.getElementById('searchbar').value = ""
         //.getElementById('searchbutton').setAttribute('onclick', "userTimeline()");
         document.getElementById('simpleform').setAttribute('action', "javascript:userTimeline()");
         document.getElementById('searchhead').innerHTML = "Inserisci il nome utente";
         document.getElementById('check_sent').disabled = true;
       } else if(choice == "text"){
         document.getElementById('searchbar').setAttribute('placeholder', "Testo ...");
+        document.getElementById('searchbar').value = ""
         //document.getElementById('searchbutton').setAttribute('onclick', "textTweet()");
         document.getElementById('simpleform').setAttribute('action', "javascript:textTweet()");
         document.getElementById('searchhead').innerHTML = "Inserisci il testo da cercare";
         document.getElementById('check_sent').disabled = false;
       } else if(choice == "hashtag"){
         document.getElementById('searchbar').setAttribute('placeholder', "Hashtag ...");
+        document.getElementById('searchbar').value = ""
         //document.getElementById('searchbutton').setAttribute('onclick', "hashtagTweet()");
         document.getElementById('simpleform').setAttribute('action', "javascript:hashtagTweet()");
         document.getElementById('searchhead').innerHTML = "Inserisci l'hashtag da cercare";
         document.getElementById('check_sent').disabled = true;
       } else if(choice == "location"){
         document.getElementById('searchbar').setAttribute('placeholder', "Località ...");
+        document.getElementById('searchbar').value = ""
         //document.getElementById('searchbutton').setAttribute('onclick', "locationTweet()");
         document.getElementById('simpleform').setAttribute('action', "javascript:locationTweet()");
         document.getElementById('searchhead').innerHTML = "Inserisci il luogo da cercare";
