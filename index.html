@@ -329,36 +329,44 @@ function locationTweet(){
   var url = serverUrl + "geo/" + location
   $.ajax({
     type: 'GET',
-    url: url,
+    url: 'https://nominatim.openstreetmap.org/search?format=json&q=%27' + location,
     crossDomain: true,
-    success: function( data ) {
-      for (let tweet of data['statuses']){
-        if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
-          let newT = $("<div>");
-          newT.addClass("tweet");
-          let id= $("<p>");
-          id.text("id: " + tweet['id'].toString());
-          newT.append(id);
-          let content = $("<p>");
-          content.text("text: " + tweet['text']);
-          newT.append(content)
-          if (tweet['place'] != null){
-            let place = $("<p>");
-            place.text("location: " + tweet['place']['full_name']);
-            newT.append(place);
+    success: function( data ){
+      var url = serverUrl + "geo/" + data[0]['lat'] + "x" + data[0]['lon'];
+      $.ajax({
+        type: 'GET',
+        url: url,
+        crossDomain: true,
+        success: function( data ) {
+          for (let tweet of data['statuses']){
+            if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
+              let newT = $("<div>");
+              newT.addClass("tweet");
+              let id= $("<p>");
+              id.text("id: " + tweet['id'].toString());
+              newT.append(id);
+              let content = $("<p>");
+              content.text("text: " + tweet['text']);
+              newT.append(content)
+              if (tweet['place'] != null){
+                let place = $("<p>");
+                place.text("location: " + tweet['place']['full_name']);
+                newT.append(place);
+              }
+              $("#base").append(newT);
+              $("#base").append("<br>");
+            }
           }
+        },
+        error: function( err ){
+          let newT = $("<div>");
+          let txt= $("<p>");
+          txt.text("Error: " + err.responseJSON.message);
+          newT.append(txt);
           $("#base").append(newT);
           $("#base").append("<br>");
         }
-      }
-    },
-    error: function( err ){
-      let newT = $("<div>");
-      let txt= $("<p>");
-      txt.text("Error: " + err.responseJSON.message);
-      newT.append(txt);
-      $("#base").append(newT);
-      $("#base").append("<br>");
+      });
     }
   });
 }

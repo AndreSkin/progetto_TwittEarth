@@ -123,20 +123,16 @@ function find_medium(coordinates){
 
 /*Tweet vicini a coordinata*/
 app.get('/geo/:place', (req, res) => {
-  T.get('geo/search', {query: req.params.place, max_results:'1'}, (err, data) =>{
-    try{
-      let coordinates = data.result.places[0].bounding_box.coordinates;
-      coordinates = coordinates[0];
-      coordinates = find_medium(coordinates);
-      georeq = coordinates[1] + ',' + coordinates[0] + ',10mi';
-      T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, (err2, data2) =>{
-        res.status(200).json(data2);
-      })
-    }
-    catch{
-      res.status(404).json(err);
-    }
-  })
+  try{
+    coord = req.params.place.split("x")
+    georeq = coord[0] + ',' + coord[1] + ',10mi';
+    T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, (err2, data2) =>{
+      res.status(200).json(data2);
+    })
+  }
+  catch{
+    res.status(404).json("error");
+  }
 })
 
 
