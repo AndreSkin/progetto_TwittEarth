@@ -25,6 +25,12 @@
       padding: 2em;
       margin-top: 2em;
     }
+
+    .sentiment{
+      border: 1px solid black;
+      border-color: red;
+      padding: 2em;
+    }
   </style>
 </head>
 <body>
@@ -66,8 +72,8 @@ var only_geo = false;
 var sent_analyze = false;
 var mymap = L.map('map').setView([0, 0], 1);
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice){
   return function(){
@@ -136,31 +142,23 @@ function userTimeline(){
     url: url,
     crossDomain: true,
     success: function( data ) {
-      if (data['data']){
-        for (let tweet of data['data']){
+      if (data['tweets']){
+        for (let tweet of data['tweets']){
           if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
               let newT = $("<div>");
               newT.addClass("tweet");
               let id= $("<p>");
-              id.text("id: " + tweet['id'].toString());
+              id.text("Author: " + user);
               newT.append(id);
               let content = $("<p>");
-              content.text("text: " + tweet['text']);
+              content.text("Text: " + tweet['Text']);
               newT.append(content)
               if (tweet['geo'] != null){
-                let loc ='';
-                  $.ajax({
-                    type: 'GET',
-                    url: serverUrl + "place/" + tweet['geo']['place_id'],
-                    crossDomain: true,
-                    success: function( data ) {
-                      loc = data['full_name'];
-                      let place = $("<p>");
-                      place.text("location: " + loc);
-                      newT.append(place);
-                    }
-                  });
-              }
+                  loc = tweet['geo']['Name'];
+                  let place = $("<p>");
+                  place.text("Location: " + loc);
+                  newT.append(place);
+                }
               $("#base").append(newT);
               $("#base").append("<br>");
           }
@@ -254,39 +252,68 @@ function textTweet(){
     url: url,
     crossDomain: true,
     success: function( data ) {
-      if (data['sentiment']!= null){
+      if (data['analysis_data']['avg']!= null){
         let newS = $('<div>');
-        newS.addClass("sentiment");
         let p= $('<p>');
-        p.text("Il sentimento per questa stringa è: " + data['sentiment']['avg']);
+        p.text("Il sentimento per questa stringa è: " + data['analysis_data']['avg']);
+        newS.append(p);
+        p= $('<p>');
+        p.text("Le parole totali analizzate sono: " + data['analysis_data']['Tot_words']);
+        newS.append(p);
+        p= $('<p>');
+        p.text("Le parole positive totali sono: " + data['analysis_data']['Tot_pos']);
+        newS.append(p);
+        p= $('<p>');
+        p.text("Le parole negative totali sono: " + data['analysis_data']['Tot_neg']);
         newS.append(p);
         $('#base').append('<br>');
         $("#base").append(newS);
         $('#base').append('<br>');
       }
-      for (let tweet of data['tweets']['data']){
+      for (let tweet of data['data']){
         if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
         let newT = $("<div>");
         newT.addClass("tweet");
         let id= $("<p>");
-        id.text("id: " + tweet['id'].toString());
+        id.text("Author: " + tweet['Author']);
         newT.append(id);
         let content = $("<p>");
-        content.text("text: " + tweet['text']);
+        content.text("Text: " + tweet['Text']);
         newT.append(content)
+        let lang = $("<p>");
+        lang.text("Language: " + tweet['Lang']);
+        let newSent = $("<div>");
+        newSent.addClass("sentiment");
+        if (data['analysis_data']['avg']!= null){
+          let p = $("<p>");
+          p.text("Score: " + tweet['sentiment']['eval'][0]['Score']);
+          newSent.append(p);
+          p = $("<p>");
+          p.text("Numero di parole positive: " + tweet['sentiment']['eval'][0]['PosL']);
+          newSent.append(p);
+          let t = ""
+          for (let pos of tweet['sentiment']['eval'][0]['Pos']){
+            t+= pos + ", "
+          }
+          p = $("<p>");
+          p.text("Parole positive: " + t);
+          newSent.append(p);
+          p = $("<p>");
+          p.text("Numero di parole negative: " + tweet['sentiment']['eval'][0]['NegL']);
+          newSent.append(p);
+          let tn = ""
+          for (let pos of tweet['sentiment']['eval'][0]['Neg']){
+            tn+= pos + ", "
+          }
+          p = $("<p>");
+          p.text("Parole negative: " + tn);
+          newSent.append(p);
+          newT.append(newSent);
+        }
         if (tweet['geo'] != null){
-          let loc ='';
-            $.ajax({
-              type: 'GET',
-              url: serverUrl + "place/" + tweet['geo']['place_id'],
-              crossDomain: true,
-              success: function( data ) {
-                loc = data['full_name'];
-                let place = $("<p>");
-                place.text("location: " + loc);
-                newT.append(place);
-              }
-            });
+          let geo= $("<p>");
+          geo.text("Location: " + tweet['geo']['Name']);
+          newT.append(geo);
           }
         $("#base").append(newT);
         $("#base").append("<br>");
