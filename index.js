@@ -120,13 +120,27 @@ function find_medium(coordinates){
   let coord = [mediaX ,mediaY];
   return (coord);
 }
-
 /*Tweet vicini a coordinata*/
 app.get('/geo/:place', (req, res) => {
   try{
     coord = req.params.place.split("x")
     georeq = coord[0] + ',' + coord[1] + ',10mi';
     T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, (err2, data2) =>{
+      for (data of data2['statuses']){
+        if (data['place'] == null){
+          data['geo'] = {'coord_center' : []};
+          data['geo']['coord_center'][1] = parseFloat(coord[0]) + Math.random() * (0.005);
+          data['geo']['coord_center'][0] = parseFloat(coord[1]) +  Math.random() * (0.005);
+        }
+        else{
+          let my_coord = find_medium(data['place']['bounding_box']['coordinates'][0]);
+          data['geo'] = {'coord_center' : []};
+          data['geo']['coord_center'][1] = my_coord[1] + Math.random() * (0.005);
+          data['geo']['coord_center'][0] = my_coord[0] + Math.random() * (0.005);
+        }
+        data['Author'] = data['id'];
+        data['Text'] = data['text'];
+      }
       res.status(200).json(data2);
     })
   }

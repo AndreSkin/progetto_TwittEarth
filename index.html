@@ -143,6 +143,7 @@ function userTimeline(){
     crossDomain: true,
     success: function( data ) {
       if (data['tweets']){
+        MulMapMarkers(data['tweets'], user);
         for (let tweet of data['tweets']){
           if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
               let newT = $("<div>");
@@ -252,6 +253,7 @@ function textTweet(){
     url: url,
     crossDomain: true,
     success: function( data ) {
+      MulMapMarkers(data['data']);
       if (data['analysis_data']['avg']!= null){
         let newS = $('<div>');
         let p= $('<p>');
@@ -338,15 +340,16 @@ function locationTweet(){
         url: url,
         crossDomain: true,
         success: function( data ) {
+          MulMapMarkers(data['statuses']);
           for (let tweet of data['statuses']){
             if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
               let newT = $("<div>");
               newT.addClass("tweet");
               let id= $("<p>");
-              id.text("id: " + tweet['id'].toString());
+              id.text("id: " + tweet['Author'].toString());
               newT.append(id);
               let content = $("<p>");
-              content.text("text: " + tweet['text']);
+              content.text("text: " + tweet['Text']);
               newT.append(content)
               if (tweet['place'] != null){
                 let place = $("<p>");
@@ -383,6 +386,29 @@ function BlankMap(mymap){
   	tileSize: 512,
   	zoomOffset: -1
   }).addTo(mymap);
+}
+
+function MulMapMarkers(TweetsList, User = null ){
+	let MarkerGroup = [];
+	//Elimina tutti i marker
+	mymap.eachLayer(function(layer){
+		if(!!layer.toGeoJSON){mymap.removeLayer(layer);
+		}
+	})
+	//Crea dei marker per ogni coordinata fornita
+	for(let i=0; i < TweetsList.length; i = i+1){
+    if(TweetsList[i]['geo'] != null){
+      let tmp;
+      if (User != null){
+        tmp = User
+      }
+      else tmp = TweetsList[i]['Author'];
+  		L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(mymap).bindPopup("<b>" + tmp + "</b>"  + ": <br/>" + TweetsList[i]['Text']);
+  		MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
+    }
+	}
+	let group = new L.featureGroup(MarkerGroup);
+  if(MarkerGroup.length != 0) mymap.fitBounds(group.getBounds());
 }
 
 
