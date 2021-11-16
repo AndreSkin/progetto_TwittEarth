@@ -110,23 +110,22 @@ app.get('/tags/:word', async(req, res) => {
 function find_medium(coordinates){
   let sumX = 0;
   let sumY = 0;
-  for (var i = 0; i < coordinates.length; i++){
-    sumX += coordinates[i][0];
-    sumY += coordinates[i][1];
+  for (let coord of coordinates){
+    sumX += coordinates[0];
+    sumY += coordinates[1];
   }
   let mediaX = sumX / coordinates.length;
   let mediaY = sumY / coordinates.length;
 
-  let coord = [mediaX ,mediaY];
-  return (coord);
+  return [mediaX ,mediaY];
 }
 /*Tweet vicini a coordinata*/
 app.get('/geo/:place', (req, res) => {
   try{
-    coord = req.params.place.split("x")
-    georeq = coord[0] + ',' + coord[1] + ',10mi';
+    let coord = req.params.place.split("x")
+    let georeq = coord[0] + ',' + coord[1] + ',10mi';
     T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, (err2, data2) =>{
-      for (data of data2['statuses']){
+      for (let data of data2['statuses']){
         if (data['place'] == null){
           data['geo'] = {'coord_center' : []};
           data['geo']['coord_center'][1] = parseFloat(coord[0]) + Math.random() * (0.005);
@@ -160,7 +159,7 @@ async function getauthor(author_id){
     console.log(error);
   }
   return author.data.username;
-};
+}
 
 //Dato un place id restituisce nome e coordinate corrispondenti
 async function getGeo(place_id){
@@ -172,13 +171,11 @@ async function getGeo(place_id){
     console.log(error);
   }
 
-  let geoinfo = {'Name': place.full_name, 'coord_center': place.contained_within[0].centroid};
-  return geoinfo;
-};
+  return {'Name': place.full_name, 'coord_center': place.contained_within[0].centroid};
+}
 
 //Funzione di sentiment analysis
 async function sentiment_analyze(toAnalyze){
-  let ignored = "No";
   let tweet_eval = {'eval': []};
   try{
     //Rimuovo '@' e '#' perchè impediscono una corretta indivduazione della lingua
@@ -189,7 +186,7 @@ async function sentiment_analyze(toAnalyze){
 
     //Riconosco la lingua in cui è scritto il tweet (se non riconosciuta ritorna null e ignora il tweet)
     var lang = langdetect.detectOne(replaced);
-    ParsedTweet = await sentiment(replaced, lang);
+    let ParsedTweet = await sentiment(replaced, lang);
 
     //Inserisco i dati dell'analisi sul tweet
     tweet_eval.eval.push({
@@ -212,9 +209,7 @@ async function sentiment_analyze(toAnalyze){
       "Neg" : 0,
       "NegL":0
     });
-    ignored = "Yes";
   }
-  //console.log("Ignored: " + ignored);
   return(tweet_eval);
 }
 
@@ -230,16 +225,16 @@ app.get('/recents/:word', async(req, res) => {
   if (query[0] == '~'){ //~ perchè è così che arrivano le richieste dato che # è un carattere vietato
     query = '#' + req.params.word.substring(1);
   }
-
-  if (query[0] == '@'){
+  else if (query[0] == '@'){
     query = '@'+req.params.word.substring(1);
   }
 
   //Se true la sentiment analysis è richiesta
   let toSentiment = req.query.sentiment;
+
   try{
     //Trovo i tweets
-   tweet = await client.v2.search(query, {'max_results':results, 'expansions':['geo.place_id', 'author_id']});
+    tweet = await client.v2.search(query, {'max_results':results, 'expansions':['geo.place_id', 'author_id']});
   }
   catch(error){
     res.status(404).json(error);
@@ -250,7 +245,7 @@ app.get('/recents/:word', async(req, res) => {
   //Numero di risultati
   let resnum = toAnalyze.length;
   //Variabili inizializzate (motivi di scope)
-  let sentiment = null;
+  let sentiment_result = null;
   let geo = null;
   let tweets = {'info': []};
   let totscore = null;
@@ -265,24 +260,24 @@ app.get('/recents/:word', async(req, res) => {
       try{
         //Se il tweet è geolocalizzato
         if (singletweet['geo'] != null){
-          //Ottengo le informazioni riguardanti il posto
-          geo = await getGeo(singletweet['geo']['place_id']);
+        //Ottengo le informazioni riguardanti il posto
+        geo = await getGeo(singletweet['geo']['place_id']);
         }
 
         if (toSentiment == "true"){
-          //Eseguo la sentiment analysis
-          sentiment = await sentiment_analyze(singletweet['text']);
-          totscore += parseFloat(sentiment.eval[0].Score);
-          totwords+= parseFloat(sentiment.eval[0].TotL);
-          totpos+= parseFloat(sentiment.eval[0].PosL);
-          totneg+= parseFloat(sentiment.eval[0].NegL);
+          //Eseguo la sentiment
+          sentiment_result = await sentiment_analyze(singletweet['text']);
+          totscore += parseFloat(sentiment_result.eval[0].Score);
+          totwords+= parseFloat(sentiment_result.eval[0].TotL);
+          totpos+= parseFloat(sentiment_result.eval[0].PosL);
+          totneg+= parseFloat(sentiment_result.eval[0].NegL);
         }
         tweets.info.push({
           "Author":"placeholder" /*await getauthor(singletweet['author_id'])*/,
           "Text": singletweet['text'],
           "Lang":langdetect.detectOne(singletweet['text']),
           "geo":geo,
-          "sentiment": sentiment
+          "sentiment": sentiment_result
         })
       }
       catch (e){
@@ -312,4 +307,3 @@ app.get('/recents/:word', async(req, res) => {
 });
 
 module.exports = app;
-
