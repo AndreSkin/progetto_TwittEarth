@@ -111,8 +111,8 @@ function find_medium(coordinates){
   let sumX = 0;
   let sumY = 0;
   for (let coord of coordinates){
-    sumX += coordinates[0];
-    sumY += coordinates[1];
+    sumX += coord[0];
+    sumY += coord[1];
   }
   let mediaX = sumX / coordinates.length;
   let mediaY = sumY / coordinates.length;
