@@ -1,0 +1,6 @@
+projectKey=pE-zKAmSzKzfUUC2Vay9
+serverUrl=https://aminsep.disi.unibo.it/sonarqube
+serverVersion=8.9.0.43852
+dashboardUrl=https://aminsep.disi.unibo.it/sonarqube/dashboard?id=pE-zKAmSzKzfUUC2Vay9
+ceTaskId=AX0otg2U0cZOjy-gn2RI
+ceTaskUrl=https://aminsep.disi.unibo.it/sonarqube/api/ce/task?id=AX0otg2U0cZOjy-gn2RI
