@@ -1,5 +1,5 @@
 const app = require('./server.js');
-const supertest = let request = require('supertest')
+const supertest = request = require('supertest')
 
 //const serverUrl = "https://localhost:8000/";
 const serverUrl = "https://site202136.tw.cs.unibo.it/";
