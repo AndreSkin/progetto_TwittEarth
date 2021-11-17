@@ -1,6 +1,7 @@
 def remote = [:]
 remote.name = "giuseppe.carrino2@annina.cs.unibo.it"
-remote.host = "giuseppe.carrino2@annina.cs.unibo.it"
+remote.host = "annina.cs.unibo.it"
+remote.user = "giuseppe.carrino2"
 remote.allowAnyHosts = true
 
 pipeline {
