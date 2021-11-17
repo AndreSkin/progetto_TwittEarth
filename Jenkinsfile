@@ -21,9 +21,7 @@ pipeline {
        stage ('Deploy') {
             steps{
                sshagent(credentials : ['ssh-lab']) {
-               sh 'ssh -o StrictHostKeyChecking=no giuseppe.carrino2@annina.cs.unibo.it'
-               sh 'ssh -v giuseppe.carrino2@annina.cs.unibo.it'
-               sh 'mkdir ciao'
+               ssh jenkins@annina.cs.unibo.it 'mkdir ciao'
             }
          }
       }
