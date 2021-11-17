@@ -1,5 +1,5 @@
 def remote = [:]
-remote.name = "annina.cs.unibo.it"
+remote.name = "giuseppe.carrino2@annina.cs.unibo.it"
 remote.host = "giuseppe.carrino2@annina.cs.unibo.it"
 remote.allowAnyHosts = true
 
