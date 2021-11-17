@@ -2,6 +2,7 @@ def remote = [:]
 remote.name = "giuseppe.carrino2@annina.cs.unibo.it"
 remote.host = "annina.cs.unibo.it"
 remote.user = "giuseppe.carrino2"
+remote.identityFile = "/var/lib/jenkins/.ssh/id_rsa"
 remote.allowAnyHosts = true
 
 pipeline {
@@ -26,8 +27,7 @@ pipeline {
        }
        stage ('Deploy') {
          steps {
-            sshagent(credentials : ['ssh-lab']) {
-               sshCommand remote: remote, command: "mkdir ciao"
+            sshCommand remote: remote, command: "mkdir ciao"
             }
          }
       }
