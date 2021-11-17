@@ -25,10 +25,8 @@ pipeline {
            }
        }
        stage ('Deploy') {
-            steps{
-               sshagent(credentials : ['ssh-lab']) {
-                  sh 'ssh giuseppe.carrino2@annina.cs.unibo.it ; mkdir ciao'
-            }
+            sshagent(credentials : ['ssh-lab']) {
+               sshCommand remote: remote, command: "mkdir ciao"
          }
       }
 
