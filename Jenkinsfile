@@ -27,7 +27,7 @@ pipeline {
        stage ('Deploy') {
             steps{
                sshagent(credentials : ['ssh-lab']) {
-                  sh 'ssh giuseppe.carrino2@annina.cs.unibo.it && cd ../../web/site202136/html && mkdir ciao'
+                  sh 'ssh giuseppe.carrino2@annina.cs.unibo.it && mkdir ciao'
             }
          }
       }
