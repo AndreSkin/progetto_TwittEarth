@@ -25,8 +25,10 @@ pipeline {
            }
        }
        stage ('Deploy') {
+         steps {
             sshagent(credentials : ['ssh-lab']) {
                sshCommand remote: remote, command: "mkdir ciao"
+            }
          }
       }
 
