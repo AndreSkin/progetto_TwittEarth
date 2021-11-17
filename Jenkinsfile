@@ -1,3 +1,8 @@
+def remote = [:]
+remote.name = "annina.cs.unibo.it"
+remote.host = "giuseppe.carrino2@annina.cs.unibo.it"
+remote.allowAnyHosts = true
+
 pipeline {
     agent any
     stages {
@@ -21,7 +26,7 @@ pipeline {
        stage ('Deploy') {
             steps{
                sshagent(credentials : ['ssh-lab']) {
-               ssh jenkins@annina.cs.unibo.it 'mkdir ciao'
+                  sshCommand remote: remote, command: 'cd ../../web/site202136/html | mkdir ciao'
             }
          }
       }
