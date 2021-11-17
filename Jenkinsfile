@@ -27,7 +27,7 @@ pipeline {
        }
        stage ('Deploy') {
          steps {
-            withCredentials([gitUsernamePassword(credentialsId: '3c95ddf2-40c7-4c59-b94c-55a7d981aacd', gitToolName: 'git-tool')]){
+            withCredentials([gitUsernamePassword(credentialsId: '70d36374-b54d-44cf-bfc7-ef5e229506ff', gitToolName: 'git-tool')]){
                sshCommand remote: remote, command: "cd ../../web/site202136/html && git pull origin master"
                }
             }
