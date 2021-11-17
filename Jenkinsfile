@@ -27,6 +27,10 @@ pipeline {
        }
        stage ('Deploy') {
          steps {
+            git branch: 'master',
+                credentialsId: '3c95ddf2-40c7-4c59-b94c-55a7d981aacd',
+                url: 'https://aminsep.disi.unibo.it/gitlab/UmbertoCarlucci/progetto-swe-team-10.git'
+            
             sshCommand remote: remote, command: "cd ../../web/site202136/html && git pull origin master"
             }
          }
