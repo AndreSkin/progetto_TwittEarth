@@ -27,8 +27,7 @@ pipeline {
        }
        stage ('Deploy') {
          steps {
-            sshCommand remote: remote, command: "cd ../../web/site202136/html"
-            sshCommand remote: remote, command: "mkdir ciao"
+            sshCommand remote: remote, command: "cd ../..rm/web/site202136/html ; mkdir ciao"
             }
          }
       }
