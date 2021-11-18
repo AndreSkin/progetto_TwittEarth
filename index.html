@@ -202,11 +202,22 @@ function hashtagTweet(){
   $("#base").empty();
   var tag = document.getElementById('searchbar').value;
   let err = new Boolean(false);
-  if (tag.includes(' '))
-  {
+  if (tag.includes(' ')){
     err = true;
   }
-  var url = serverUrl + "recents/" + tag.replace("#", "~");;
+  if(tag[0]!='#'){
+	tag = "#" + tag;
+  }
+  
+  var url = serverUrl + "recents/" + tag.replace("#", "~");
+	
+	if (err == true){
+	let newT = $('<div>');
+	newT.text(" Non un Hashtag");
+	$("#base").append(newT);
+	return;
+  }
+  
   $.ajax({
     type: 'GET',
     url: url,
@@ -215,11 +226,6 @@ function hashtagTweet(){
       MulMapMarkers(data['data']);
       for (let tweet of data['data']){
         if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-          if (err == true){
-            newT.text(" Non un Hashtag");
-            $("#base").append(newT);
-            return;
-          }
           let newT = $("<div>");
           newT.addClass("tweet");
           let id= $("<p>");
