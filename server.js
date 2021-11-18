@@ -265,7 +265,7 @@ app.get('/recents/:word', async(req, res) => {
         }
 
         if (toSentiment == "true"){
-          //Eseguo la sentiment
+          //Eseguo la sentimenttaiga
           sentiment_result = await sentiment_analyze(singletweet['text']);
           totscore += parseFloat(sentiment_result.eval[0].Score);
           totwords+= parseFloat(sentiment_result.eval[0].TotL);
@@ -273,7 +273,7 @@ app.get('/recents/:word', async(req, res) => {
           totneg+= parseFloat(sentiment_result.eval[0].NegL);
         }
         tweets.info.push({
-          "Author":await getauthor(singletweet['author_id']),
+          "Author":singletweet['author_id'],
           "Text": singletweet['text'],
           "Lang":langdetect.detectOne(singletweet['text']),
           "geo":geo,
