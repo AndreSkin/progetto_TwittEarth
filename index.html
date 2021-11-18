@@ -79,8 +79,8 @@ var only_geo = false;
 var sent_analyze = false;
 var mymap = L.map('map').setView([0, 0], 1);
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice){
   return function(){
@@ -206,44 +206,32 @@ function hashtagTweet(){
   {
     err = true;
   }
-  if (tag[0]=='#') {
-    tag = tag.substring(1);
-  }
-  var url = serverUrl + "tags/" + tag;
+  var url = serverUrl + "recents/" + tag.replace("#", "~");;
   $.ajax({
     type: 'GET',
     url: url,
     crossDomain: true,
-    success: function( data2 ) {
-      for (let tweet of data2['data']){
+    success: function( data ) {
+      MulMapMarkers(data['data']);
+      for (let tweet of data['data']){
         if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-          let newT = $("<div>");
-          newT.addClass("tweet");
-          if (err == true)
-          {
+          if (err == true){
             newT.text(" Non un Hashtag");
             $("#base").append(newT);
             return;
           }
+          let newT = $("<div>");
+          newT.addClass("tweet");
           let id= $("<p>");
-          id.text("id: " + tweet['id'].toString());
+          id.text("Author: " + tweet['Author']);
           newT.append(id);
           let content = $("<p>");
-          content.text("text: " + tweet['text']);
+          content.text("Text: " + tweet['Text']);
           newT.append(content)
           if (tweet['geo'] != null){
-            let loc ='';
-              $.ajax({
-                type: 'GET',
-                url: serverUrl + "place/" + tweet['geo']['place_id'],
-                crossDomain: true,
-                success: function( data ) {
-                  loc = data['full_name'];
-                  let place = $("<p>");
-                  place.text("location: " + loc);
-                  newT.append(place);
-                }
-              });
+            let geo= $("<p>");
+            geo.text("Location: " + tweet['geo']['Name']);
+            newT.append(geo);
           }
           $("#base").append(newT);
           $("#base").append("<br>");

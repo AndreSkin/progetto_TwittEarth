@@ -273,7 +273,7 @@ app.get('/recents/:word', async(req, res) => {
           totneg+= parseFloat(sentiment_result.eval[0].NegL);
         }
         tweets.info.push({
-          "Author":"placeholder" /*await getauthor(singletweet['author_id'])*/,
+          "Author":await getauthor(singletweet['author_id']),
           "Text": singletweet['text'],
           "Lang":langdetect.detectOne(singletweet['text']),
           "geo":geo,
