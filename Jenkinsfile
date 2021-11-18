@@ -9,7 +9,7 @@ pipeline {
     agent any
     stages {
        stage('build') {
-         when { changeset "./*" }
+         when { changeset "./**" }
           steps {
              echo 'Notify GitLab'
              updateGitlabCommitStatus name: 'build', state: 'pending'
@@ -18,7 +18,7 @@ pipeline {
           }
        }
        stage(test) {
-         when { changeset "./*" }
+         when { changeset "./**" }
            steps {
                echo 'Notify GitLab'
                updateGitlabCommitStatus name: 'test', state: 'pending'
@@ -28,7 +28,7 @@ pipeline {
            }
        }
        stage ('Deploy') {
-         when { changeset "./*" }
+         when { changeset "./**" }
          steps {
                sshCommand remote: remote, command: "cd ../../web/site202136/html && git pull origin master"
             }
