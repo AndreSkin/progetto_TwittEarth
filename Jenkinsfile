@@ -22,7 +22,6 @@ pipeline {
            steps {
                echo 'Notify GitLab'
                updateGitlabCommitStatus name: 'test', state: 'pending'
-               sh 'npm run test'
                updateGitlabCommitStatus name: 'test', state: 'success'
 
            }
