@@ -26,7 +26,7 @@ pipeline {
                echo 'Notify GitLab'
                updateGitlabCommitStatus name: 'test', state: 'pending'
                withSonarQubeEnv('sonarqube aminsep') {
-                  sh 'cd /home/joseph/Documents/TwittEarth/ && ${scannerHome}/bin/sonar-scanner'
+                  sh 'export PATH="$PATH:$JAVA_HOME/bin" && cd /home/joseph/Documents/TwittEarth/ && ${scannerHome}/bin/sonar-scanner'
                }
 
             timeout(time: 10, unit: 'MINUTES') {
