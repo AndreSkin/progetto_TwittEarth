@@ -34,18 +34,15 @@
       crossorigin="anonymous"
     ></script>
 
-    <script
-    src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous">
-    </script>
-
     <script>
+
+      //serverUrl = "http://localhost:8000/";
+      serverUrl = "https://site202136.tw.cs.unibo.it/";
       getstream();
       async function getstream()
       {
         const tweetStream = document.getElementById('tweetStream');
-        const socket = io("http://localhost:8000");
+        const socket = io(serverUrl);
         console.log(socket);
 
       const tweets = []
