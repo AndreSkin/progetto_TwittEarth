@@ -23,7 +23,6 @@ pipeline {
                scannerHome = tool 'SonarQubeScanner'
             }
            steps {
-              }
                echo 'Notify GitLab'
                updateGitlabCommitStatus name: 'test', state: 'pending'
                withSonarQubeEnv('sonarqube') {
@@ -34,7 +33,7 @@ pipeline {
                waitForQualityGate abortPipeline: true
             }
 
-           }
+         }
        }
        stage ('Deploy') {
          when { changeset "*/**" }
