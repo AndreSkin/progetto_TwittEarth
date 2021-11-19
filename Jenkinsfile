@@ -19,11 +19,19 @@ pipeline {
        }
        stage(test) {
          when { changeset "*/**" }
+            environment { 
+               scannerHome = tool 'SonarQubeScanner'
            steps {
+              }
                echo 'Notify GitLab'
                updateGitlabCommitStatus name: 'test', state: 'pending'
-               sh '/home/joseph/Documents/TwittEarth/sonar-scanner -D"sonar.projectKey=10_TwittEarth" -D"sonar.sources=." -D"sonar.host.url=https://aminsep.disi.unibo.it/sonarqube" -D"sonar.login=c98b50793a5bab155206a753ea0964ed9ab0a342"'
-               updateGitlabCommitStatus name: 'test', state: 'success'
+               withSonarQubeEnv('sonarqube') {
+                  sh '${scannerHome}/bin/sonar-scanner'
+               }
+
+            timeout(time: 10, unit: 'MINUTES') {
+               waitForQualityGate abortPipeline: true
+            }
 
            }
        }
