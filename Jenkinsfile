@@ -25,7 +25,7 @@ pipeline {
            steps {
                echo 'Notify GitLab'
                updateGitlabCommitStatus name: 'test', state: 'pending'
-               withSonarQubeEnv('sonarqube') {
+               withSonarQubeEnv('SonarQubeScanner') {
                   sh '${scannerHome}/bin/sonar-scanner'
                }
 
