@@ -2,9 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const Twit = require('twit');
-const { TwitterApi } = require('twitter-api-v2');
+const { TwitterApi, ETwitterStreamEvent, TweetStream, ETwitterApiError } = require('twitter-api-v2');
 var sentiment = require('multilang-sentiment');
-
 var langdetect = require('langdetect');
 
 const b_token= "AAAAAAAAAAAAAAAAAAAAAMEAUwEAAAAA1xY%2F32bSU4v5kwxoncHszvMJHx4%3D8gqEEFr90qe45rDMfubNdiMWfZwkkECKAK9SVgs5e6NdQOouCN";
@@ -25,6 +24,7 @@ const twitterClient = new TwitterApi(b_token);
 const client = twitterClient.readOnly;
 const apiv1 = client.v1;
 const apiv2 = client.v2;
+
 
 app.use(express.json());
 
@@ -306,4 +306,83 @@ app.get('/recents/:word', async(req, res) => {
   res.status(200).json(ans);
 });
 
-module.exports = app;
+let httpServer = require("http").createServer(app);
+
+const path = require('path');
+const Server = require("socket.io");
+const io = require("socket.io") (httpServer, {cors:{origin:"*"}})
+
+app.get('/stream', async (req, res) => {
+  let stream = '';
+  try
+  {
+    const addedRules = await client.v2.updateStreamRules({
+    add: [
+      { value: 'ciao' },
+      { value: 'buonasera'},
+      { value: 'sera'},
+      { value: 'notte'},
+      { value: 'hi'},
+      { value: 'hello'},
+      { value: 'the'},
+      { value: 'of'},
+      { value: 'and'},
+      { value: 'a'},
+      { value: 'to'},
+      { value: 'at'},
+      { value: 'be'},
+      { value: 'have'},
+      { value: 'is'},
+    ],
+  });
+    stream = await client.v2.searchStream({'expansions':['geo.place_id', 'author_id']});
+
+    // Awaits for a tweet
+    stream.on(
+      // Emitted when Node.js {response} emits a 'error' event (contains its payload).
+      ETwitterStreamEvent.ConnectionError,
+      err => console.log('Connection error!', err),
+    );
+
+    stream.on(
+      // Emitted when Node.js {response} is closed by remote or using .close().
+      ETwitterStreamEvent.ConnectionClosed,
+      () => console.log('Connection has been closed.'),
+    );
+
+    stream.on(
+      // Emitted when a Twitter sent a signal to maintain connection active
+      ETwitterStreamEvent.DataKeepAlive,
+      () => console.log('Twitter has a keep-alive packet.'),
+    );
+
+
+    stream.on(
+      // Emitted when a Twitter payload (a tweet or not, given the endpoint).
+      ETwitterStreamEvent.Data,
+      async eventData => {
+        //console.log('Twitter has sent something:', eventData)
+        await io.emit('tweet', eventData);
+      }
+    );
+
+
+    // Enable reconnect feature
+      stream.autoReconnect = true;
+
+  }
+  catch(e)
+  {
+    console.log("STREAM: " + e);
+    res.status(404).json(e);
+  }
+
+  let percorso = path.resolve(__dirname, 'stream.html')
+  res.sendFile(percorso);
+
+  io.on("connection", (socket) => {
+    console.log('IO connected...')
+  });
+});
+
+module.exports.httpServer = httpServer;

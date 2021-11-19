@@ -9,8 +9,11 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "http": "0.0.1-security",
     "langdetect": "^0.2.1",
     "multilang-sentiment": "^2.0.0",
+    "path": "^0.12.7",
+    "socket.io": "^4.4.0",
     "twit": "^2.2.11",
     "twitter-api-v2": "^1.6.5"
   }
