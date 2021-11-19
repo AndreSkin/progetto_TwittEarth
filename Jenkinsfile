@@ -21,6 +21,7 @@ pipeline {
          when { changeset "*/**" }
             environment { 
                scannerHome = tool 'SonarQubeScanner'
+            }
            steps {
               }
                echo 'Notify GitLab'
