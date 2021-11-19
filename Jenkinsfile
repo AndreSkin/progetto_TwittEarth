@@ -19,6 +19,7 @@ pipeline {
        }
        stage(test) {
          when { changeset "*/**" }
+         agent {     docker   'maven:3-alpine'   }
             environment { 
                scannerHome = tool 'SonarQubeScanner'
             }
