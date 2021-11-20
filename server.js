@@ -306,35 +306,68 @@ app.get('/recents/:word', async(req, res) => {
   res.status(200).json(ans);
 });
 
+
 let httpServer = require("http").createServer(app);
 
 const path = require('path');
 const Server = require("socket.io");
 const io = require("socket.io") (httpServer, {cors:{origin:"*"}})
 
-app.get('/stream', async (req, res) => {
+async function delete_rules()
+{
+  let rules='';
+  let idArray=[];
+  try
+  {
+    rules = await client.v2.streamRules();
+    //console.log("OLD RULES: ", rules);
+
+    for(let rule of rules.data)
+    {
+      idArray.push(rule.id);
+    }
+
+    await client.v2.updateStreamRules({
+      delete: {
+        ids: idArray
+      }
+    });
+
+    /*
+    rules = await client.v2.streamRules();
+    console.log("RULES AFTER DELETE ", rules.data)
+    */
+  }
+  catch (e)
+  {
+    console.log("DELETE RULE: ", e);
+  }
+}
+
+
+app.get('/stream/tweets', async (req, res) => {
   let stream = '';
   try
   {
-    const addedRules = await client.v2.updateStreamRules({
-    add: [
-      { value: 'ciao' },
-      { value: 'buonasera'},
-      { value: 'sera'},
-      { value: 'notte'},
-      { value: 'hi'},
-      { value: 'hello'},
-      { value: 'the'},
-      { value: 'of'},
-      { value: 'and'},
-      { value: 'a'},
-      { value: 'to'},
-      { value: 'at'},
-      { value: 'be'},
-      { value: 'have'},
-      { value: 'is'},
+    await delete_rules();
+    /*const addedRules =*/
+     await client.v2.updateStreamRules({
+      add: [
+    { value: 'JavaScript', tag: 'js' },
+    { value: 'TypeScript', tag: 'ts' },
+    { value: 'C++', tag: 'cpp' },
+    { value: 'Python', tag: 'py' },
+    { value: 'Java', tag: 'J' },
+    { value: 'Golang', tag: 'go' }
     ],
   });
+
+    /*
+    console.log("ADDED RULES: ", addedRules);
+    let rules = await client.v2.streamRules();
+    console.log("NEW RULES: ", rules)
+    */
+
     stream = await client.v2.searchStream({'expansions':['geo.place_id', 'author_id']});
 
     // Awaits for a tweet
@@ -356,7 +389,6 @@ app.get('/stream', async (req, res) => {
       () => console.log('Twitter has a keep-alive packet.'),
     );
 
-
     stream.on(
       // Emitted when a Twitter payload (a tweet or not, given the endpoint).
       ETwitterStreamEvent.Data,
@@ -366,10 +398,8 @@ app.get('/stream', async (req, res) => {
       }
     );
 
-
     // Enable reconnect feature
       stream.autoReconnect = true;
-
   }
   catch(e)
   {
