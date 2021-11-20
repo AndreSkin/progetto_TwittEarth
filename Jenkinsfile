@@ -17,12 +17,17 @@ pipeline {
              updateGitlabCommitStatus name: 'build', state: 'success'
           }
        }
+       node {
+          stage('SonarQube analysis'){
+            when { changeset "*/**" }
+               def scannerHome = tool 'SonarQubeScanner';
+               withSonarQubeEnv('sonarqube'){
+                  sh "${scannerHome}/bin/sonar-scanner"
+            }
+          }
+       }
        stage(test) {
          when { changeset "*/**" }
-            def scannerHome = tool 'SonarQubeScanner';
-            withSonarQubeEnv('sonarqube'){
-            sh "${scannerHome}/bin/sonar-scanner"
-            }
            steps {
                echo 'Notify GitLab'
                updateGitlabCommitStatus name: 'test', state: 'pending'
