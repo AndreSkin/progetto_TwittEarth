@@ -17,13 +17,6 @@ pipeline {
              updateGitlabCommitStatus name: 'build', state: 'success'
           }
        }
-         stage('SonarQube analysis'){
-            when { changeset "*/**" }
-               def scannerHome = tool 'SonarQubeScanner';
-               withSonarQubeEnv('sonarqube'){
-                  sh "${scannerHome}/bin/sonar-scanner"
-            }
-          }
        stage(test) {
          when { changeset "*/**" }
            steps {
