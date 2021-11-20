@@ -21,7 +21,7 @@
      margin-left: 0.2em;
   }
     .tweet {
-      border: 1px solid black;
+      /*border: 1px solid black;*/
       width: 25em;
       padding: 2em;
       margin-top: 2em;
@@ -79,8 +79,8 @@ var only_geo = false;
 var sent_analyze = false;
 var mymap = L.map('map').setView([0, 0], 1);
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice){
   return function(){
@@ -157,22 +157,12 @@ function userTimeline(){
         MulMapMarkers(data['tweets'], user);
         for (let tweet of data['tweets']){
           if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
+              let embed = $("<div>");
+              embed.html(tweet["html"]);
               let newT = $("<div>");
               newT.addClass("tweet");
-              let id= $("<p>");
-              id.text("Author: " + user);
-              newT.append(id);
-              let content = $("<p>");
-              content.text("Text: " + tweet['Text']);
-              newT.append(content)
-              if (tweet['geo'] != null){
-                  loc = tweet['geo']['Name'];
-                  let place = $("<p>");
-                  place.text("Location: " + loc);
-                  newT.append(place);
-                }
+              newT.append(embed);
               $("#base").append(newT);
-              $("#base").append("<br>");
           }
         }
       }

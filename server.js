@@ -31,6 +31,11 @@ app.use(express.json());
 /*API*/
 
 //API v2 che dato uno username restituisce la timeline dei suoi Tweets
+async function embedTweet(id){
+  const tweet = await client.v1.oembedTweet(id);
+  return tweet.html;
+}
+
 app.get('/users/:name', async(req, res) => {
   let userID= '';
   //Dato un nome trovo l'ID
@@ -55,6 +60,7 @@ app.get('/users/:name', async(req, res) => {
   let geo=null;
   //Scorro tutti i tweets
   for(let singletweet of userTweets._realData.data){
+    tweetHtml = await embedTweet(singletweet.id);
     //geo torna null in modo da non conservarne il valore
     geo = null;
     try{
@@ -65,7 +71,8 @@ app.get('/users/:name', async(req, res) => {
       //Creo la risposta
       timeline.tweets.push({
         "Text":singletweet.text,
-        "geo": geo
+        "geo": geo,
+        "html": tweetHtml
       })
     }
     catch (e){
