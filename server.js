@@ -46,7 +46,7 @@ app.get('/users/:name', async(req, res) => {
     console.log(error);
   }
   //Numero dei risultati che si vogliono ottenere (predisposizione per passaggio con parametro)
-  let results = 100;
+  let results = req.query.numtweets == undefined? 25:req.query.numtweets;
   let userTweets='';
   //Utilizzo l'ID trovato prima per ottenere la user timeline
   try{
@@ -60,7 +60,7 @@ app.get('/users/:name', async(req, res) => {
   let geo=null;
   //Scorro tutti i tweets
   for(let singletweet of userTweets._realData.data){
-    tweetHtml = await embedTweet(singletweet.id);
+    let tweetHtml = await embedTweet(singletweet.id);
     //geo torna null in modo da non conservarne il valore
     geo = null;
     try{
@@ -126,12 +126,17 @@ function find_medium(coordinates){
 
   return [mediaX ,mediaY];
 }
+
 /*Tweet vicini a coordinata*/
 app.get('/geo/:place', (req, res) => {
   try{
-    let coord = req.params.place.split("x")
-    let georeq = coord[0] + ',' + coord[1] + ',10mi';
-    T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, (err2, data2) =>{
+    let coord = req.params.place.split("x");
+
+    let radius = req.query.radius == undefined? ',10mi': ',' + req.query.radius + 'mi' ;
+
+    let georeq = coord[0] + ',' + coord[1] + radius;
+
+    T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, async (err2, data2) =>{
       for (let data of data2['statuses']){
         if (data['place'] == null){
           data['geo'] = {'coord_center' : []};
@@ -224,8 +229,8 @@ async function sentiment_analyze(toAnalyze){
 app.get('/recents/:word', async(req, res) => {
   let tweet= '';
   //Numero dei risultati che si vogliono ottenere (predisposizione per passaggio con parametro)
-  let results = 50;
-
+  let results = req.query.numtweets == undefined? 25:req.query.numtweets;
+  console.log("recents: " + results)
   let query = req.params.word;
 
   //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
@@ -262,6 +267,7 @@ app.get('/recents/:word', async(req, res) => {
 
   if (toAnalyze != null){
     for(let singletweet of toAnalyze){
+      let tweetHtml = await embedTweet(singletweet.id);
       //geo torna null perchè non mantenga il valore
       geo = null;
       try{
@@ -284,7 +290,8 @@ app.get('/recents/:word', async(req, res) => {
           "Text": singletweet['text'],
           "Lang":langdetect.detectOne(singletweet['text']),
           "geo":geo,
-          "sentiment": sentiment_result
+          "sentiment": sentiment_result,
+          "html": tweetHtml
         })
       }
       catch (e){
