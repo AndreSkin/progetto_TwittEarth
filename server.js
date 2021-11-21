@@ -60,7 +60,7 @@ app.get('/users/:name', async(req, res) => {
   let geo=null;
   //Scorro tutti i tweets
   for(let singletweet of userTweets._realData.data){
-    let tweetHtml = await embedTweet(singletweet.id);
+    //let tweetHtml = await embedTweet(singletweet.id);
     //geo torna null in modo da non conservarne il valore
     geo = null;
     try{
@@ -72,7 +72,8 @@ app.get('/users/:name', async(req, res) => {
       timeline.tweets.push({
         "Text":singletweet.text,
         "geo": geo,
-        "html": tweetHtml
+        "id": singletweet.id
+        //"html": tweetHtml
       })
     }
     catch (e){
@@ -267,7 +268,7 @@ app.get('/recents/:word', async(req, res) => {
 
   if (toAnalyze != null){
     for(let singletweet of toAnalyze){
-      let tweetHtml = await embedTweet(singletweet.id);
+      //let tweetHtml = await embedTweet(singletweet.id);
       //geo torna null perchè non mantenga il valore
       geo = null;
       try{
@@ -291,7 +292,7 @@ app.get('/recents/:word', async(req, res) => {
           "Lang":langdetect.detectOne(singletweet['text']),
           "geo":geo,
           "sentiment": sentiment_result,
-          "html": tweetHtml
+          "id": singletweet.id
         })
       }
       catch (e){

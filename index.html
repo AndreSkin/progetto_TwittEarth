@@ -13,6 +13,7 @@
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous">
   </script>
+  
   <title>TwittEarth</title>
   <style>
   *
@@ -157,8 +158,13 @@ function userTimeline(){
         MulMapMarkers(data['tweets'], user);
         for (let tweet of data['tweets']){
           if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-              let embed = $("<div>");
-              embed.html(tweet["html"]);
+              let embed = $("<blockquote>");
+              embed.addClass('twitter-tweet');
+              embed.addClass('ourTweets');
+              let atweet = $("<a>");
+              let myurl = "https://twitter.com/tweet/status/" + tweet['id'];
+              atweet.attr('href', myurl)
+              embed.append(atweet);
               let newT = $("<div>");
               newT.addClass("tweet");
               newT.append(embed);
@@ -174,6 +180,8 @@ function userTimeline(){
         $('#base').append('<br>');
         $('#base').append(newT);
       }
+      let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+      $("#base").append(scripting)
     },
     error: function( err ){
       let newT = $("<div>");
@@ -214,23 +222,19 @@ function hashtagTweet(){
       MulMapMarkers(data['data']);
       for (let tweet of data['data']){
         if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-          let newT = $("<div>");
-          newT.addClass("tweet");
-          let id= $("<p>");
-          id.text("Author: " + tweet['Author']);
-          newT.append(id);
-          let content = $("<p>");
-          content.text("Text: " + tweet['Text']);
-          newT.append(content)
-          if (tweet['geo'] != null){
-            let geo= $("<p>");
-            geo.text("Location: " + tweet['geo']['Name']);
-            newT.append(geo);
-          }
-          $("#base").append(newT);
+          let embed = $("<blockquote>");
+          embed.addClass('twitter-tweet');
+          embed.addClass('ourTweets');
+          let atweet = $("<a>");
+          let myurl = "https://twitter.com/tweet/status/" + tweet['id'];
+          atweet.attr('href', myurl)
+          embed.append(atweet);
+          $("#base").append(embed);
           $("#base").append("<br>");
         }
       }
+      let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+      $("#base").append(scripting)
     }
   });
 }
@@ -269,14 +273,14 @@ function textTweet(){
         if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
         let newT = $("<div>");
         newT.addClass("tweet");
-        let id= $("<p>");
-        id.text("Author: " + tweet['Author']);
-        newT.append(id);
-        let content = $("<p>");
-        content.text("Text: " + tweet['Text']);
-        newT.append(content)
-        let lang = $("<p>");
-        lang.text("Language: " + tweet['Lang']);
+        let embed = $("<blockquote>");
+        embed.addClass('twitter-tweet');
+        embed.addClass('ourTweets');
+        let atweet = $("<a>");
+        let myurl = "https://twitter.com/tweet/status/" + tweet['id'];
+        atweet.attr('href', myurl)
+        embed.append(atweet);
+        newT.append(embed);
         let newSent = $("<div>");
         newSent.addClass("sentiment");
         if (data['analysis_data']['avg']!= null){
@@ -305,15 +309,12 @@ function textTweet(){
           newSent.append(p);
           newT.append(newSent);
         }
-        if (tweet['geo'] != null){
-          let geo= $("<p>");
-          geo.text("Location: " + tweet['geo']['Name']);
-          newT.append(geo);
-          }
         $("#base").append(newT);
         $("#base").append("<br>");
         }
       }
+      let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+      $("#base").append(scripting)
     }
   });
 }
@@ -336,23 +337,19 @@ function locationTweet(){
           MulMapMarkers(data['statuses']);
           for (let tweet of data['statuses']){
             if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
-              let newT = $("<div>");
-              newT.addClass("tweet");
-              let id= $("<p>");
-              id.text("id: " + tweet['Author'].toString());
-              newT.append(id);
-              let content = $("<p>");
-              content.text("text: " + tweet['Text']);
-              newT.append(content)
-              if (tweet['place'] != null){
-                let place = $("<p>");
-                place.text("location: " + tweet['place']['full_name']);
-                newT.append(place);
-              }
-              $("#base").append(newT);
+              let embed = $("<blockquote>");
+              embed.addClass('twitter-tweet');
+              embed.addClass('ourTweets');
+              let atweet = $("<a>");
+              let myurl = "https://twitter.com/tweet/status/" + tweet['id_str'];
+              atweet.attr('href', myurl)
+              embed.append(atweet);
+              $("#base").append(embed);
               $("#base").append("<br>");
             }
           }
+          let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+          $("#base").append(scripting)
         },
         error: function( err ){
           let newT = $("<div>");
