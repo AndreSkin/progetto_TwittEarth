@@ -5,26 +5,54 @@ const Twit = require('twit');
 const { TwitterApi, ETwitterStreamEvent, TweetStream, ETwitterApiError } = require('twitter-api-v2');
 var sentiment = require('multilang-sentiment');
 var langdetect = require('langdetect');
+const result=require('dotenv').config()
 
-const b_token= "AAAAAAAAAAAAAAAAAAAAAMEAUwEAAAAA1xY%2F32bSU4v5kwxoncHszvMJHx4%3D8gqEEFr90qe45rDMfubNdiMWfZwkkECKAK9SVgs5e6NdQOouCN";
+let httpServer = require("http").createServer(app);
+
+const path = require('path');
+const Server = require("socket.io");
+const io = require("socket.io") (httpServer, {cors:{origin:"*"}})
+
+
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport('smtps://' + process.env.MAIL + ':' + process.env.MAIL_PSW + '@smtp.gmail.com');
+
+async function sendmail()
+{
+  var mailOptions = {
+      from: '"prova_team_10 👥" <team10igsw2021@gmail.com>', // sender address
+      to: 'team10igsw2021@gmail.com', // list of receivers
+      subject: 'Hello ✔', // Subject line
+      text: 'Hello world 🐴', // plaintext body
+      html: '<b>Hello world 🐴</b>' // html body
+  };
+
+  transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+        return console.log("ERROR IN MAIL", error);
+    }
+    console.log('Message sent: ' + info.response);
+});
+}
+
+//sendmail();
+
+const b_token= process.env.BEARER_TOKEN;
 
 app.use('/', express.static(__dirname + '/'));
 app.use(cors());
 
 var T = new Twit({
-  consumer_key: "C1To9MvaerpcTFE6s3dXjHFXd",
-  consumer_secret: "IH8ec7CnV2VSpgdqsh5IQTysgZMzHafjx8DP3QOqjVrFiBDZQj",
-  access_token: "1447914708598722561-FbmOcEaDCAEnDNsojC54vqROseWSzL",
-  access_token_secret: "BbnkHQZYa6N7Wqyh2KdGIfZO2ZQLGOzWUdWSmrNKPN93N",
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET,
 })
 
 
 //Istanzio client per twitter API
 const twitterClient = new TwitterApi(b_token);
 const client = twitterClient.readOnly;
-const apiv1 = client.v1;
-const apiv2 = client.v2;
-
 
 app.use(express.json());
 
@@ -43,7 +71,7 @@ app.get('/users/:name', async(req, res) => {
    userID = await client.v2.userByUsername(req.params.name);
   }
   catch(error){
-    console.log(error);
+    console.log("ERROR IN USER BY USERNAME: ", error);
   }
   //Numero dei risultati che si vogliono ottenere (predisposizione per passaggio con parametro)
   let results = req.query.numtweets == undefined? 25:req.query.numtweets;
@@ -77,7 +105,7 @@ app.get('/users/:name', async(req, res) => {
       })
     }
     catch (e){
-      console.log("Error: " + e );
+      console.log("ERROR IN TIMELINE: ", e );
     }
   }
   res.status(200).json(timeline);
@@ -169,7 +197,7 @@ async function getauthor(author_id){
     author = await client.v2.user(author_id);
   }
   catch(error){
-    console.log(error);
+    console.log("ERROR IN GET AUTHOR", error);
   }
   return author.data.username;
 }
@@ -181,7 +209,7 @@ async function getGeo(place_id){
     place = await client.v1.geoPlace(place_id);
   }
   catch(error){
-    console.log(error);
+    console.log("ERROR IN GET GEO",error);
   }
 
   return {'Name': place.full_name, 'coord_center': place.contained_within[0].centroid};
@@ -231,7 +259,6 @@ app.get('/recents/:word', async(req, res) => {
   let tweet= '';
   //Numero dei risultati che si vogliono ottenere (predisposizione per passaggio con parametro)
   let results = req.query.numtweets == undefined? 25:req.query.numtweets;
-  console.log("recents: " + results)
   let query = req.params.word;
 
   //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
@@ -298,7 +325,7 @@ app.get('/recents/:word', async(req, res) => {
       catch (e){
         //In caso di errori (es. lingua sconosciuta) diminuisco il numero di risultati
         resnum--;
-        console.log("ERROR: " + e);
+        console.log("ERROR IN RECENTS: ", e);
       }
     }
   }
@@ -321,12 +348,6 @@ app.get('/recents/:word', async(req, res) => {
   res.status(200).json(ans);
 });
 
-
-let httpServer = require("http").createServer(app);
-
-const path = require('path');
-const Server = require("socket.io");
-const io = require("socket.io") (httpServer, {cors:{origin:"*"}})
 
 async function delete_rules()
 {
@@ -355,7 +376,7 @@ async function delete_rules()
   }
   catch (e)
   {
-    console.log("DELETE RULE: ", e);
+    console.log("ERROR IN DELETE RULE: ", e);
   }
 }
 
@@ -418,7 +439,7 @@ app.get('/stream/tweets', async (req, res) => {
   }
   catch(e)
   {
-    console.log("STREAM: " + e);
+    console.log("ERROR IN STREAM: " , e);
     res.status(404).json(e);
   }
 
