@@ -1,3 +1,4 @@
+const result=require('dotenv').config({path: `${__dirname}/.env`})
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -5,7 +6,6 @@ const Twit = require('twit');
 const { TwitterApi, ETwitterStreamEvent, TweetStream, ETwitterApiError } = require('twitter-api-v2');
 var sentiment = require('multilang-sentiment');
 var langdetect = require('langdetect');
-const result=require('dotenv').config()
 
 let httpServer = require("http").createServer(app);
 
