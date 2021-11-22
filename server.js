@@ -165,7 +165,7 @@ app.get('/geo/:place', (req, res) => {
 
     let georeq = coord[0] + ',' + coord[1] + radius;
 
-    T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 500, result_type: 'recent'}, async (err2, data2) =>{
+    T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 100, result_type: 'recent'}, async (err2, data2) =>{
       for (let data of data2['statuses']){
         if (data['place'] == null){
           data['geo'] = {'coord_center' : []};
