@@ -63,7 +63,9 @@
       }
       //serverUrl = "http://localhost:8000/";
       serverUrl = "https://site202136.tw.cs.unibo.it/";
+
       getstream();
+
       async function getstream(){
         const tweetStream = document.getElementById('tweetStream');
         const socket = io(serverUrl);
@@ -113,7 +115,7 @@
           $("#tweetStream").append(scripting);
         }
 
-        setTimeout(await () => removing(newT, scripting), 5000)
+        setTimeout(() => newT.remove(), 5000)
     });
   }
     </script>
