@@ -87,10 +87,10 @@
         newT.addClass("tweet");
         newT.append(embed);
 
-        tweetStream.appendChild(newT);
+        $("#tweetStream").append(newT);
 
         let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
-        tweetStream.appendChild(scripting);
+        $("#tweetStream").append(scripting);
 
         setTimeout(() => tweetEl.remove(), 10000)
     });
