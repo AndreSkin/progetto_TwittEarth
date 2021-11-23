@@ -33,11 +33,16 @@
         <a href="#" class="navbar-brand">Real-Time Tweet Stream</a>
       </div>
     </nav>
+    <div class="row">
+      <div class="col container">
+        <div id="tweetStream"></div>
+      </div>
 
-    <div class="container">
-      <div id="tweetStream"></div>
+      <div class="col">
+        <label for="pausing">Pause</label>
+        <input type="checkbox" id="pausing" name="pausing" value="pausing">
+      </div>
     </div>
-
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
       integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
@@ -45,12 +50,21 @@
     ></script>
 
     <script>
-
+      var pausing = new Boolean(false);
+      function removing(tweet, scripting){
+        while(pausing) {}
+        tweet.remove();
+        //scripting.remove();
+      }
+      window.onload = function(){
+        var my_pausa = document.getElementById('pausing');
+        my_pausa.checked = false;
+        my_pausa.addEventListener('click', () => pausing = !pausing);
+      }
       //serverUrl = "http://localhost:8000/";
       serverUrl = "https://site202136.tw.cs.unibo.it/";
       getstream();
-      async function getstream()
-      {
+      async function getstream(){
         const tweetStream = document.getElementById('tweetStream');
         const socket = io(serverUrl);
         console.log(socket);
@@ -81,23 +95,25 @@
             </div>
         `*/
 
-        let embed = $("<blockquote>");
-        embed.addClass('twitter-tweet');
-        embed.addClass('ourTweets');
-        let atweet = $("<a>");
-        let myurl = "https://twitter.com/tweet/status/" + tweetData['id'];
-        atweet.attr('href', myurl)
-        embed.append(atweet);
-        let newT = $("<div>");
-        newT.addClass("tweet");
-        newT.append(embed);
+        if (!pausing){
+          let embed = $("<blockquote>");
+          embed.addClass('twitter-tweet');
+          embed.addClass('ourTweets');
+          let atweet = $("<a>");
+          let myurl = "https://twitter.com/tweet/status/" + tweetData['id'];
+          atweet.attr('href', myurl)
+          embed.append(atweet);
+          let newT = $("<div>");
+          newT.addClass("tweet");
+          newT.append(embed);
 
-        $("#tweetStream").prepend(newT);
+          $("#tweetStream").prepend(newT);
 
-        let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
-        $("#tweetStream").append(scripting);
+          let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+          $("#tweetStream").append(scripting);
+        }
 
-        setTimeout(() => newT.remove(), 5000)
+        setTimeout(() => removing(newT, scripting), 5000)
     });
   }
     </script>
