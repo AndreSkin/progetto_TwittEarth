@@ -62,16 +62,30 @@
           text: tweet.data.text,
         }
 
-        const tweetEl = document.createElement('div')
+        /*const tweetEl = document.createElement('div')
         tweetEl.className = 'card my-4'
         tweetEl.innerHTML = `
             <div class="card-body">
                 <h5 class="card-title">${tweetData.text}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">${tweetData.id}</h6>
             </div>
-        `
+        `*/
 
-        tweetStream.appendChild(tweetEl)
+        let embed = $("<blockquote>");
+        embed.addClass('twitter-tweet');
+        embed.addClass('ourTweets');
+        let atweet = $("<a>");
+        let myurl = "https://twitter.com/tweet/status/" + tweetData['id'];
+        atweet.attr('href', myurl)
+        embed.append(atweet);
+        let newT = $("<div>");
+        newT.addClass("tweet");
+        newT.append(embed);
+
+        tweetStream.appendChild(newT);
+
+        let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+        tweetStream.appendChild(scripting);
 
         setTimeout(() => tweetEl.remove(), 10000)
     });
