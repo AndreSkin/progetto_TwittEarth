@@ -113,7 +113,7 @@
           $("#tweetStream").append(scripting);
         }
 
-        setTimeout(() => await removing(newT, scripting), 5000)
+        setTimeout(await () => removing(newT, scripting), 5000)
     });
   }
     </script>
