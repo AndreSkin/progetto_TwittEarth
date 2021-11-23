@@ -50,7 +50,7 @@
     ></script>
 
     <script>
-      var pausing = new Boolean(false);
+      var pausing = false;
       async function removing(tweet, scripting){
         while(pausing) {}
         tweet.remove();
@@ -98,6 +98,7 @@
         `*/
         let newT = $("<div>");
         let scripting = ``;
+        console.log(pausing);
         if (pausing == false){
           let embed = $("<blockquote>");
           embed.addClass('twitter-tweet');
@@ -115,7 +116,7 @@
           $("#tweetStream").append(scripting);
         }
 
-        setTimeout(() => newT.remove(), 5000)
+        //setTimeout(() => newT.remove(), 5000)
     });
   }
     </script>
