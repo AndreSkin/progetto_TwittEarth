@@ -51,10 +51,12 @@
 
     <script>
       var pausing = false;
-      async function removing(tweet, scripting){
-        while(pausing) {}
-        tweet.remove();
-        //scripting.remove();
+      var tweetcounter = 0;
+      const onScreenTweets = 20;
+      function resetpause(){
+        pausing = !pausing;
+        if (pausing == false)
+          tweetcounter = 0;
       }
       window.onload = function(){
         var my_pausa = document.getElementById('pausing');
@@ -114,9 +116,13 @@
 
           let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
           $("#tweetStream").append(scripting);
+          tweetcounter= tweetcounter+1;
         }
-
-        //setTimeout(() => newT.remove(), 5000)
+        if (tweetcounter >= onScreenTweets){
+          for(i= 0; i < onScreenTweets/2; i++){
+            $("#tweetStream").last().remove();
+          }
+        }
     });
   }
     </script>
