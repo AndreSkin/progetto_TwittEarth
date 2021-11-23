@@ -100,7 +100,6 @@
         `*/
         let newT = $("<div>");
         let scripting = ``;
-        console.log(pausing);
         if (pausing == false){
           let embed = $("<blockquote>");
           embed.addClass('twitter-tweet');
@@ -119,9 +118,11 @@
           tweetcounter= tweetcounter+1;
         }
         if (tweetcounter >= onScreenTweets){
-          for(i= 0; i < onScreenTweets/2; i++){
-            $("#tweetStream").last().remove();
+          for(i= 0; i < onScreenTweets; i++){
+            $("#tweetStream div").last().remove();
+            $("#tweetStream script").last().remove();
           }
+          tweetcounter= onScreenTweets/2;
         }
     });
   }
