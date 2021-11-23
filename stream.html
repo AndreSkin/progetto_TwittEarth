@@ -51,7 +51,7 @@
 
     <script>
       var pausing = new Boolean(false);
-      function removing(tweet, scripting){
+      async function removing(tweet, scripting){
         while(pausing) {}
         tweet.remove();
         //scripting.remove();
@@ -113,7 +113,7 @@
           $("#tweetStream").append(scripting);
         }
 
-        setTimeout(() => removing(newT, scripting), 5000)
+        setTimeout(() => await removing(newT, scripting), 5000)
     });
   }
     </script>
