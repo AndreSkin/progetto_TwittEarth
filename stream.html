@@ -67,8 +67,8 @@
           text: tweet.data.text,
         }
 
-        /*const tweetEl = document.createElement('div')
-        tweetEl.className = 'card my-4'
+        const tweetEl = document.createElement('div')
+        /**tweetEl.className = 'card my-4'
         tweetEl.innerHTML = `
             <div class="card-body">
                 <h5 class="card-title">${tweetData.text}</h5>
@@ -87,12 +87,12 @@
         newT.addClass("tweet");
         newT.append(embed);
 
-        $("#tweetStream").append(newT);
+        $("#tweetStream").prepend(newT);
 
         let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
         $("#tweetStream").append(scripting);
 
-        setTimeout(() => tweetEl.remove(), 10000)
+        setTimeout(() => newT.remove(), 5000)
     });
   }
     </script>
