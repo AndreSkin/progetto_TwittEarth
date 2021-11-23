@@ -13,7 +13,7 @@
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous">
   </script>
-  
+
   <title>TwittEarth</title>
   <style>
   *
@@ -75,7 +75,7 @@
   </div>
 </body>
 <script>
-
+throw new Error("ciao");
 var only_geo = false;
 var sent_analyze = false;
 var mymap = L.map('map').setView([0, 0], 1);
@@ -204,16 +204,16 @@ function hashtagTweet(){
   if(tag[0]!='#'){
 	tag = "#" + tag;
   }
-  
+
   var url = serverUrl + "recents/" + tag.replace("#", "~");
-	
+
 	if (err == true){
 	let newT = $('<div>');
 	newT.text(" Non un Hashtag");
 	$("#base").append(newT);
 	return;
   }
-  
+
   $.ajax({
     type: 'GET',
     url: url,
