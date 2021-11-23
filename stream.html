@@ -94,7 +94,8 @@
                 <h6 class="card-subtitle mb-2 text-muted">${tweetData.id}</h6>
             </div>
         `*/
-
+        let newT = $("<div>");
+        let scripting = ``;
         if (!pausing){
           let embed = $("<blockquote>");
           embed.addClass('twitter-tweet');
@@ -103,7 +104,6 @@
           let myurl = "https://twitter.com/tweet/status/" + tweetData['id'];
           atweet.attr('href', myurl)
           embed.append(atweet);
-          let newT = $("<div>");
           newT.addClass("tweet");
           newT.append(embed);
 
