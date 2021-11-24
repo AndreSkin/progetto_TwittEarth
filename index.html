@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-  crossorigin="anonymous">
-  </script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">
+    </script>
 
   <title>TwittEarth</title>
   <style>
-  *
-  {
-    font-family: "Calibri", Helvetica, Arial, Verdana, Tahoma, sans-serif;
-     margin-left: 0.2em;
-  }
+    * {
+      font-family: "Calibri", Helvetica, Arial, Verdana, Tahoma, sans-serif;
+      margin-left: 0.2em;
+    }
+
     .tweet {
       /*border: 1px solid black;*/
       width: 25em;
@@ -28,21 +32,23 @@
       margin-top: 2em;
     }
 
-    .sentiment{
+    .sentiment {
       border: 1px solid black;
       border-color: red;
       padding: 2em;
     }
 
-    #map{
+    #map {
       width: 60em;
       min-height: 30em;
     }
-
   </style>
 </head>
+
 <body>
-  <div><h1>TwittEarth</h1></div>
+  <div>
+    <h1>TwittEarth</h1>
+  </div>
   <div class="row">
     <div class="col">
       <div id="radios">
@@ -60,344 +66,19 @@
         <input type="checkbox" id="check_sent" name="sentcheck" value="sentcheck" disabled>
         <label for="check_sent">Show sentiment for word searching tweets</label><br>
       </div>
-      <div id= "searchDiv">
+      <div id="searchDiv">
         <h3 id="searchhead">Inserisci il nome utente</h3>
         <form id="simpleform" action="javascript:userTimeline()">
           <input id="searchbar" type="text" placeholder="Nome utente..." name="searchbar" required="true">
-          <button type="submit" id= "searchbutton"><em class="fa fa-search"></em></button>
+          <button type="submit" id="searchbutton"><em class="fa fa-search"></em></button>
         </form>
       </div>
-      <div id= "base"></div>
+      <div id="base"></div>
     </div>
     <div class="col r-col">
       <div id="map"></div>
     </div>
   </div>
 </body>
-<script>
-var only_geo = false;
-var sent_analyze = false;
-var mymap = L.map('map').setView([0, 0], 1);
-
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
-
-function changebar(choice){
-  return function(){
-    $("#base").empty();
-    if(choice == "user"){
-        document.getElementById('searchbar').setAttribute('placeholder', "Nome utente ...");
-        document.getElementById('searchbar').value = ""
-        //.getElementById('searchbutton').setAttribute('onclick', "userTimeline()");
-        document.getElementById('simpleform').setAttribute('action', "javascript:userTimeline()");
-        document.getElementById('searchhead').innerHTML = "Inserisci il nome utente";
-        document.getElementById('check_sent').disabled = true;
-      } else if(choice == "text"){
-        document.getElementById('searchbar').setAttribute('placeholder', "Testo ...");
-        document.getElementById('searchbar').value = ""
-        //document.getElementById('searchbutton').setAttribute('onclick', "textTweet()");
-        document.getElementById('simpleform').setAttribute('action', "javascript:textTweet()");
-        document.getElementById('searchhead').innerHTML = "Inserisci il testo da cercare";
-        document.getElementById('check_sent').disabled = false;
-      } else if(choice == "hashtag"){
-        document.getElementById('searchbar').setAttribute('placeholder', "Hashtag ...");
-        document.getElementById('searchbar').value = ""
-        //document.getElementById('searchbutton').setAttribute('onclick', "hashtagTweet()");
-        document.getElementById('simpleform').setAttribute('action', "javascript:hashtagTweet()");
-        document.getElementById('searchhead').innerHTML = "Inserisci l'hashtag da cercare";
-        document.getElementById('check_sent').disabled = true;
-      } else if(choice == "location"){
-        document.getElementById('searchbar').setAttribute('placeholder', "Località ...");
-        document.getElementById('searchbar').value = ""
-        //document.getElementById('searchbutton').setAttribute('onclick', "locationTweet()");
-        document.getElementById('simpleform').setAttribute('action', "javascript:locationTweet()");
-        document.getElementById('searchhead').innerHTML = "Inserisci il luogo da cercare";
-        document.getElementById('check_sent').disabled = true;
-      }
-    }
-}
-window.onload = function(){
-  BlankMap(mymap);
-  only_geo= false;
-  sent_analyze = false;
-  var choice_user = document.getElementById('radio_userTimeline');
-  var choice_text = document.getElementById('radio_textTweets');
-  var choice_hashtag = document.getElementById('radio_hashtagTweets');
-  var choice_location = document.getElementById('radio_location');
-  choice_text.checked = false;
-  choice_hashtag.checked = false;
-  choice_location.checked = false;
-  choice_user.checked = true;
-  choice_user.addEventListener('click', changebar("user"), false);
-  choice_text.addEventListener('click', changebar("text"), false);
-  choice_hashtag.addEventListener('click', changebar("hashtag"), false);
-  choice_location.addEventListener('click', changebar("location"), false);
-  var choice_geo = document.getElementById('check_geo');
-  var choice_sent = document.getElementById('check_sent');
-  choice_sent.checked = false;
-  choice_sent.disabled = true;
-  choice_geo.checked = false;
-  choice_geo.addEventListener('click', () => {only_geo= !only_geo;}, false);
-  choice_sent.addEventListener('click', () => {sent_analyze = !sent_analyze}, false)
-}
-
-function userTimeline(){
-  $("#base").empty();
-  var user= document.getElementById('searchbar').value
-  if (user[0]=='@') {
-    user = user.substring(1);
-  }
-  var url = serverUrl + "users/" + user
-  $.ajax({
-    type: 'GET',
-    url: url,
-    crossDomain: true,
-    success: function( data ) {
-      if (data['tweets']){
-        MulMapMarkers(data['tweets'], user);
-        for (let tweet of data['tweets']){
-          if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-              let embed = $("<blockquote>");
-              embed.addClass('twitter-tweet');
-              embed.addClass('ourTweets');
-              let atweet = $("<a>");
-              let myurl = "https://twitter.com/tweet/status/" + tweet['id'];
-              atweet.attr('href', myurl)
-              embed.append(atweet);
-              let newT = $("<div>");
-              newT.addClass("tweet");
-              newT.append(embed);
-              $("#base").append(newT);
-          }
-        }
-      }
-      else{
-        let newT = $('<div>');
-        let p = $('<p>');
-        p.text("Utente non trovato");
-        newT.append(p);
-        $('#base').append('<br>');
-        $('#base').append(newT);
-      }
-      let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
-      $("#base").append(scripting)
-    },
-    error: function( err ){
-      let newT = $("<div>");
-      let txt= $("<p>");
-      txt.text("Error: " + "Utente non trovato");
-      newT.append(txt);
-      $("#base").append(newT);
-      $("#base").append("<br>");
-    }
-  });
-}
-
-function hashtagTweet(){
-  $("#base").empty();
-  var tag = document.getElementById('searchbar').value;
-  let err = new Boolean(false);
-  if (tag.includes(' ')){
-    err = true;
-  }
-  if(tag[0]!='#'){
-	tag = "#" + tag;
-  }
-
-  var url = serverUrl + "recents/" + tag.replace("#", "~");
-
-	if (err == true){
-	let newT = $('<div>');
-	newT.text(" Non un Hashtag");
-	$("#base").append(newT);
-	return;
-  }
-
-  $.ajax({
-    type: 'GET',
-    url: url,
-    crossDomain: true,
-    success: function( data ) {
-      MulMapMarkers(data['data']);
-      for (let tweet of data['data']){
-        if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-          let embed = $("<blockquote>");
-          embed.addClass('twitter-tweet');
-          embed.addClass('ourTweets');
-          let atweet = $("<a>");
-          let myurl = "https://twitter.com/tweet/status/" + tweet['id'];
-          atweet.attr('href', myurl)
-          embed.append(atweet);
-          $("#base").append(embed);
-          $("#base").append("<br>");
-        }
-      }
-      let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
-      $("#base").append(scripting)
-    }
-  });
-}
-
-
-function textTweet(){
-  $("#base").empty();
-  var frase = document.getElementById('searchbar').value
-  frase = frase.replace("#", "~");
-  var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze;
-  $.ajax({
-    type: 'GET',
-    url: url,
-    crossDomain: true,
-    success: function( data ) {
-      MulMapMarkers(data['data']);
-      if (data['analysis_data']['avg']!= null){
-        let newS = $('<div>');
-        let p= $('<p>');
-        p.text("Il sentimento per questa stringa è: " + data['analysis_data']['avg']);
-        newS.append(p);
-        p= $('<p>');
-        p.text("Le parole totali analizzate sono: " + data['analysis_data']['Tot_words']);
-        newS.append(p);
-        p= $('<p>');
-        p.text("Le parole positive totali sono: " + data['analysis_data']['Tot_pos']);
-        newS.append(p);
-        p= $('<p>');
-        p.text("Le parole negative totali sono: " + data['analysis_data']['Tot_neg']);
-        newS.append(p);
-        $('#base').append('<br>');
-        $("#base").append(newS);
-        $('#base').append('<br>');
-      }
-      for (let tweet of data['data']){
-        if((tweet['geo'] == null && !only_geo) || (tweet['geo'] != null)){
-        let newT = $("<div>");
-        newT.addClass("tweet");
-        let embed = $("<blockquote>");
-        embed.addClass('twitter-tweet');
-        embed.addClass('ourTweets');
-        let atweet = $("<a>");
-        let myurl = "https://twitter.com/tweet/status/" + tweet['id'];
-        atweet.attr('href', myurl)
-        embed.append(atweet);
-        newT.append(embed);
-        let newSent = $("<div>");
-        newSent.addClass("sentiment");
-        if (data['analysis_data']['avg']!= null){
-          let p = $("<p>");
-          p.text("Score: " + tweet['sentiment']['eval'][0]['Score']);
-          newSent.append(p);
-          p = $("<p>");
-          p.text("Numero di parole positive: " + tweet['sentiment']['eval'][0]['PosL']);
-          newSent.append(p);
-          let t = ""
-          for (let pos of tweet['sentiment']['eval'][0]['Pos']){
-            t+= pos + ", "
-          }
-          p = $("<p>");
-          p.text("Parole positive: " + t);
-          newSent.append(p);
-          p = $("<p>");
-          p.text("Numero di parole negative: " + tweet['sentiment']['eval'][0]['NegL']);
-          newSent.append(p);
-          let tn = ""
-          for (let pos of tweet['sentiment']['eval'][0]['Neg']){
-            tn+= pos + ", "
-          }
-          p = $("<p>");
-          p.text("Parole negative: " + tn);
-          newSent.append(p);
-          newT.append(newSent);
-        }
-        $("#base").append(newT);
-        $("#base").append("<br>");
-        }
-      }
-      let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
-      $("#base").append(scripting)
-    }
-  });
-}
-
-function locationTweet(){
-  $("#base").empty();
-  var location= document.getElementById('searchbar').value
-  var url = serverUrl + "geo/" + location
-  $.ajax({
-    type: 'GET',
-    url: 'https://nominatim.openstreetmap.org/search?format=json&q=%27' + location,
-    crossDomain: true,
-    success: function( data ){
-      var url = serverUrl + "geo/" + data[0]['lat'] + "x" + data[0]['lon'];
-      $.ajax({
-        type: 'GET',
-        url: url,
-        crossDomain: true,
-        success: function( data ) {
-          MulMapMarkers(data['statuses']);
-          for (let tweet of data['statuses']){
-            if((tweet['place'] == null && !only_geo) || (tweet['place'] != null)){
-              let embed = $("<blockquote>");
-              embed.addClass('twitter-tweet');
-              embed.addClass('ourTweets');
-              let atweet = $("<a>");
-              let myurl = "https://twitter.com/tweet/status/" + tweet['id_str'];
-              atweet.attr('href', myurl)
-              embed.append(atweet);
-              $("#base").append(embed);
-              $("#base").append("<br>");
-            }
-          }
-          let scripting=`<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
-          $("#base").append(scripting)
-        },
-        error: function( err ){
-          let newT = $("<div>");
-          let txt= $("<p>");
-          txt.text("Error: " + err.responseJSON.message);
-          newT.append(txt);
-          $("#base").append(newT);
-          $("#base").append("<br>");
-        }
-      });
-    }
-  });
-}
-
-//Mappa
-//Costruisce una mappa vuota
-function BlankMap(mymap){
-  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-  	maxZoom: 18,
-		minZoom: 1,
-  	attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-  		'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-  	id: 'mapbox/streets-v11',
-  	tileSize: 512,
-  	zoomOffset: -1
-  }).addTo(mymap);
-}
-
-function MulMapMarkers(TweetsList, User = null ){
-	let MarkerGroup = [];
-	//Elimina tutti i marker
-	mymap.eachLayer(function(layer){
-		if(!!layer.toGeoJSON){mymap.removeLayer(layer);
-		}
-	})
-	//Crea dei marker per ogni coordinata fornita
-	for(let i=0; i < TweetsList.length; i = i+1){
-    if(TweetsList[i]['geo'] != null){
-      let tmp;
-      if (User != null){
-        tmp = User
-      }
-      else tmp = TweetsList[i]['Author'];
-  		L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(mymap).bindPopup("<b>" + tmp + "</b>"  + ": <br/>" + TweetsList[i]['Text']);
-  		MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
-    }
-	}
-	let group = new L.featureGroup(MarkerGroup);
-  if(MarkerGroup.length != 0) mymap.fitBounds(group.getBounds());
-}
-  </script>
+<script src="home.js"></script>
 </html>

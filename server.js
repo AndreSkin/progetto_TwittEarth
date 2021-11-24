@@ -181,6 +181,7 @@ app.get('/geo/:place', (req, res) => {
         data['Author'] = data['id'];
         data['Text'] = data['text'];
       }
+      data2['tweets'] = data2['statuses'];
       res.status(200).json(data2);
     })
   }
