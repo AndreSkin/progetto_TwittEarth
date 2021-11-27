@@ -112,21 +112,6 @@ app.get('/users/:name', async(req, res) => {
 });
 
 
-//Api v1 che dato un place id restituisce informazioni sul luogo corrispondente
-//Potrebbe ancora servire ma ora c'è una funzione backend apposta
-app.get('/place/:id', async(req, res) => {
-  let place= '';
-  try{
-   place = await client.v1.geoPlace(req.params.id);
-  }
-  catch(error){
-    res.status(404).json(error);
-  }
-
-  res.status(200).json(place);
-});
-
-
 //Api v2 che dato un hashtag restituisce i tweet più recenti che lo contengono
 //Sostituibile da recents
 app.get('/tags/:word', async(req, res) => {
@@ -390,14 +375,15 @@ app.get('/stream/tweets', async (req, res) => {
     /*const addedRules =*/
      await client.v2.updateStreamRules({
       add: [
-    { value: 'JavaScript', tag: 'js' },
-    { value: 'TypeScript', tag: 'ts' },
-    { value: 'C++', tag: 'cpp' },
-    { value: 'Python', tag: 'py' },
-    { value: 'Java', tag: 'J' },
-    { value: 'Golang', tag: 'go' }
+    { value: 'SOSigsw10', tag: 'SOS' },
+    { value: 'abcd', tag: 'ab' },
+    { value: 'efg', tag: 'ef' },
+    { value: 'hijk', tag: 'hi' },
+    { value: 'lmno', tag: 'kl' },
+    { value: 'pqrs', tag: 'op' }
     ],
   });
+
 
     /*
     console.log("ADDED RULES: ", addedRules);
@@ -425,13 +411,43 @@ app.get('/stream/tweets', async (req, res) => {
       ETwitterStreamEvent.DataKeepAlive,
       () => console.log('Twitter has a keep-alive packet.'),
     );
-
+    var emergencytweets=[];
     stream.on(
       // Emitted when a Twitter payload (a tweet or not, given the endpoint).
       ETwitterStreamEvent.Data,
       async eventData => {
-        //console.log('Twitter has sent something:', eventData)
         await io.emit('tweet', eventData);
+        if (eventData.data.geo.place_id != undefined)
+        {
+            let location = await getGeo(eventData.data.geo.place_id);
+            if (eventData.data.text.includes("SOSigsw10"))
+            {
+              sendmail();
+            }
+            else {
+              emergencytweets.push(location);
+              console.log("ET: ", emergencytweets)
+              if (emergencytweets.length == 5)
+              {
+                let removed = false;
+                console.log("Removed 1: " , removed);
+                for (var i = 0; i < emergencytweets.length; i++)
+                {
+                  if (await Math.abs(emergencytweets[0].coord_center[0] - emergencytweets[i].coord_center[0] > 1) ||
+                      (await Math.abs(emergencytweets[0].coord_center[1] - emergencytweets[i].coord_center[1] > 1)))
+                  {
+                    removed=true;
+                    console.log("Removed 2: " , removed);
+                    await delete emergencytweets[i]
+                  }
+                }
+                if (removed==false)
+                {
+                  sendmail();
+                }
+              }
+            }
+        }
       }
     );
 
@@ -450,6 +466,8 @@ app.get('/stream/tweets', async (req, res) => {
   io.on("connection", (socket) => {
     console.log('IO connected...')
   });
+
+  //setTimeout(function(stream){stream.close()}, 10000, stream);
 });
 
 module.exports.httpServer = httpServer;
