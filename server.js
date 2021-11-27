@@ -145,10 +145,12 @@ function find_medium(coordinates){
 app.get('/geo/:place', (req, res) => {
   try{
     let coord = req.params.place.split("x");
-
+    console.log(req.query.radius);
     let radius = req.query.radius == undefined? ',10mi': ',' + req.query.radius + 'mi' ;
-
+    console.log(radius);
     let georeq = coord[0] + ',' + coord[1] + radius;
+
+
 
     T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 30, result_type: 'recent'}, async (err2, data2) =>{
       for (let data of data2['statuses']){
@@ -246,7 +248,8 @@ app.get('/recents/:word', async(req, res) => {
   //Numero dei risultati che si vogliono ottenere (predisposizione per passaggio con parametro)
   let results = req.query.numtweets == undefined? 25:req.query.numtweets;
   let query = req.params.word;
-
+  let notcontain = req.query.notcontain == undefined ? []:req.query.notcontain.split(",");
+  let hasmedia = req.query.hasmedia == undefined ? true:req.query.hasmedia;
   //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
   if (query[0] == '~'){ //~ perchè è così che arrivano le richieste dato che # è un carattere vietato
     query = '#' + req.params.word.substring(1);
@@ -254,6 +257,12 @@ app.get('/recents/:word', async(req, res) => {
   else if (query[0] == '@'){
     query = '@'+req.params.word.substring(1);
   }
+
+  for (onenot in notcontain)
+    query+=" -" + onenot;
+
+  if(!hasmedia)
+    query+= " -has:media -has-links";
 
   //Se true la sentiment analysis è richiesta
   let toSentiment = req.query.sentiment;

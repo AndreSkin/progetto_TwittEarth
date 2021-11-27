@@ -7,22 +7,40 @@ serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
-        function setValues(placeholder, myfun, toDisable, toSearch) {
+        function setValues(placeholder, myfun, toDisable, toSearch, min) {
             document.getElementById('searchbar').setAttribute('placeholder', placeholder);
             document.getElementById('searchbar').value = "";
             document.getElementById('simpleform').setAttribute('action', myfun);
             document.getElementById('searchhead').innerHTML = "Inserisci " + toSearch + " da cercare";
             document.getElementById('check_sent').disabled = toDisable;
+            document.getElementById('check_sent').checked = false;
+            document.getElementById('notcontain').disabled = toDisable;
+            document.getElementById('notcontain').value = "";
+            document.getElementById('containmedia').disabled = toDisable;
+            document.getElementById('containmedia').checked = false;
+            if (toSearch == "il luogo"){
+                document.getElementById('numtweets').value = min;
+                document.getElementById('numtweets').min = "1";
+                document.getElementById('numtweets').max = "500";
+                document.getElementById('numtweetslabel').innerHTML = "Raggio di ricerca (in miglia):";
+            }
+            else{
+                document.getElementById('numtweets').value = "25";
+                document.getElementById('numtweets').min = min;
+                document.getElementById('numtweets').max = "100";
+                document.getElementById('numtweetslabel').innerHTML = "Numero di tweet:";
+            }
+
         }
         $("#base").empty();
         if (choice == "user") {
-            setValues("Nome Utente ...", "javascript:userTimeline()", false, "il nome utente");
+            setValues("Nome Utente ...", "javascript:userTimeline()", true, "il nome utente", 5);
         } else if (choice == "text") {
-            setValues("Testo ...", "javascript:textTweet()", false, "il testo");
+            setValues("Testo ...", "javascript:textTweet()", false, "il testo", 10);
         } else if (choice == "hashtag") {
-            setValues("Hashtag ...", "javascript:hashtagTweet()", true, "l'hashtag")
+            setValues("Hashtag ...", "javascript:hashtagTweet()", true, "l'hashtag", 10)
         } else if (choice == "location") {
-            setValues("Località ...", "javascript:locationTweet()", true, "il luogo");
+            setValues("Località ...", "javascript:locationTweet()", true, "il luogo", 10);
         }
     }
 }
@@ -111,11 +129,12 @@ function embedTweets(data, user = null, sentiment = false, geo = false) {
 
 function userTimeline() {
     $("#base").empty();
-    var user = document.getElementById('searchbar').value
+    var user = document.getElementById('searchbar').value;
     if (user[0] == '@') {
         user = user.substring(1);
     }
-    var url = serverUrl + "users/" + user
+    let numtweets = document.getElementById('numtweets').value;
+    var url = serverUrl + "users/" + user + "?numtweets=" + numtweets;
     $.ajax({
         type: 'GET',
         url: url,
@@ -157,8 +176,8 @@ function hashtagTweet() {
     if (tag[0] != '#') {
         tag = "#" + tag;
     }
-
-    var url = serverUrl + "recents/" + tag.replace("#", "~");
+    let numtweets = document.getElementById('numtweets').value;
+    var url = serverUrl + "recents/" + tag.replace("#", "~") + "?numtweets=" + numtweets;
 
     if (err == true) {
         let newT = $('<div>');
@@ -183,8 +202,11 @@ function hashtagTweet() {
 function textTweet() {
     $("#base").empty();
     var frase = document.getElementById('searchbar').value
+    let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
+    let media = document.getElementById('containmedia').checked;
     frase = frase.replace("#", "~");
-    var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze;
+    let numtweets = document.getElementById('numtweets').value;
+    var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze + "&notcontain=" + esclusi + "&hasmedia=" + media + "&numtweets=" + numtweets;
     $.ajax({
         type: 'GET',
         url: url,
@@ -218,13 +240,13 @@ function textTweet() {
 function locationTweet() {
     $("#base").empty();
     var location = document.getElementById('searchbar').value
-    var url = serverUrl + "geo/" + location
+    let radius = document.getElementById('numtweets').value;
     $.ajax({
         type: 'GET',
         url: 'https://nominatim.openstreetmap.org/search?format=json&q=%27' + location,
         crossDomain: true,
         success: function (data) {
-            var url = serverUrl + "geo/" + data[0]['lat'] + "x" + data[0]['lon'];
+            var url = serverUrl + "geo/" + data[0]['lat'] + "x" + data[0]['lon'] + "?radius=" + radius;
             $.ajax({
                 type: 'GET',
                 url: url,

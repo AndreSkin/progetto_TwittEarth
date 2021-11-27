@@ -65,10 +65,29 @@
         <label for="check_geo">Show only geolocalized Tweets</label>
         <input type="checkbox" id="check_sent" name="sentcheck" value="sentcheck" disabled>
         <label for="check_sent">Show sentiment for word searching tweets</label><br>
+        <hr>
+        <h4>Funzionalità aggiuntive (solo per ricerca tramite Testo)</h4>
+        <label for="notcontain">Escludi Tweet con le date keyword (comma separated)</label>
+        <br>
+        <input type="text" id="notcontain" placeholder="Parole da non contenere..." name="notcontain" required="false" disabled>
+        <!--<label for="fromdate">Prendi in considerazione solo tweet pubblicati dal giorno</label>
+        <input type="date" id="fromdate" name="fromdate" value="2008-03-22" min="2008-01-01">
+        <label for="todate">Prendi in considerazione solo tweet pubblicati fino al giorno</label>
+        <input type="date" id="todate" name="todate" value="2021-11-27" min="2008-01-01">-->
+        <br>
+        <br>
+        <input type="checkbox" id="containmedia" name="mediacheck" value="mediacontain" disabled>
+        <label for="containmedia">Escludi tweet contenenti un'immagine o un video</label>
+        <hr>
       </div>
       <div id="searchDiv">
         <h3 id="searchhead">Inserisci il nome utente</h3>
         <form id="simpleform" action="javascript:userTimeline()">
+          <label id="numtweetslabel" for="numtweets">Numero di tweet:</label>
+          <br>
+          <input id="numtweets" type="number" value="25" name="numtweets" min="5" max="100">
+          <br>
+          <br>
           <input id="searchbar" type="text" placeholder="Nome utente..." name="searchbar" required="true">
           <button type="submit" id="searchbutton"><em class="fa fa-search"></em></button>
         </form>
