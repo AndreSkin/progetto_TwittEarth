@@ -13,7 +13,6 @@ const path = require('path');
 const Server = require("socket.io");
 const io = require("socket.io") (httpServer, {cors:{origin:"*"}})
 
-//prova
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport('smtps://' + process.env.MAIL + ':' + process.env.MAIL_PSW + '@smtp.gmail.com');
 
