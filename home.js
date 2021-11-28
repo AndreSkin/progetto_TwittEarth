@@ -2,8 +2,8 @@ var only_geo = false;
 var sent_analyze = false;
 var mymap = L.map('map').setView([0, 0], 1);
 
-serverUrl = "http://localhost:8000/";
-//serverUrl = "https://site202136.tw.cs.unibo.it/";
+//serverUrl = "http://localhost:8000/";
+serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
