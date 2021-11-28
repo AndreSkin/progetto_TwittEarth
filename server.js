@@ -8,7 +8,7 @@ var sentiment = require('multilang-sentiment');
 var langdetect = require('langdetect');
 
 let httpServer = require("http").createServer(app);
-//prova
+
 const path = require('path');
 const Server = require("socket.io");
 const io = require("socket.io") (httpServer, {cors:{origin:"*"}})
