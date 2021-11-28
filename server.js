@@ -249,7 +249,8 @@ app.get('/recents/:word', async(req, res) => {
   let results = req.query.numtweets == undefined? 25:req.query.numtweets;
   let query = req.params.word;
   let notcontain = req.query.notcontain == undefined ? []:req.query.notcontain.split(",");
-  let hasmedia = req.query.hasmedia == undefined ? true:req.query.hasmedia;
+  let hasmedia = req.query.hasmedia == undefined ? 'false':req.query.hasmedia;
+
   //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
   if (query[0] == '~'){ //~ perchè è così che arrivano le richieste dato che # è un carattere vietato
     query = '#' + req.params.word.substring(1);
@@ -258,11 +259,15 @@ app.get('/recents/:word', async(req, res) => {
     query = '@'+req.params.word.substring(1);
   }
 
-  for (onenot in notcontain)
-    query+=" -" + onenot;
+  if (notcontain[0]!= '') {
+    for (onenot of notcontain)
+      query=query + " -" + onenot;
+  }
 
-  if(!hasmedia)
-    query+= " -has:media -has-links";
+
+  if(hasmedia!='false')
+    query=query + " -has:media -has:links"
+console.log(query)
 
   //Se true la sentiment analysis è richiesta
   let toSentiment = req.query.sentiment;
