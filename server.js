@@ -68,7 +68,7 @@ app.get('/users/:name', async(req, res) => {
   let userID= '';
   //Dato un nome trovo l'ID
   try{
-   userID = await client.v2.userByUsername(req.params.name);
+   userID = await client.v2.userByUsername(req.params.name + " -");
   }
   catch(error){
     console.log("ERROR IN USER BY USERNAME: ", error);
@@ -250,6 +250,7 @@ app.get('/recents/:word', async(req, res) => {
   let query = req.params.word;
   let notcontain = req.query.notcontain == undefined ? []:req.query.notcontain.split(",");
   let hasmedia = req.query.hasmedia == undefined ? 'false':req.query.hasmedia;
+  let isverified = req.query.verified == undefined ? 'false':req.query.verified;
 
   //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
   if (query[0] == '~'){ //~ perchè è così che arrivano le richieste dato che # è un carattere vietato
@@ -267,7 +268,13 @@ app.get('/recents/:word', async(req, res) => {
 
   if(hasmedia!='false')
     query=query + " -has:media -has:links"
-console.log(query)
+
+  console.log(req.query.verified)
+  
+  if(isverified!='false')
+    query=query + " is:verified"
+
+  console.log(query)
 
   //Se true la sentiment analysis è richiesta
   let toSentiment = req.query.sentiment;

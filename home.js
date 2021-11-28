@@ -18,6 +18,8 @@ function changebar(choice) {
             document.getElementById('notcontain').value = "";
             document.getElementById('containmedia').disabled = toDisable;
             document.getElementById('containmedia').checked = false;
+            document.getElementById('verified').disabled = toDisable;
+            document.getElementById('verified').checked = false;
             if (toSearch == "il luogo"){
                 document.getElementById('numtweets').value = min;
                 document.getElementById('numtweets').min = "1";
@@ -204,9 +206,10 @@ function textTweet() {
     var frase = document.getElementById('searchbar').value
     let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
     let media = document.getElementById('containmedia').checked;
+    let verified = document.getElementById('verified').checked;
     frase = frase.replace("#", "~");
     let numtweets = document.getElementById('numtweets').value;
-    var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze + "&notcontain=" + esclusi + "&hasmedia=" + media + "&numtweets=" + numtweets;
+    var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze + "&notcontain=" + esclusi + "&hasmedia=" + media + "&numtweets=" + numtweets + "&verified=" + verified;
     $.ajax({
         type: 'GET',
         url: url,
