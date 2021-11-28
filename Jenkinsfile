@@ -25,7 +25,7 @@ pipeline {
           steps {
             withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'sonarqube_token_vero') {
                 sh "echo ${SCANNER_HOME}"
-                sh '''cd /home/joseph/Documents/new_twittEarth/sonar-scanner-4.6.2.2472-linux/bin &&\
+                sh '''
                     sonar-scanner -D"sonar.projectKey=10_TwittEarth" \
                     -D"project.settings=../sonar-project.properties" \
                     -D"sonar.sources=." -D"sonar.host.url=https://aminsep.disi.unibo.it/sonarqube" \
