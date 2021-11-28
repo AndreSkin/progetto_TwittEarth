@@ -19,12 +19,18 @@ pipeline {
        }
        stage(test) {
          when { changeset "*/**" }
-           steps {
-               echo 'Notify GitLab'
-               updateGitlabCommitStatus name: 'test', state: 'pending'
-               updateGitlabCommitStatus name: 'test', state: 'success'
-
-           }
+         environment {
+            SCANNER_HOME = tool 'SonarQubeTwittEarth'
+         }
+          steps {
+            withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'sonarqube_token_vero') {
+                sh '''cd /home/joseph/Documents/new_twittEarth;\
+                    sonar-scanner -D"sonar.projectKey=10_TwittEarth" \
+                    -D"project.settings=../sonar-project.properties" \
+                    -D"sonar.sources=." -D"sonar.host.url=https://aminsep.disi.unibo.it/sonarqube" \
+                    -D"sonar.login=c98b50793a5bab155206a753ea0964ed9ab0a342"'''
+            }
+          }
        }
        stage ('Deploy') {
          when { changeset "*/**" }

@@ -266,7 +266,7 @@ app.get('/recents/:word', async(req, res) => {
 
   if(hasmedia!='false')
     query=query + " -has:media -has:links"
-  
+
   if(isverified!='false')
     query=query + " is:verified"
 
