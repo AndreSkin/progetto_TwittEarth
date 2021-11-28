@@ -145,9 +145,7 @@ function find_medium(coordinates){
 app.get('/geo/:place', (req, res) => {
   try{
     let coord = req.params.place.split("x");
-    console.log(req.query.radius);
     let radius = req.query.radius == undefined? ',10mi': ',' + req.query.radius + 'mi' ;
-    console.log(radius);
     let georeq = coord[0] + ',' + coord[1] + radius;
 
 
@@ -268,13 +266,9 @@ app.get('/recents/:word', async(req, res) => {
 
   if(hasmedia!='false')
     query=query + " -has:media -has:links"
-
-  console.log(req.query.verified)
   
   if(isverified!='false')
     query=query + " is:verified"
-
-  console.log(query)
 
   //Se true la sentiment analysis è richiesta
   let toSentiment = req.query.sentiment;
@@ -289,70 +283,75 @@ app.get('/recents/:word', async(req, res) => {
 
   //Tweet da analizzare
   let toAnalyze = tweet._realData.data;
-  //Numero di risultati
-  let resnum = toAnalyze.length;
-  //Variabili inizializzate (motivi di scope)
-  let sentiment_result = null;
-  let geo = null;
-  let tweets = {'info': []};
-  let totscore = null;
-  let totwords=0;
-  let totpos=0;
-  let totneg=0;
+  if(toAnalyze != undefined){
+    //Numero di risultati
+    let resnum = toAnalyze.length;
+    //Variabili inizializzate (motivi di scope)
+    let sentiment_result = null;
+    let geo = null;
+    let tweets = {'info': []};
+    let totscore = null;
+    let totwords=0;
+    let totpos=0;
+    let totneg=0;
 
-  if (toAnalyze != null){
-    for(let singletweet of toAnalyze){
-      //let tweetHtml = await embedTweet(singletweet.id);
-      //geo torna null perchè non mantenga il valore
-      geo = null;
-      try{
-        //Se il tweet è geolocalizzato
-        if (singletweet['geo'] != null){
-        //Ottengo le informazioni riguardanti il posto
-        geo = await getGeo(singletweet['geo']['place_id']);
-        }
+    if (toAnalyze != null){
+      for(let singletweet of toAnalyze){
+        //let tweetHtml = await embedTweet(singletweet.id);
+        //geo torna null perchè non mantenga il valore
+        geo = null;
+        try{
+          //Se il tweet è geolocalizzato
+          if (singletweet['geo'] != null){
+          //Ottengo le informazioni riguardanti il posto
+          geo = await getGeo(singletweet['geo']['place_id']);
+          }
 
-        if (toSentiment == "true"){
-          //Eseguo la sentimenttaiga
-          sentiment_result = await sentiment_analyze(singletweet['text']);
-          totscore += parseFloat(sentiment_result.eval[0].Score);
-          totwords+= parseFloat(sentiment_result.eval[0].TotL);
-          totpos+= parseFloat(sentiment_result.eval[0].PosL);
-          totneg+= parseFloat(sentiment_result.eval[0].NegL);
+          if (toSentiment == "true"){
+            //Eseguo la sentimenttaiga
+            sentiment_result = await sentiment_analyze(singletweet['text']);
+            totscore += parseFloat(sentiment_result.eval[0].Score);
+            totwords+= parseFloat(sentiment_result.eval[0].TotL);
+            totpos+= parseFloat(sentiment_result.eval[0].PosL);
+            totneg+= parseFloat(sentiment_result.eval[0].NegL);
+          }
+          tweets.info.push({
+            "Author":singletweet['author_id'],
+            "Text": singletweet['text'],
+            "Lang":langdetect.detectOne(singletweet['text']),
+            "geo":geo,
+            "sentiment": sentiment_result,
+            "id": singletweet.id
+          })
         }
-        tweets.info.push({
-          "Author":singletweet['author_id'],
-          "Text": singletweet['text'],
-          "Lang":langdetect.detectOne(singletweet['text']),
-          "geo":geo,
-          "sentiment": sentiment_result,
-          "id": singletweet.id
-        })
-      }
-      catch (e){
-        //In caso di errori (es. lingua sconosciuta) diminuisco il numero di risultati
-        resnum--;
-        console.log("ERROR IN RECENTS: ", e);
+        catch (e){
+          //In caso di errori (es. lingua sconosciuta) diminuisco il numero di risultati
+          resnum--;
+          console.log("ERROR IN RECENTS: ", e);
+        }
       }
     }
+    else{
+      res.status(404).json("No tweets found")
+    }
+
+    //Se dovevo fare sentiment analysis calcolo la media degli score, altrimenti metto null (null/int = 0)
+    totscore = totscore/results;
+    if (toSentiment != "true"){
+      totscore = null;
+      totwords=null;
+      totpos=null;
+      totneg=null;
+    }
+    //Creo e restituisco la risposta
+    let counters = {"avg": totscore, "Tot_words":totwords, "Tot_pos":totpos, "Tot_neg":totneg}
+    let data = tweets.info;
+    let ans = {'Tot_tweets': resnum, 'analysis_data':counters, data};
+    res.status(200).json(ans);
   }
   else{
-    res.status(404).json("No tweets found")
+    res.status(404).json("Not Found");
   }
-
-  //Se dovevo fare sentiment analysis calcolo la media degli score, altrimenti metto null (null/int = 0)
-  totscore = totscore/results;
-  if (toSentiment != "true"){
-    totscore = null;
-    totwords=null;
-    totpos=null;
-    totneg=null;
-  }
-  //Creo e restituisco la risposta
-  let counters = {"avg": totscore, "Tot_words":totwords, "Tot_pos":totpos, "Tot_neg":totneg}
-  let data = tweets.info;
-  let ans = {'Tot_tweets': resnum, 'analysis_data':counters, data};
-  res.status(200).json(ans);
 });
 
 
