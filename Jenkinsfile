@@ -21,6 +21,7 @@ pipeline {
         environment {
             SCANNER_HOME = tool 'SonarQubeTwittEarth'
             }
+         when { changeset "*/**" }
           steps {
             withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'sonarqube_token_vero') {
                 sh '''cd /home/joseph/Documents/new_twittEarth;\
