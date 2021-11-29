@@ -67,7 +67,7 @@ app.get('/users/:name', async(req, res) => {
   let userID= '';
   //Dato un nome trovo l'ID
   try{
-   userID = await client.v2.userByUsername(req.params.name + " -");
+   userID = await client.v2.userByUsername(req.params.name);
   }
   catch(error){
     console.log("ERROR IN USER BY USERNAME: ", error);
