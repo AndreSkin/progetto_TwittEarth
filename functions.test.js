@@ -1,14 +1,15 @@
 const external = require('./server.js');
 const supertest = request = require('supertest')
+
 const numberOfTweets = 12; //between 10 and 100
-const location = "Bologna";
+const latitude = 44.49382035;
+const longitude = 11.3426327;
 describe("Testing GETs", () => {
     describe("with given default hashtag", () => {
       beforeAll(async () => {
-        return testHashtags = await request(external.httpServer).get('/recents/' + '~' + 'testinggeolocatedtweetuniboswe2122'), formattedTestHashtags = JSON.parse(testHashtags.text);
+        return testHashtags = await request(external.httpServer).get('/recents/' + '~' + 'testingtweetuniboswe2122');
       })
       test("Status code is 200", () => {
-        console.log(formattedTestHashtags.Tot_tweets);
         expect(testHashtags.statusCode).toBe(200);
       });
     })
@@ -29,11 +30,10 @@ describe("Testing GETs", () => {
       })
     })
     describe("with given default location", () => {
-      beforeAll(async() => {
-        return testLocation = await request(external.httpServer).get('/recents/' + '~' + 'testinggeolocatedtweetuniboswe2122?geo='+location);
+      beforeAll(async () => {
+            return testLocation = await request(external.httpServer).get('/geo/' + latitude + 'x' + longitude + '?radius=1');
       })
       test("Status code is 200", () => {
-        console.log(testLocation);
         expect(testLocation.statusCode).toBe(200);
       })
     })
