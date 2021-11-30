@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "jest"
+    "test": "jest --testTimeout=30000"
   },
   "devDependencies": {
     "jest": "^27.3.1",
