@@ -40,26 +40,26 @@ describe("Testing GETs", () => {
 });
 
 describe("Testing other functions", () =>{
-    // describe("Testing sentiment analysis", () => {
-    //   beforeAll(async() => {
-    //     return positiveSentiment = await request(external.httpServer).get('/recents/good?sentiment=true&numtweets=10'),
-    //     formattedPositiveSentiment = JSON.parse(positiveSentiment.text),
-    //     negativeSentiment = await request(external.httpServer).get('/recents/bad?sentiment=true&numtweets=10'),
-    //     formattedNegativeSentiment = JSON.parse(negativeSentiment.text);
-    //   })
-    //   test("Status code is 200 for given positive word", () => {
-    //       expect(positiveSentiment.statusCode).toBe(200);
-    //   })
-    //   test("Status code is 200 for given negative word", () => {
-    //       expect(negativeSentiment.statusCode).toBe(200);
-    //   })
-    //   test("There is at least one positive word \"good\"", () => {
-    //       expect(formattedPositiveSentiment.data[0].sentiment.eval[0].PosL).toBeGreaterThanOrEqual(1);
-    //   })
-    //   test("There is at least one negative word \"bad\"", () => {
-    //       expect(formattedNegativeSentiment.data[0].sentiment.eval[0].NegL).toBeGreaterThanOrEqual(1);
-    //   })
-    // })
+    describe("Testing sentiment analysis", () => {
+      beforeAll(async() => {
+        return positiveSentiment = await request(external.httpServer).get('/recents/good?sentiment=true&numtweets=10'),
+        formattedPositiveSentiment = JSON.parse(positiveSentiment.text),
+        negativeSentiment = await request(external.httpServer).get('/recents/bad?sentiment=true&numtweets=10'),
+        formattedNegativeSentiment = JSON.parse(negativeSentiment.text);
+      })
+      test("Status code is 200 for given positive word", () => {
+          expect(positiveSentiment.statusCode).toBe(200);
+      })
+      test("Status code is 200 for given negative word", () => {
+          expect(negativeSentiment.statusCode).toBe(200);
+      })
+      test("There is at least one positive word \"good\"", () => {
+          expect(formattedPositiveSentiment.data[0].sentiment.eval[0].PosL).toBeGreaterThanOrEqual(1);
+      })
+      test("There is at least one negative word \"bad\"", () => {
+          expect(formattedNegativeSentiment.data[0].sentiment.eval[0].NegL).toBeGreaterThanOrEqual(1);
+      })
+    })
     describe("Testing number of tweets", () => {
       beforeAll(async() => {
         return numberTest = await request(external.httpServer).get('/recents/nasa?numtweets=' + numberOfTweets), formattedNumberTest = JSON.parse(numberTest.text)
