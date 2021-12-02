@@ -4,10 +4,10 @@ var mymap = L.map('map').setView([0, 0], 1);
 var SentimetCtx = document.getElementById("SentimentChart").getContext("2d");
 var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 var BooksCtx = document.getElementById("BooksChart").getContext("2d");
+var PoolCtx = document.getElementById("PoolChart").getContext("2d");
 
-
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
@@ -36,6 +36,7 @@ function changebar(choice) {
                 document.getElementById('numtweets').max = "100";
                 document.getElementById('numtweetslabel').innerHTML = "Numero di tweet:";
             }
+
         }
         $("#base").empty();
         if (choice == "user") {
@@ -235,7 +236,7 @@ function textTweet() {
                 $('#base').append('<br>');
                 $("#base").append(newS);
                 $('#base').append('<br>');
-                let NeutralWords = data['analysis_data']['Tot_words'] - (data['analysis_data']['Tot_pos'] + data['analysis_data']['Tot_neg']);
+                let NeutralWords = data['analysis_data']['Tot_words'] - data['analysis_data']['Tot_pos'] - data['analysis_data']['Tot_neg'];
                 let SData = [data['analysis_data']['Tot_neg'], data['analysis_data']['Tot_pos'], NeutralWords];
                 let SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
             }
@@ -358,6 +359,41 @@ function SentimentChartConstructor(SentimentData, ChartType){
   return SentimentChartStructure;
 }
 
+var PoolChart = new Chart(PoolCtx, SentimentChartConstructor(PData, type));
+
+//Grafico Risposte corrette Pool
+function PoolChartConstructor(PoolData, ChartType){
+  let PoolChartStructure = {
+      type: ChartType,
+      data: {
+          labels: ['Errate', 'Corrette'],
+          datasets: [{
+              label: 'Numero parole',
+              data: SentimentData,
+              backgroundColor: [
+                  'rgba(255, 0, 0, 0.6)',
+                  'rgba(0, 153, 0, 0.6)',
+              ],
+              borderColor: [
+                  'rgba(255, 0, 0, 1)',
+                  'rgba(0, 153, 0, 1)',
+              ],
+              borderWidth: 3
+          }]
+      },
+      options: {
+          responsive:false,
+          scales:  {
+            yAxes: ChartType=='bar' ? [{
+              ticks: {
+                beginAtZero: true
+                }
+            }]:[]
+          }
+      }
+  };
+  return PoolChartStructure;
+}
 
 //Generatore di n colori casuali per i grafici
 function RandomChartColorsGenerator(ListOfItems){
