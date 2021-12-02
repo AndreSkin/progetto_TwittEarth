@@ -17,6 +17,18 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">
     </script>
+  <script src=" https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js" charset="utf-8">
+    </script>
+  <script src="https://code.highcharts.com/highcharts.js">
+    </script>
+  <script src="https://code.highcharts.com/modules/wordcloud.js">
+    </script>
+  <script src="https://code.highcharts.com/modules/exporting.js">
+    </script>
+  <script src="https://code.highcharts.com/modules/export-data.js">
+    </script>
+  <script src="https://code.highcharts.com/modules/accessibility.js">
+    </script>
 
   <title>TwittEarth</title>
   <style>
@@ -101,7 +113,19 @@
       <div id="base"></div>
     </div>
     <div class="col r-col">
+
       <div id="map"></div>
+
+      <canvas id="SentimentChart" width="400" height="400"></canvas>
+
+      <canvas id="LocalitiesChart" width="400" height="400"></canvas>
+
+      <canvas id="BooksChart" width="400" height="400"></canvas>
+
+      <figure class="highcharts-figure">
+        <div id="SentimentWordcloud"></div>
+      </figure>
+
     </div>
   </div>
 </body>

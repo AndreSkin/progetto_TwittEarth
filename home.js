@@ -1,9 +1,13 @@
 var only_geo = false;
 var sent_analyze = false;
 var mymap = L.map('map').setView([0, 0], 1);
+var SentimetCtx = document.getElementById("SentimentChart").getContext("2d");
+var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
+var BooksCtx = document.getElementById("BooksChart").getContext("2d");
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
@@ -232,7 +236,15 @@ function textTweet() {
                 $('#base').append('<br>');
                 $("#base").append(newS);
                 $('#base').append('<br>');
+                let NeutralWords = data['analysis_data']['Tot_words'] - data['analysis_data']['Tot_pos'] - data['analysis_data']['Tot_neg'];
+                let SData = [data['analysis_data']['Tot_pos'], data['analysis_data']['Tot_neg'], NeutralWords];
+                let SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
             }
+            let TextTermCloud = '';
+            for (singleText of data['data']){
+            TextTermCloud = TextTermCloud + singleText['Text'];
+            }
+            WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg']);
             embedTweets(data, null, true);
             let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
             $("#base").append(scripting)
@@ -309,3 +321,170 @@ function MulMapMarkers(TweetsList, User = null) {
     let group = new L.featureGroup(MarkerGroup);
     if (MarkerGroup.length != 0) mymap.fitBounds(group.getBounds());
 }
+
+
+//Grafico per sentiment analysis
+function SentimentChartConstructor(SentimentData, ChartType){
+  let SentimentChartStructure = {
+      type: ChartType,
+      data: {
+          labels: ['Negative', 'Positive', 'Neutre'],
+          datasets: [{
+              label: 'Numero parole',
+              data: SentimentData,
+              backgroundColor: [
+                  'rgba(255, 0, 0, 0.6)',
+                  'rgba(54, 162, 235, 0.6)',
+                  'rgba(105, 105, 105, 0.6)',
+              ],
+              borderColor: [
+                  'rgba(255, 0, 0, 1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(105, 105, 105, 1)',
+              ],
+              borderWidth: 3
+          }]
+      },
+      options: {
+          responsive:false,
+          scales:  {
+            yAxes: ChartType=='bar' ? [{
+              ticks: {
+                beginAtZero: true
+                }
+            }]:[]
+          }
+      }
+  };
+  return SentimentChartStructure;
+}
+
+
+//Generatore di n colori casuali per i grafici
+function RandomChartColorsGenerator(ListOfItems){
+  let BackGroundChartColors = [];
+  let BorederColors = [];
+  let Colors = [];
+  for (let i = 0; i < ListOfItems.length; i = i + 1) {
+    let SliceColor = [];
+    let r = Math.floor(Math.random() * 256);
+    let g = Math.floor(Math.random() * 256);
+    let b = Math.floor(Math.random() * 256);
+
+    SliceColor.push(r);
+    SliceColor.push(g);
+    SliceColor.push(b);
+
+    BackGroundChartColors.push('rgba(' + SliceColor + ', 0.6)')
+    BorederColors.push('rgba(' + SliceColor + ', 1)')
+  }
+  Colors.push(BackGroundChartColors)
+  Colors.push(BorederColors)
+  return Colors;
+}
+
+//Aggiorna il grafico cambiandone il tipo
+function ChartTypeUpdate(chart, NewType) {
+    chart.type = NewType;
+    chart.update();
+}
+
+//Grafico di n elementi con n colori autogenerati
+function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
+  let Colors = RandomChartColorsGenerator(Names)
+  let ChartStructure = {
+      type: ChartType,
+      data: {
+          labels: Names,
+          datasets: [{
+              label: label,
+              data: Data,
+              backgroundColor: Colors[0],
+              borderColor: Colors[1],
+              borderWidth: 3
+          }]
+      },
+      options: {
+          responsive:false,
+          scales:  {
+            yAxes: ChartType=='bar' ? [{
+              ticks: {
+                beginAtZero: true
+                }
+            }]:[]
+          }
+      }
+  };
+  return ChartStructure;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var LData = [10, 20, 30, 40, 50]
+var LNames = ['Milano', 'Cannavacciulo', 'Cubo', 'Cannella', 'Cannabionoide'];
+var Llabel = 'Numero Tweets'
+
+//var LocalitiesChart = new Chart(LocalitiesCtx, InfiniteElementsChartConstructor(LData, LNames, type, Llabel));
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var BData = [23, 44, 55, 12, 76, 62]
+var BNames = ['Le avventure di Gianni', 'Josep lo Sburnatore', 'THE CUBOEN', 'Sdrogo', 'Zio Pera', 'Uncle Pear'];
+var Blabel = 'Numero voti'
+
+//var BooksChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(BData, BNames, type, Blabel));
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function WordcloudBuilder(text, SentimentValue){
+  const RegEx_http = RegExp('https://t', "g");
+  text = text.replace(RegEx_http, '');
+  let WordCloudColors = [];
+  if (SentimentValue >= 1) WordCloudColors = ['#00E500', '#00B200', '#00FF00', '#007F00', '#00B300'];
+  else if (SentimentValue < 1 && SentimentValue > -1 && SentimentValue != null) WordCloudColors = ['#808080', '#8A8A8A', '#9D9D9D', '#A7A7A7', '#767676'];
+  else if (SentimentValue <= -1) WordCloudColors = ['#FFAAAA', '#D46A6A', '#AA3939', '#801515', '#550000'];
+  else WordCloudColors = ['#33FFBE', '#33FFF6', '#33F3FF', '#33CEFF', '#33BEFF'];
+  lines = text.split(/[,\. ]+/g),
+  data = lines.reduce((arr, word) => {
+    let obj = Highcharts.find(arr, obj => obj.name === word);
+    if (obj) {
+      obj.weight += 1;
+    } else {
+      obj = {
+        name: word,
+        weight: 1
+      };
+      arr.push(obj);
+    }
+    return arr;
+  }, []);
+
+  Highcharts.chart('SentimentWordcloud', {
+    accessibility: {
+      screenReaderSection: {
+        beforeChartFormat: '<h5>{chartTitle}</h5>' +
+          '<div>{chartSubtitle}</div>' +
+          '<div>{chartLongdesc}</div>' +
+          '<div>{viewTableButton}</div>'
+      }
+    },
+    series: [{
+      colors: WordCloudColors,
+      type: 'wordcloud',
+      data,
+      name: 'Occorrenze'
+    }],
+    title: {
+      text: ''
+    }
+  });
+}
+
+var type = 'doughnut';
