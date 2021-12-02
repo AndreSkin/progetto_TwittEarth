@@ -4,10 +4,10 @@ var mymap = L.map('map').setView([0, 0], 1);
 var SentimetCtx = document.getElementById("SentimentChart").getContext("2d");
 var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 var BooksCtx = document.getElementById("BooksChart").getContext("2d");
-var PoolCtx = document.getElementById("PoolChart").getContext("2d");
+var PollCtx = document.getElementById("PollChart").getContext("2d");
 
-serverUrl = "http://localhost:8000/";
-//serverUrl = "https://site202136.tw.cs.unibo.it/";
+//serverUrl = "http://localhost:8000/";
+serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
@@ -359,11 +359,11 @@ function SentimentChartConstructor(SentimentData, ChartType){
   return SentimentChartStructure;
 }
 
-var PoolChart = new Chart(PoolCtx, SentimentChartConstructor(PData, type));
+var PollChart = new Chart(PollCtx, SentimentChartConstructor(PData, type));
 
-//Grafico Risposte corrette Pool
-function PoolChartConstructor(PoolData, ChartType){
-  let PoolChartStructure = {
+//Grafico Risposte corrette Poll
+function PollChartConstructor(PollData, ChartType){
+  let PollChartStructure = {
       type: ChartType,
       data: {
           labels: ['Errate', 'Corrette'],
@@ -392,7 +392,7 @@ function PoolChartConstructor(PoolData, ChartType){
           }
       }
   };
-  return PoolChartStructure;
+  return PollChartStructure;
 }
 
 //Generatore di n colori casuali per i grafici
