@@ -4,6 +4,7 @@ const supertest = request = require('supertest')
 const numberOfTweets = 12; //between 10 and 100
 const latitude = 44.49382035;
 const longitude = 11.3426327;
+
 describe("Testing GETs", () => {
     describe("with given default hashtag", () => {
       beforeAll(async () => {
@@ -29,13 +30,14 @@ describe("Testing GETs", () => {
           expect(testUsername.statusCode).toBe(200);
       })
     })
-    describe("with given default location", () => {
+    describe("with given default location", () => { //da finire
       beforeAll(async () => {
             return testLocation = await request(external.httpServer).get('/geo/' + latitude + 'x' + longitude + '?radius=1');
       })
       test("Status code is 200", () => {
         expect(testLocation.statusCode).toBe(200);
       })
+
     })
 });
 
@@ -69,3 +71,6 @@ describe("Testing other functions", () =>{
       })
     })
 });
+
+
+//avere tweet senza media, avere  tweet senza parole date in input
