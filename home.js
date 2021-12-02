@@ -6,8 +6,8 @@ var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 var BooksCtx = document.getElementById("BooksChart").getContext("2d");
 
 
-serverUrl = "http://localhost:8000/";
-//serverUrl = "https://site202136.tw.cs.unibo.it/";
+//serverUrl = "http://localhost:8000/";
+serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
@@ -36,7 +36,6 @@ function changebar(choice) {
                 document.getElementById('numtweets').max = "100";
                 document.getElementById('numtweetslabel').innerHTML = "Numero di tweet:";
             }
-
         }
         $("#base").empty();
         if (choice == "user") {
@@ -236,8 +235,8 @@ function textTweet() {
                 $('#base').append('<br>');
                 $("#base").append(newS);
                 $('#base').append('<br>');
-                let NeutralWords = data['analysis_data']['Tot_words'] - data['analysis_data']['Tot_pos'] - data['analysis_data']['Tot_neg'];
-                let SData = [data['analysis_data']['Tot_pos'], data['analysis_data']['Tot_neg'], NeutralWords];
+                let NeutralWords = data['analysis_data']['Tot_words'] - (data['analysis_data']['Tot_pos'] + data['analysis_data']['Tot_neg']);
+                let SData = [data['analysis_data']['Tot_neg'], data['analysis_data']['Tot_pos'], NeutralWords];
                 let SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
             }
             let TextTermCloud = '';
