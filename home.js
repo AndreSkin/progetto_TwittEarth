@@ -359,7 +359,7 @@ function SentimentChartConstructor(SentimentData, ChartType){
   return SentimentChartStructure;
 }
 
-var PollChart = new Chart(PollCtx, SentimentChartConstructor(PData, type));
+//var PollChart = new Chart(PollCtx, PollChartConstructor(PData, type));
 
 //Grafico Risposte corrette Poll
 function PollChartConstructor(PollData, ChartType){
@@ -458,11 +458,11 @@ function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
 
 
 
-
+var type = 'bar';
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var LData = [10, 20, 30, 40, 50]
-var LNames = ['Milano', 'Cannavacciulo', 'Cubo', 'Cannella', 'Cannabionoide'];
+var LNames = [];
 var Llabel = 'Numero Tweets'
 
 //var LocalitiesChart = new Chart(LocalitiesCtx, InfiniteElementsChartConstructor(LData, LNames, type, Llabel));
@@ -470,7 +470,7 @@ var Llabel = 'Numero Tweets'
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var BData = [23, 44, 55, 12, 76, 62]
-var BNames = ['Le avventure di Gianni', 'Josep lo Sburnatore', 'THE CUBOEN', 'Sdrogo', 'Zio Pera', 'Uncle Pear'];
+var BNames = [];
 var Blabel = 'Numero voti'
 
 //var BooksChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(BData, BNames, type, Blabel));
@@ -521,5 +521,3 @@ function WordcloudBuilder(text, SentimentValue){
     }
   });
 }
-
-var type = 'doughnut';
