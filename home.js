@@ -12,6 +12,7 @@ serverUrl = "https://site202136.tw.cs.unibo.it/";
 function changebar(choice) {
     return function () {
         function setValues(placeholder, myfun, toDisable, toSearch, min) {
+          console.log("cambio valori in " + myfun);
             document.getElementById('searchbar').setAttribute('placeholder', placeholder);
             document.getElementById('searchbar').value = "";
             document.getElementById('simpleform').setAttribute('action', myfun);
@@ -248,6 +249,14 @@ function textTweet() {
             embedTweets(data, null, true);
             let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
             $("#base").append(scripting)
+        },
+        error: function(err){
+          let newT = $("<div>");
+          let txt = $("<p>");
+          txt.text("Error: " + "Ricerca Errata");
+          newT.append(txt);
+          $("#base").append(newT);
+          $("#base").append("<br>");
         }
     });
 }
