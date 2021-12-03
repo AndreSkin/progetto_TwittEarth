@@ -489,4 +489,64 @@ app.get('/stream/tweets', async (req, res) => {
   //setTimeout(function(stream){stream.close()}, 10000, stream);
 });
 
+
+app.get('/poll/:pollTag', async (req, res) => {
+  var PollTweets='';
+  try{
+    PollTweets = await client.v2.search('#' + req.params.pollTag, {'expansions':['attachments.poll_ids', 'author_id'], 'poll.fields':'duration_minutes,end_datetime,id,options,voting_status'});
+    var polls=[];
+    var singlepoll='';
+    for(poll of PollTweets._realData.data){
+      try{
+        if (poll.attachments.poll_ids != undefined){
+          for(included of PollTweets._realData.includes.polls){
+            if (included.id == poll.attachments.poll_ids){
+              singlepoll = included;
+              polls.push({
+                "Text": poll.text,
+                "Poll": singlepoll,
+                "Correct":null
+              });
+            }
+          }
+        }
+      }
+      catch (error){
+        //console.log("ERROR IN FINDING POLLS: ", error)
+      }
+    }
+  }
+  catch (e){
+    console.log("ERROR IN POLL: ", e)
+  }
+
+
+  var answ='';
+  try{
+
+    let query = '#risposta' + req.params.pollTag
+    answ = await client.v2.search(query, {'expansions':'author_id'});
+
+    if (answ._realData.data[0] != undefined){
+      //Elimino # risposta + ottengo singole risposte + le metto nell'ordine giusto
+      let risposte = answ._realData.data[0].text.substring(query.length).split(",").reverse();
+
+      for (var i = 0; i < polls.length; i++){
+        polls[i].Correct = parseInt(risposte[i]);
+      }
+    }
+  }
+  catch (e)
+  {
+    //console.log("ERROR IN FINDING ANSWERS: ", e)
+  }
+
+res.status(200).json(polls);
+})
+
+
+
+
+
+
 module.exports.httpServer = httpServer;

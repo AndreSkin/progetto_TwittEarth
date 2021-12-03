@@ -66,7 +66,7 @@ describe("Testing other functions", () =>{
       beforeAll(async() => {
         return numberTest = await request(external.httpServer).get('/recents/nasa?numtweets=' + numberOfTweets), formattedNumberTest = JSON.parse(numberTest.text)
       })
-      test("Number of returned tweets is equal to number of requested tweets", () => {
+      test("Number of returned tweets is equal to the number of requested tweets (" + numberOfTweets + ")", () => {
         expect(formattedNumberTest.Tot_tweets).toBe(numberOfTweets);
       })
     })
