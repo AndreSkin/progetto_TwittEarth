@@ -71,7 +71,7 @@ window.onload = function () {
     choice_sent.addEventListener('click', () => { sent_analyze = !sent_analyze }, false)
 }
 
-function embedTweets(data, user = null, sentiment = false, geo = false) {
+async function embedTweets(data, user = null, sentiment = false, geo = false) {
     let attr = "tweets";
     let myId = "id";
     let myGeo = "geo";
@@ -124,7 +124,7 @@ function embedTweets(data, user = null, sentiment = false, geo = false) {
                     newT.append(newSent);
                 }
             }
-            $("#base").append(newT);
+            await $("#base").append(newT);
         }
     }
 }
