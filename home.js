@@ -7,8 +7,8 @@ var BooksCtx = document.getElementById("BooksChart").getContext("2d");
 var PollCtx = document.getElementById("PollChart").getContext("2d");
 var SentimentChart = null;
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
@@ -137,6 +137,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
 
 function userTimeline() {
     ResetMap();
+    ResetChart(SentimentChart);
     $("#base").empty();
     var user = document.getElementById('searchbar').value;
     if (user[0] == '@') {
@@ -162,6 +163,11 @@ function userTimeline() {
             }
             let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
             $("#base").append(scripting)
+            let TextTermCloud = '';
+            for (singleText of data['tweets']){
+            TextTermCloud = TextTermCloud + singleText['Text'];
+            }
+            WordcloudBuilder(TextTermCloud.toLowerCase(), null);
         },
         error: function (err) {
             let newT = $("<div>");
@@ -177,6 +183,7 @@ function userTimeline() {
 
 function hashtagTweet() {
     ResetMap();
+    ResetChart(SentimentChart);
     $("#base").empty();
     var tag = document.getElementById('searchbar').value;
     let err = new Boolean(false);
@@ -285,6 +292,11 @@ function locationTweet() {
                     embedTweets(data, null, false, true);
                     let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
                     $("#base").append(scripting)
+                    let TextTermCloud = '';
+                    for (singleText of data['statuses']){
+                    TextTermCloud = TextTermCloud + singleText['Text'];
+                    }
+                    WordcloudBuilder(TextTermCloud.toLowerCase(), null);
                 },
                 error: function (err) {
                     let newT = $("<div>");
