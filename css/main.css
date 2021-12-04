@@ -26,12 +26,11 @@
   padding: 2em;
 }
 
-#map #graphs{
-  z-index: -2;
+#map, #graphs{
   height: 65vh;
 }
 
-#base{
+#base, #graphs{
   align-items: center;
   height: 65vh;
   overflow: hidden;
