@@ -68,16 +68,32 @@ app.get('/users/:name', async(req, res) => {
   //Dato un nome trovo l'ID
   try{
    userID = await client.v2.userByUsername(req.params.name);
+   if (userID.data == undefined) {
+     res.status(404).json("Errore: utente non trovato");
+     return;
+   }
   }
   catch(error){
     console.log("ERROR IN USER BY USERNAME: ", error);
   }
   //Numero dei risultati che si vogliono ottenere (predisposizione per passaggio con parametro)
   let results = req.query.numtweets == undefined? 25:req.query.numtweets;
+
+  if (results<5) {
+    results=5;
+  }
+  else if (results>100) {
+    results=100;
+  }
+
   let userTweets='';
   //Utilizzo l'ID trovato prima per ottenere la user timeline
   try{
    userTweets = await client.v2.userTimeline(userID.data.id, {'max_results': results, 'expansions':'geo.place_id'});
+   if (userTweets._realData.data == undefined) {
+     res.status(200).json("Questo utente non ha mai twittato")
+     return;
+   }
   }
   catch(error){
     res.status(404).json(error);
@@ -111,21 +127,6 @@ app.get('/users/:name', async(req, res) => {
 });
 
 
-//Api v2 che dato un hashtag restituisce i tweet più recenti che lo contengono
-//Sostituibile da recents
-app.get('/tags/:word', async(req, res) => {
-  let recentTweets= '';
-  try{
-   recentTweets = await client.v2.search('#' + req.params.word, {'expansions':'geo.place_id'});
-  }
-  catch(error){
-    res.status(404).json(error);
-  }
-
-  res.status(200).json(recentTweets._realData);
-});
-
-
 /*Dato un array di coordinate trova il centro*/
 function find_medium(coordinates){
   let sumX = 0;
@@ -147,9 +148,13 @@ app.get('/geo/:place', (req, res) => {
     let radius = req.query.radius == undefined? ',10mi': ',' + req.query.radius + 'mi' ;
     let georeq = coord[0] + ',' + coord[1] + radius;
 
-
-
     T.get('search/tweets', {q: 'since:2020-01-01', geocode: georeq, count: 30, result_type: 'recent'}, async (err2, data2) =>{
+
+      if (data2["statuses"].length == 0) {
+        res.status(400).json("Nessun tweet trovato")
+        return;
+      }
+
       for (let data of data2['statuses']){
         if (data['place'] == null){
           data['geo'] = {'coord_center' : []};
@@ -244,8 +249,22 @@ app.get('/recents/:word', async(req, res) => {
   let tweet= '';
   //Numero dei risultati che si vogliono ottenere (predisposizione per passaggio con parametro)
   let results = req.query.numtweets == undefined? 25:req.query.numtweets;
+
+  if (results<10) {
+    results=10;
+  }
+  else if (results>100) {
+    results=100;
+  }
+
   let query = req.params.word;
   let notcontain = req.query.notcontain == undefined ? []:req.query.notcontain.split(",");
+
+  if (notcontain.includes(query)) {
+    res.status(400).json("Impossibile escludere la stringa cercata");
+    return;
+  }
+
   let hasmedia = req.query.hasmedia == undefined ? 'false':req.query.hasmedia;
   let isverified = req.query.verified == undefined ? 'false':req.query.verified;
 
@@ -262,7 +281,6 @@ app.get('/recents/:word', async(req, res) => {
       query=query + " -" + onenot;
   }
 
-
   if(hasmedia!='false')
     query=query + " -has:media -has:links"
 
@@ -275,6 +293,11 @@ app.get('/recents/:word', async(req, res) => {
   try{
     //Trovo i tweets
     tweet = await client.v2.search(query, {'max_results':results, 'expansions':['geo.place_id', 'author_id']});
+
+    if (tweet._realData.data == undefined) {
+      res.status(404).json("Nessun tweet trovato")
+      return;
+    }
   }
   catch(error){
     res.status(404).json(error);
@@ -296,7 +319,6 @@ app.get('/recents/:word', async(req, res) => {
 
     if (toAnalyze != null){
       for(let singletweet of toAnalyze){
-        //let tweetHtml = await embedTweet(singletweet.id);
         //geo torna null perchè non mantenga il valore
         geo = null;
         try{
@@ -493,7 +515,17 @@ app.get('/stream/tweets', async (req, res) => {
 app.get('/poll/:pollTag', async (req, res) => {
   var PollTweets='';
   try{
-    PollTweets = await client.v2.search('#' + req.params.pollTag, {'expansions':['attachments.poll_ids', 'author_id'], 'poll.fields':'duration_minutes,end_datetime,id,options,voting_status'});
+    query=req.params.pollTag;
+
+    //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
+    if (query[0] == '~'){ //~ perchè è così che arrivano le richieste dato che # è un carattere vietato
+      query = '#' + req.params.pollTag.substring(1);
+    }
+    else {
+      query = '#' + query;
+    }
+
+    PollTweets = await client.v2.search(query, {'expansions':['attachments.poll_ids', 'author_id'], 'poll.fields':'duration_minutes,end_datetime,id,options,voting_status'});
     var polls=[];
     var singlepoll='';
     for(poll of PollTweets._realData.data){
@@ -524,12 +556,12 @@ app.get('/poll/:pollTag', async (req, res) => {
   var answ='';
   try{
 
-    let query = '#risposta' + req.params.pollTag
-    answ = await client.v2.search(query, {'expansions':'author_id'});
+    let queryans = '#risposta' + req.params.pollTag.replace("~", "")
+    answ = await client.v2.search(queryans, {'expansions':'author_id'});
 
     if (answ._realData.data[0] != undefined){
       //Elimino # risposta + ottengo singole risposte + le metto nell'ordine giusto
-      let risposte = answ._realData.data[0].text.substring(query.length).split(",").reverse();
+      let risposte = answ._realData.data[0].text.substring(queryans.length).split(",").reverse();
 
       for (var i = 0; i < polls.length; i++){
         polls[i].Correct = parseInt(risposte[i]);
