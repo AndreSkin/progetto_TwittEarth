@@ -57,13 +57,13 @@
 
         <div class="input-group input--large">
               <label class="label" id="searchhead">Insert user name</label>
-              <input id="searchbar" class="input--style-1" type="text" placeholder="User name..." name="searchbar" required="true">
+              <input id="searchbar" class="input--style-1" type="text" placeholder="Nome utente..." name="searchbar" required="true">
         </div>
 <!-- SEARCH BY-->
         <div class="input-group input--medium dropdown">
           <button type="button" class="dropdown-toggle" data-toggle="dropdown">
               <label class="label">Search by</label>
-              <input id="searchby" class="input--style-1" type="text" name="checkin" placeholder="User" id="input-start">
+              <input class="input--style-1" type="text" name="checkin" placeholder="User" id="input-start">
           </button>
 
           <div class="dropdown-menu">
@@ -145,17 +145,18 @@
     <div class="col" id="base">
     </div>
     <div class="col" id="graphs">
-      <canvas id="SentimentChart"></canvas>
+
+      <figure class="highcharts-figure">
+        <div id="SentimentWordcloud"></div>
+      </figure>
+
+      <canvas id="SentimentChartID"></canvas>
 
       <canvas id="PollChart"></canvas>
 
       <canvas id="LocalitiesChart"></canvas>
 
       <canvas id="BooksChart"></canvas>
-
-      <figure class="highcharts-figure">
-        <div id="SentimentWordcloud"></div>
-      </figure>
 
     </div>
   </div>

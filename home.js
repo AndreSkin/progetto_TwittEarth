@@ -1,24 +1,23 @@
 var only_geo = false;
 var sent_analyze = false;
-var mymap = L.map('map').setView([0, 0], 2);
-var SentimetCtx = document.getElementById("SentimentChart").getContext("2d");
+var mymap = L.map('map').setView([0, 0], 1);
+var SentimetCtx = document.getElementById("SentimentChartID").getContext("2d");
 var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 var BooksCtx = document.getElementById("BooksChart").getContext("2d");
 var PollCtx = document.getElementById("PollChart").getContext("2d");
+var SentimentChart = null;
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
-        function setValues(placeholder1, placeholder2, myfun, toDisable, toSearch, min) {
+        function setValues(placeholder, myfun, toDisable, toSearch, min) {
           console.log("cambio valori in " + myfun);
-            document.getElementById('searchbar').setAttribute('placeholder', placeholder1);
+            document.getElementById('searchbar').setAttribute('placeholder', placeholder);
             document.getElementById('searchbar').value = "";
-            document.getElementById('searchby').setAttribute('placeholder', placeholder2);
-            document.getElementById('searchby').value = "";
             document.getElementById('simpleform').setAttribute('action', myfun);
-            document.getElementById('searchhead').innerHTML = "Insert" + toSearch;
+            document.getElementById('searchhead').innerHTML = "Inserisci " + toSearch + " da cercare";
             document.getElementById('check_sent').disabled = toDisable;
             document.getElementById('check_sent').checked = false;
             document.getElementById('notcontain').disabled = toDisable;
@@ -27,29 +26,29 @@ function changebar(choice) {
             document.getElementById('containmedia').checked = false;
             document.getElementById('verified').disabled = toDisable;
             document.getElementById('verified').checked = false;
-            if (toSearch == " location"){
+            if (toSearch == "il luogo"){
                 document.getElementById('numtweets').value = min;
                 document.getElementById('numtweets').min = "1";
                 document.getElementById('numtweets').max = "500";
-                document.getElementById('numtweetslabel').innerHTML = "Radius (in miles):";
+                document.getElementById('numtweetslabel').innerHTML = "Raggio di ricerca (in miglia):";
             }
             else{
                 document.getElementById('numtweets').value = "25";
                 document.getElementById('numtweets').min = min;
                 document.getElementById('numtweets').max = "100";
-                document.getElementById('numtweetslabel').innerHTML = "Number:";
+                document.getElementById('numtweetslabel').innerHTML = "Numero di tweet:";
             }
 
         }
         $("#base").empty();
         if (choice == "user") {
-            setValues("User name...","User", "javascript:userTimeline()", true, " user name", 5);
+            setValues("Nome Utente ...", "javascript:userTimeline()", true, "il nome utente", 5);
         } else if (choice == "text") {
-            setValues("Text...","Text", "javascript:textTweet()", false, " text", 10);
+            setValues("Testo ...", "javascript:textTweet()", false, "il testo", 10);
         } else if (choice == "hashtag") {
-            setValues("Hashtag ...","Hashtag", "javascript:hashtagTweet()", true, " hashtag", 10)
+            setValues("Hashtag ...", "javascript:hashtagTweet()", true, "l'hashtag", 10)
         } else if (choice == "location") {
-            setValues("Location ...","Location" ,"javascript:locationTweet()", true, " location", 10);
+            setValues("Località ...", "javascript:locationTweet()", true, "il luogo", 10);
         }
     }
 }
@@ -137,6 +136,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
 }
 
 function userTimeline() {
+    ResetMap();
     $("#base").empty();
     var user = document.getElementById('searchbar').value;
     if (user[0] == '@') {
@@ -176,6 +176,7 @@ function userTimeline() {
 
 
 function hashtagTweet() {
+    ResetMap();
     $("#base").empty();
     var tag = document.getElementById('searchbar').value;
     let err = new Boolean(false);
@@ -209,6 +210,8 @@ function hashtagTweet() {
 
 
 function textTweet() {
+    ResetMap();
+    ResetChart(SentimentChart);
     $("#base").empty();
     var frase = document.getElementById('searchbar').value
     let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
@@ -241,7 +244,7 @@ function textTweet() {
                 $('#base').append('<br>');
                 let NeutralWords = data['analysis_data']['Tot_words'] - data['analysis_data']['Tot_pos'] - data['analysis_data']['Tot_neg'];
                 let SData = [data['analysis_data']['Tot_neg'], data['analysis_data']['Tot_pos'], NeutralWords];
-                let SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
+                SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
             }
             let TextTermCloud = '';
             for (singleText of data['data']){
@@ -264,6 +267,7 @@ function textTweet() {
 }
 
 function locationTweet() {
+    ResetMap();
     $("#base").empty();
     var location = document.getElementById('searchbar').value
     let radius = document.getElementById('numtweets').value;
@@ -307,6 +311,15 @@ function BlankMap(mymap) {
         tileSize: 512,
         zoomOffset: -1
     }).addTo(mymap);
+}
+
+function ResetMap(){
+  mymap.setView([0, 0], 1);
+  //Elimina tutti i marker
+  mymap.eachLayer(function(layer){
+    if(!!layer.toGeoJSON){mymap.removeLayer(layer);
+    }
+  })
 }
 
 function MulMapMarkers(TweetsList, User = null) {
@@ -357,7 +370,7 @@ function SentimentChartConstructor(SentimentData, ChartType){
           }]
       },
       options: {
-          responsive:false,
+          responsive:true,
           scales:  {
             yAxes: ChartType=='bar' ? [{
               ticks: {
@@ -371,6 +384,12 @@ function SentimentChartConstructor(SentimentData, ChartType){
 }
 
 //var PollChart = new Chart(PollCtx, PollChartConstructor(PData, type));
+function ResetChart(Chart){
+  if (Chart != null){
+   Chart.destroy();
+   Chart = null;
+  }
+}
 
 //Grafico Risposte corrette Poll
 function PollChartConstructor(PollData, ChartType){
@@ -469,7 +488,7 @@ function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
 
 
 
-var type = 'bar';
+var type = 'doughnut';
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var LData = [10, 20, 30, 40, 50]
