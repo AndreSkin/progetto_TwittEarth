@@ -1,6 +1,6 @@
 var only_geo = false;
 var sent_analyze = false;
-var mymap = L.map('map').setView([0, 0], 1);
+var mymap = L.map('map').setView([0, 0], 2);
 var SentimetCtx = document.getElementById("SentimentChartID").getContext("2d");
 var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 var BooksCtx = document.getElementById("BooksChart").getContext("2d");
@@ -12,12 +12,14 @@ serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
-        function setValues(placeholder, myfun, toDisable, toSearch, min) {
+        function setValues(placeholder1, placeholder2, myfun, toDisable, toSearch, min) {
           console.log("cambio valori in " + myfun);
-            document.getElementById('searchbar').setAttribute('placeholder', placeholder);
+            document.getElementById('searchbar').setAttribute('placeholder', placeholder1);
             document.getElementById('searchbar').value = "";
+            document.getElementById('searchby').setAttribute('placeholder', placeholder2);
+            document.getElementById('searchby').value = "";
             document.getElementById('simpleform').setAttribute('action', myfun);
-            document.getElementById('searchhead').innerHTML = "Inserisci " + toSearch + " da cercare";
+            document.getElementById('searchhead').innerHTML = "Insert" + toSearch;
             document.getElementById('check_sent').disabled = toDisable;
             document.getElementById('check_sent').checked = false;
             document.getElementById('notcontain').disabled = toDisable;
@@ -26,29 +28,29 @@ function changebar(choice) {
             document.getElementById('containmedia').checked = false;
             document.getElementById('verified').disabled = toDisable;
             document.getElementById('verified').checked = false;
-            if (toSearch == "il luogo"){
+            if (toSearch == " location"){
                 document.getElementById('numtweets').value = min;
                 document.getElementById('numtweets').min = "1";
                 document.getElementById('numtweets').max = "500";
-                document.getElementById('numtweetslabel').innerHTML = "Raggio di ricerca (in miglia):";
+                document.getElementById('numtweetslabel').innerHTML = "Radius (in miles):";
             }
             else{
                 document.getElementById('numtweets').value = "25";
                 document.getElementById('numtweets').min = min;
                 document.getElementById('numtweets').max = "100";
-                document.getElementById('numtweetslabel').innerHTML = "Numero di tweet:";
+                document.getElementById('numtweetslabel').innerHTML = "Number:";
             }
 
         }
         $("#base").empty();
         if (choice == "user") {
-            setValues("Nome Utente ...", "javascript:userTimeline()", true, "il nome utente", 5);
+            setValues("User name...","User", "javascript:userTimeline()", true, " user name", 5);
         } else if (choice == "text") {
-            setValues("Testo ...", "javascript:textTweet()", false, "il testo", 10);
+            setValues("Text...","Text", "javascript:textTweet()", false, " text", 10);
         } else if (choice == "hashtag") {
-            setValues("Hashtag ...", "javascript:hashtagTweet()", true, "l'hashtag", 10)
+            setValues("Hashtag ...","Hashtag", "javascript:hashtagTweet()", true, " hashtag", 10)
         } else if (choice == "location") {
-            setValues("Località ...", "javascript:locationTweet()", true, "il luogo", 10);
+            setValues("Location ...","Location" ,"javascript:locationTweet()", true, " location", 10);
         }
     }
 }
