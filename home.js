@@ -31,12 +31,14 @@ function changebar(choice) {
             document.getElementById('verified').checked = false;
             if (toSearch == " location"){
                 document.getElementById('numtweets').value = min;
+                document.getElementById('numtweets').setAttribute('value', min);
                 document.getElementById('numtweets').min = "1";
                 document.getElementById('numtweets').max = "500";
                 document.getElementById('numtweetslabel').innerHTML = "Radius (in miles):";
             }
             else{
                 document.getElementById('numtweets').value = "25";
+                document.getElementById('numtweets').setAttribute('value', "25");
                 document.getElementById('numtweets').min = min;
                 document.getElementById('numtweets').max = "100";
                 document.getElementById('numtweetslabel').innerHTML = "Number:";
@@ -59,6 +61,8 @@ window.onload = function () {
     BlankMap(mymap);
     only_geo = false;
     sent_analyze = false;
+    document.getElementById('numtweets').value=25;
+    document.getElementById('searchbar').value = "";
     var choice_user = document.getElementById('radio_userTimeline');
     var choice_text = document.getElementById('radio_textTweets');
     var choice_hashtag = document.getElementById('radio_hashtagTweets');
@@ -77,7 +81,31 @@ window.onload = function () {
     choice_sent.disabled = true;
     choice_geo.checked = false;
     choice_geo.addEventListener('click', () => { only_geo = !only_geo; }, false);
-    choice_sent.addEventListener('click', () => { sent_analyze = !sent_analyze }, false)
+    choice_sent.addEventListener('click', () => { sent_analyze = !sent_analyze }, false);
+    //bottoni + e -
+    var plusbutton = document.getElementById('plusbutton');
+    var minusbutton = document.getElementById('minusbutton');
+    var numtweets = document.getElementById('numtweets');
+
+    plusbutton.addEventListener("click", () => { changeval('plus'); })
+    minusbutton.addEventListener("click", () => { changeval('minus');})
+    numtweets.addEventListener('change', () =>{changeval('equal');})
+
+    function changeval(op){
+      var val = parseInt(document.getElementById('numtweets').value)
+      var min = document.getElementById('numtweets').min;
+      var max = document.getElementById('numtweets').max;
+      if (op == 'plus') val++;
+      else if (op == 'minus') val--;
+
+      if(val<=max && val>=min){
+         document.getElementById('numtweets').setAttribute("value",val);
+         document.getElementById('numtweets').value=val;
+      }
+      else {document.getElementById('numtweets').value=numtweets.getAttribute('value');}
+    }
+    ///////
+
 }
 
 async function embedTweets(data, user = null, sentiment = false, geo = false) {
