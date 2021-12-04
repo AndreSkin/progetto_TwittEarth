@@ -376,7 +376,8 @@ app.get('/recents/:word', async(req, res) => {
 });
 
 
-async function delete_rules(){
+async function delete_rules()
+{
   let rules='';
   let idArray=[];
   try
@@ -576,98 +577,6 @@ res.status(200).json(polls);
 })
 
 
-app.get('/concorso/:tagConcorso', async (req, res) => {
-  var Bandoconcorso='';
-  var Partecipanti='';
-  var Voters='';
-  var votato=[];
-
-  var concorso={'bando':[], 'partecipanti':[], 'votanti':[], 'results':[]}
-
-  try{
-    query=req.params.tagConcorso;
-
-    //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
-    if (query[0] == '~'){ //~ perchè è così che arrivano le richieste dato che # è un carattere vietato
-      query = req.params.tagConcorso.substring(1);
-    }
-
-    Bandoconcorso = await client.v2.search('#'+'bandiscoconcorso' + query, {'max_results':100,'expansions': 'author_id'});
-
-    if (Bandoconcorso._realData.data == undefined) {
-      res.status(404).json("Nessun tweet trovato")
-      return;
-    }
-
-    concorso.bando.push({
-      "Text":Bandoconcorso._realData.data[0].text,
-      "Banditore":Bandoconcorso._realData.includes.users[0].username
-    });
-
-
-    Partecipanti = await client.v2.search('#'+'partecipoconcorso' + query, {'max_results':100,'expansions': 'author_id'});
-
-    if (Partecipanti._realData.data == undefined) {
-      res.status(200).json(concorso);
-      return;
-    }
-
-    const regExSpace = new RegExp(' ', "g");
-    for(user of Partecipanti._realData.data){
-    concorso.partecipanti.push(user.text.replace('#'+'partecipoconcorso' + query, "").trim().replace(regExSpace,"_").toLowerCase())}
-
-
-    Voters = await client.v2.search('#'+'votoconcorso' + query, {'max_results':100,'expansions': 'author_id'});
-
-    if (Voters._realData.data == undefined) {
-      res.status(200).json(concorso);
-      return;
-    }
-
-    for(voter of Voters._realData.data){
-      let voto =voter.text.replace('#'+'votoconcorso' + query, "").trim().replace(regExSpace,"_").toLowerCase()
-      var checkpartecipa = (element) => element==voto;
-      var checkvoted = (element) => element==voter.author_id;
-
-      if (concorso.partecipanti.some(checkpartecipa)){
-        if (!votato.some(checkvoted)) {
-          concorso.votanti.push({
-            "Voto":voto,
-            "ID":voter.author_id
-          })
-        }
-          var checkvotanti = concorso.votanti.filter(elem => elem.ID==voter.author_id);
-
-          if (checkvotanti.length > 9)
-          {
-            if (!votato.some(checkvoted)) {
-              votato.push(voter.author_id);
-            }
-          }
-      }
-      else {
-        console.log(voto + " non partecipa")
-      }
-    }
-
-
-    for(part of concorso.partecipanti)
-    {
-      var contavoti=concorso.votanti.filter(elem => elem.Voto==part);
-      concorso.results.push({
-        "Partecipante":part,
-        "Voti":contavoti.length
-      })
-    }
-  }
-  catch(e)
-  {
-    console.log("ERRORE NEL CONCORSO: ", e)
-  }
-
-  res.status(200).json(concorso);
-
-})
 
 
 
