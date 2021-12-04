@@ -27,7 +27,7 @@ function changebar(choice) {
             document.getElementById('containmedia').checked = false;
             document.getElementById('verified').disabled = toDisable;
             document.getElementById('verified').checked = false;
-            if (toSearch == "il luogo"){
+            if (toSearch == " location"){
                 document.getElementById('numtweets').value = min;
                 document.getElementById('numtweets').min = "1";
                 document.getElementById('numtweets').max = "500";
