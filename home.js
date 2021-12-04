@@ -6,6 +6,7 @@ var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 var BooksCtx = document.getElementById("BooksChart").getContext("2d");
 var PollCtx = document.getElementById("PollChart").getContext("2d");
 var SentimentChart = null;
+var WordCloud = null;
 
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
@@ -140,6 +141,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
 function userTimeline() {
     ResetMap();
     ResetChart(SentimentChart);
+    ResetChart(WordCloud);
     $("#base").empty();
     var user = document.getElementById('searchbar').value;
     if (user[0] == '@') {
@@ -169,7 +171,7 @@ function userTimeline() {
             for (singleText of data['tweets']){
             TextTermCloud = TextTermCloud + singleText['Text'];
             }
-            WordcloudBuilder(TextTermCloud.toLowerCase(), null);
+            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
         },
         error: function (err) {
             let newT = $("<div>");
@@ -186,6 +188,7 @@ function userTimeline() {
 function hashtagTweet() {
     ResetMap();
     ResetChart(SentimentChart);
+    ResetChart(WordCloud);
     $("#base").empty();
     var tag = document.getElementById('searchbar').value;
     let err = new Boolean(false);
@@ -213,6 +216,11 @@ function hashtagTweet() {
             embedTweets(data, null, true);
             let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
             $("#base").append(scripting)
+            let TextTermCloud = '';
+            for (singleText of data['data']){
+            TextTermCloud = TextTermCloud + singleText['Text'];
+            }
+            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
         }
     });
 }
@@ -221,6 +229,7 @@ function hashtagTweet() {
 function textTweet() {
     ResetMap();
     ResetChart(SentimentChart);
+    ResetChart(WordCloud);
     $("#base").empty();
     var frase = document.getElementById('searchbar').value
     let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
@@ -259,7 +268,7 @@ function textTweet() {
             for (singleText of data['data']){
             TextTermCloud = TextTermCloud + singleText['Text'];
             }
-            WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg']);
+            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg']);
             embedTweets(data, null, true);
             let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
             $("#base").append(scripting)
@@ -277,6 +286,8 @@ function textTweet() {
 
 function locationTweet() {
     ResetMap();
+    ResetChart(SentimentChart);
+    ResetChart(WordCloud);
     $("#base").empty();
     var location = document.getElementById('searchbar').value
     let radius = document.getElementById('numtweets').value;
@@ -298,7 +309,7 @@ function locationTweet() {
                     for (singleText of data['statuses']){
                     TextTermCloud = TextTermCloud + singleText['Text'];
                     }
-                    WordcloudBuilder(TextTermCloud.toLowerCase(), null);
+                    WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
                 },
                 error: function (err) {
                     let newT = $("<div>");
@@ -398,6 +409,7 @@ function SentimentChartConstructor(SentimentData, ChartType){
 }
 
 //var PollChart = new Chart(PollCtx, PollChartConstructor(PData, type));
+
 function ResetChart(Chart){
   if (Chart != null){
    Chart.destroy();
