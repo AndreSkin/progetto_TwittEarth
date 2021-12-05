@@ -226,7 +226,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
                     newSent.append(p);
                     newT.append(newSent);
                 }
-            }frase.replace("#", "~");
+            }
             await $("#base").append(newT);
         }
     }
