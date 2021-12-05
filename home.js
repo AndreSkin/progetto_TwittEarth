@@ -32,7 +32,9 @@ function changebar(choice) {
             document.getElementById('verified').disabled = toDisable;
             document.getElementById('verified').checked = false;
             if (toSearch == " location"){
-                document.getElementById('numtweets').setAttribute('disabled', false);
+                document.getElementById('plusbutton').disabled = false;
+                document.getElementById('minusbutton').disabled = false;
+                document.getElementById('numtweets').disabled = false;
                 document.getElementById('numtweets').value = min;
                 document.getElementById('numtweets').setAttribute('value', min);
                 document.getElementById('numtweets').min = "1";
@@ -41,9 +43,14 @@ function changebar(choice) {
             }
             else{
                 if (toSearch == " contest" || toSearch == " trivia"){
-                  document.getElementById('numtweets').setAttribute('disabled', true);
+                  document.getElementById('numtweets').disabled = true;
+                  document.getElementById('numtweets').value = 0;
+                  document.getElementById('plusbutton').disabled = true;
+                  document.getElementById('minusbutton').disabled = true;
                 } else {
-                  document.getElementById('numtweets').setAttribute('disabled', false);
+                  document.getElementById('plusbutton').disabled = false;
+                  document.getElementById('minusbutton').disabled = false;
+                  document.getElementById('numtweets').disabled = false;
                   document.getElementById('numtweets').value = "25";
                   document.getElementById('numtweets').setAttribute('value', "25");
                   document.getElementById('numtweets').min = min;
