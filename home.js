@@ -1,3 +1,5 @@
+$.getScript("Map.js");
+$.getScript("Chart.js");
 var only_geo = false;
 var sent_analyze = false;
 var nomedia = false;
@@ -13,6 +15,7 @@ var SentimentChart = null;
 var WordCloud = null;
 var bookChart = null;
 var bookChartTop = null;
+const type = 'doughnut';
 
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
@@ -181,7 +184,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
         myId = "id_str";
         myGeo = "place";
     }
-    MulMapMarkers(data[attr], user);
+    MulMapMarkers(mymap, data[attr], user);
     for (let tweet of data[attr]) {
         if ((tweet[myGeo] == null && !only_geo) || (tweet[myGeo] != null)) {
             let embed = $("<blockquote>");
@@ -230,7 +233,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
 }
 
 function contestTweet() {
-  ResetMap();
+  ResetMap(mymap);
   ResetChart(SentimentChart);
   ResetChart(WordCloud);
   ResetChart(bookChart);
@@ -289,7 +292,7 @@ function contestTweet() {
 }
 
 function userTimeline() {
-    ResetMap();
+    ResetMap(mymap);
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
     ResetChart(bookChart);
@@ -338,7 +341,7 @@ function userTimeline() {
 
 
 function hashtagTweet() {
-    ResetMap();
+    ResetMap(mymap);
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
     ResetChart(bookChart);
@@ -381,7 +384,7 @@ function hashtagTweet() {
 
 
 function textTweet() {
-    ResetMap();
+    ResetMap(mymap);
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
     ResetChart(bookChart);
@@ -441,7 +444,7 @@ function textTweet() {
 }
 
 function locationTweet() {
-    ResetMap();
+    ResetMap(mymap);
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
     ResetChart(bookChart);
@@ -480,258 +483,4 @@ function locationTweet() {
             });
         }
     });
-}
-
-//Mappa
-//Costruisce una mappa vuota
-function BlankMap(mymap) {
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        maxZoom: 18,
-        minZoom: 1,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox/streets-v11',
-        tileSize: 512,
-        zoomOffset: -1
-    }).addTo(mymap);
-}
-
-function ResetMap(){
-  mymap.setView([0, 0], 1);
-  //Elimina tutti i marker
-  mymap.eachLayer(function(layer){
-    if(!!layer.toGeoJSON){mymap.removeLayer(layer);
-    }
-  })
-}
-
-function MulMapMarkers(TweetsList, User = null) {
-    let MarkerGroup = [];
-    //Elimina tutti i marker
-    mymap.eachLayer(function (layer) {
-        if (!!layer.toGeoJSON) {
-            mymap.removeLayer(layer);
-        }
-    })
-    //Crea dei marker per ogni coordinata fornita
-    for (let i = 0; i < TweetsList.length; i = i + 1) {
-        if (TweetsList[i]['geo'] != null) {
-            let tmp;
-            if (User != null) {
-                tmp = User
-            }
-            else tmp = TweetsList[i]['Author'];
-            L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(mymap).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
-            MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
-        }
-    }
-    let group = new L.featureGroup(MarkerGroup);
-    if (MarkerGroup.length != 0) mymap.fitBounds(group.getBounds());
-}
-
-
-//Grafico per sentiment analysis
-function SentimentChartConstructor(SentimentData, ChartType){
-  let SentimentChartStructure = {
-      type: ChartType,
-      data: {
-          labels: ['Negative', 'Positive', 'Neutre'],
-          datasets: [{
-              label: 'Numero parole',
-              data: SentimentData,
-              backgroundColor: [
-                  'rgba(255, 0, 0, 0.6)',
-                  'rgba(54, 162, 235, 0.6)',
-                  'rgba(105, 105, 105, 0.6)',
-              ],
-              borderColor: [
-                  'rgba(255, 0, 0, 1)',
-                  'rgba(54, 162, 235, 1)',
-                  'rgba(105, 105, 105, 1)',
-              ],
-              borderWidth: 3
-          }]
-      },
-      options: {
-          responsive:true,
-          scales:  {
-            yAxes: ChartType=='bar' ? [{
-              ticks: {
-                beginAtZero: true
-                }
-            }]:[]
-          }
-      }
-  };
-  return SentimentChartStructure;
-}
-
-//var PollChart = new Chart(PollCtx, PollChartConstructor(PData, type));
-
-function ResetChart(Chart){
-  if (Chart != null){
-   Chart.destroy();
-   Chart = null;
-  }
-}
-
-//Grafico Risposte corrette Poll
-function PollChartConstructor(PollData, ChartType){
-  let PollChartStructure = {
-      type: ChartType,
-      data: {
-          labels: ['Errate', 'Corrette'],
-          datasets: [{
-              label: 'Numero parole',
-              data: SentimentData,
-              backgroundColor: [
-                  'rgba(255, 0, 0, 0.6)',
-                  'rgba(0, 153, 0, 0.6)',
-              ],
-              borderColor: [
-                  'rgba(255, 0, 0, 1)',
-                  'rgba(0, 153, 0, 1)',
-              ],
-              borderWidth: 3
-          }]
-      },
-      options: {
-          responsive:false,
-          scales:  {
-            yAxes: ChartType=='bar' ? [{
-              ticks: {
-                beginAtZero: true
-                }
-            }]:[]
-          }
-      }
-  };
-  return PollChartStructure;
-}
-
-//Generatore di n colori casuali per i grafici
-function RandomChartColorsGenerator(ListOfItems){
-  let BackGroundChartColors = [];
-  let BorederColors = [];
-  let Colors = [];
-  for (let i = 0; i < ListOfItems.length; i = i + 1) {
-    let SliceColor = [];
-    let r = Math.floor(Math.random() * 256);
-    let g = Math.floor(Math.random() * 256);
-    let b = Math.floor(Math.random() * 256);
-
-    SliceColor.push(r);
-    SliceColor.push(g);
-    SliceColor.push(b);
-
-    BackGroundChartColors.push('rgba(' + SliceColor + ', 0.6)')
-    BorederColors.push('rgba(' + SliceColor + ', 1)')
-  }
-  Colors.push(BackGroundChartColors)
-  Colors.push(BorederColors)
-  return Colors;
-}
-
-//Aggiorna il grafico cambiandone il tipo
-function ChartTypeUpdate(chart, NewType) {
-    chart.type = NewType;
-    chart.update();
-}
-
-//Grafico di n elementi con n colori autogenerati
-function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
-  let Colors = RandomChartColorsGenerator(Names)
-  let ChartStructure = {
-      type: ChartType,
-      data: {
-          labels: Names,
-          datasets: [{
-              label: label,
-              data: Data,
-              backgroundColor: Colors[0],
-              borderColor: Colors[1],
-              borderWidth: 3
-          }]
-      },
-      options: {
-          responsive:true,
-          scales:  {
-            yAxes: ChartType=='bar' ? [{
-              ticks: {
-                beginAtZero: true
-                }
-            }]:[]
-          }
-      }
-  };
-  return ChartStructure;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-var type = 'doughnut';
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-var LData = [10, 20, 30, 40, 50]
-var LNames = [];
-var Llabel = 'Numero Tweets'
-
-//var LocalitiesChart = new Chart(LocalitiesCtx, InfiniteElementsChartConstructor(LData, LNames, type, Llabel));
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-var BData = [23, 44, 55, 12, 76, 62]
-var BNames = [];
-var Blabel = 'Numero voti'
-
-//var BooksChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(BData, BNames, type, Blabel));
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-function WordcloudBuilder(text, SentimentValue){
-  const RegEx_http = RegExp('https://t', "g");
-  text = text.replace(RegEx_http, '');
-  let WordCloudColors = [];
-  if (SentimentValue >= 1) WordCloudColors = ['#00E500', '#00B200', '#00FF00', '#007F00', '#00B300'];
-  else if (SentimentValue < 1 && SentimentValue > -1 && SentimentValue != null) WordCloudColors = ['#808080', '#8A8A8A', '#9D9D9D', '#A7A7A7', '#767676'];
-  else if (SentimentValue <= -1) WordCloudColors = ['#FFAAAA', '#D46A6A', '#AA3939', '#801515', '#550000'];
-  else WordCloudColors = ['#33FFBE', '#33FFF6', '#33F3FF', '#33CEFF', '#33BEFF'];
-  lines = text.split(/[,\. ]+/g),
-  data = lines.reduce((arr, word) => {
-    let obj = Highcharts.find(arr, obj => obj.name === word);
-    if (obj) {
-      obj.weight += 1;
-    } else {
-      obj = {
-        name: word,
-        weight: 1
-      };
-      arr.push(obj);
-    }
-    return arr;
-  }, []);
-
-  Highcharts.chart('SentimentWordcloud', {
-    accessibility: {
-      screenReaderSection: {
-        beforeChartFormat: '<h5>{chartTitle}</h5>' +
-          '<div>{chartSubtitle}</div>' +
-          '<div>{chartLongdesc}</div>' +
-          '<div>{viewTableButton}</div>'
-      }
-    },
-    series: [{
-      colors: WordCloudColors,
-      type: 'wordcloud',
-      data,
-      name: 'Occorrenze'
-    }],
-    title: {
-      text: ''
-    }
-  });
 }
