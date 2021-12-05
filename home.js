@@ -15,6 +15,7 @@ var bookChart = null;
 var bookChartTop = null;
 const type = 'doughnut';
 
+//prova
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
 
