@@ -1,5 +1,8 @@
 var only_geo = false;
 var sent_analyze = false;
+var nomedia = false;
+var veri = false;
+var nocont = false;
 var mymap = L.map('map').setView([0, 0], 2);
 var SentimetCtx = document.getElementById("SentimentChartID").getContext("2d");
 var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
@@ -14,7 +17,6 @@ serverUrl = "https://site202136.tw.cs.unibo.it/";
 function changebar(choice) {
     return function () {
         function setValues(placeholder1, placeholder2, myfun, toDisable, toSearch, min) {
-          console.log("cambio valori in " + myfun);
             document.getElementById('searchbar').setAttribute('placeholder', placeholder1);
             document.getElementById('searchbar').value = "";
             document.getElementById('searchby').setAttribute('placeholder', placeholder2);
@@ -61,6 +63,9 @@ window.onload = function () {
     BlankMap(mymap);
     only_geo = false;
     sent_analyze = false;
+    nomedia = false;
+    veri = false;
+    nocont  = false;
     document.getElementById('numtweets').value=25;
     document.getElementById('searchbar').value = "";
     var choice_user = document.getElementById('radio_userTimeline');
@@ -75,13 +80,45 @@ window.onload = function () {
     choice_text.addEventListener('click', changebar("text"), false);
     choice_hashtag.addEventListener('click', changebar("hashtag"), false);
     choice_location.addEventListener('click', changebar("location"), false);
+    var choice_veri = document.getElementById('verified');
     var choice_geo = document.getElementById('check_geo');
     var choice_sent = document.getElementById('check_sent');
+    var choice_media = document.getElementById('containmedia');
+    var choice_nocont = document.getElementById('notcontain');
     choice_sent.checked = false;
     choice_sent.disabled = true;
     choice_geo.checked = false;
-    choice_geo.addEventListener('click', () => { only_geo = !only_geo; }, false);
-    choice_sent.addEventListener('click', () => { sent_analyze = !sent_analyze }, false);
+
+    function click_geo() {
+      only_geo = !only_geo;
+      if($("#searchby").attr("placeholder") == "Text")
+        choice_sent.disabled = !choice_sent.disabled
+      changefilternumber(only_geo)
+    }
+    function click_sent() {
+      sent_analyze = !sent_analyze;
+      if($("#searchby").attr("placeholder") == "Text")
+        choice_geo.disabled = !choice_geo.disabled
+      changefilternumber(sent_analyze)
+    }
+
+    function click_nocont() {
+      if((choice_nocont.value != "" && !nocont) || (choice_nocont.value == "" && nocont)){
+        nocont = !nocont;
+        changefilternumber(nocont);
+      }
+    }
+
+    function changefilternumber(filter){
+        var filternumber = parseInt(document.getElementById('input-end').placeholder);
+        if (filter) document.getElementById('input-end').setAttribute('placeholder', ++filternumber);
+        else document.getElementById('input-end').setAttribute('placeholder', --filternumber);
+    }
+    choice_geo.addEventListener('change', click_geo, false);
+    choice_sent.addEventListener('change', click_sent , false);
+    choice_veri.addEventListener('change', () => {veri = !veri; changefilternumber(veri)}, false);
+    choice_media.addEventListener('change', () => {nomedia = !nomedia; changefilternumber(nomedia)}, false)
+    choice_nocont.addEventListener('input', click_nocont, false)
     //bottoni + e -
     var plusbutton = document.getElementById('plusbutton');
     var minusbutton = document.getElementById('minusbutton');
