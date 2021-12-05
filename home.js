@@ -7,9 +7,12 @@ var mymap = L.map('map').setView([0, 0], 2);
 var SentimetCtx = document.getElementById("SentimentChartID").getContext("2d");
 var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 var BooksCtx = document.getElementById("BooksChart").getContext("2d");
+var BooksCtxTop = document.getElementById("BooksChartTop").getContext("2d");
 var PollCtx = document.getElementById("PollChart").getContext("2d");
 var SentimentChart = null;
 var WordCloud = null;
+var bookChart = null;
+var bookChartTop = null;
 
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
@@ -220,16 +223,77 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
                     newSent.append(p);
                     newT.append(newSent);
                 }
-            }
+            }frase.replace("#", "~");
             await $("#base").append(newT);
         }
     }
+}
+
+function contestTweet() {
+  ResetMap();
+  ResetChart(SentimentChart);
+  ResetChart(WordCloud);
+  ResetChart(bookChart);
+  ResetChart(bookChartTop);
+  $("#base").empty();
+  var contest = document.getElementById('searchbar').value;
+  contest = contest.replace("#", "~");
+  var url = serverUrl + "concorso/" + contest;
+  $.ajax({
+    type: 'GET',
+    url: url,
+    crossDomain: true,
+    success: function (data) {
+      if (data['bando']){
+        let labels = []
+        let votes = []
+        let top = []
+        let nowtop = {"part": "", "vote": 0}
+        let topnames = []
+        let topping = data['results'];
+        let index;
+        let j = 0;
+        for (result of topping){
+          labels.push(result['Partecipante']);
+          votes.push(result['Voti']);
+          if(result['Voti'] > nowtop['vote']){
+            nowtop['part'] = result['Partecipante'];
+            nowtop['vote'] = result['Voti'];
+            index = j;
+          }
+          j++;
+        }
+        topping.splice(index, 1);
+        top.push(nowtop);
+        index = 0;
+        for(let i= 0; i < 2; i++){
+          j= 0
+          nowtop = {"part" : "", "vote": 0}
+          for (result of topping){
+            if(result['Voti'] > nowtop['vote']){
+              nowtop['part'] = result['Partecipante'];
+              nowtop['vote'] = result['Voti'];
+              index = j
+            }
+            j++;
+          }
+          topping.splice(index, 1);
+          top.push(nowtop);
+        }
+        bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti"));
+        bookChartTop = new Chart(BooksCtxTop, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti"));
+        console.log(top);
+      }
+    }
+  })
 }
 
 function userTimeline() {
     ResetMap();
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
+    ResetChart(bookChart);
+    ResetChart(bookChartTop);
     $("#base").empty();
     var user = document.getElementById('searchbar').value;
     if (user[0] == '@') {
@@ -277,6 +341,8 @@ function hashtagTweet() {
     ResetMap();
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
+    ResetChart(bookChart);
+    ResetChart(bookChartTop);
     $("#base").empty();
     var tag = document.getElementById('searchbar').value;
     let err = new Boolean(false);
@@ -318,6 +384,8 @@ function textTweet() {
     ResetMap();
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
+    ResetChart(bookChart);
+    ResetChart(bookChartTop);
     $("#base").empty();
     var frase = document.getElementById('searchbar').value
     let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
@@ -376,6 +444,8 @@ function locationTweet() {
     ResetMap();
     ResetChart(SentimentChart);
     ResetChart(WordCloud);
+    ResetChart(bookChart);
+    ResetChart(bookChartTop);
     $("#base").empty();
     var location = document.getElementById('searchbar').value
     let radius = document.getElementById('numtweets').value;
@@ -584,7 +654,7 @@ function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
           }]
       },
       options: {
-          responsive:false,
+          responsive:true,
           scales:  {
             yAxes: ChartType=='bar' ? [{
               ticks: {
