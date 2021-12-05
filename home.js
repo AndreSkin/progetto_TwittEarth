@@ -1,5 +1,3 @@
-$.getScript("Map.js");
-$.getScript("Chart.js");
 var only_geo = false;
 var sent_analyze = false;
 var nomedia = false;
@@ -83,6 +81,11 @@ function changebar(choice) {
     }
 }
 window.onload = function () {
+  $.when(
+    $.getScript("Map.js"),
+    $.getScript("Chart.js")
+  ).done(myonload)
+  function myonload() {
     BlankMap(mymap);
     only_geo = false;
     sent_analyze = false;
@@ -170,6 +173,7 @@ window.onload = function () {
       }
       else {document.getElementById('numtweets').value=numtweets.getAttribute('value');}
     }
+  }
     ///////
 
 }
