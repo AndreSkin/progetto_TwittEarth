@@ -13,7 +13,7 @@ function BlankMap(Map) {
 }
 
 function ResetMap(Map){
-  Map.setView([0, 0], 1);
+  Map.setView([0, 0], 2);
   //Elimina tutti i marker
   Map.eachLayer(function(layer){
     if(!!layer.toGeoJSON){Map.removeLayer(layer);
