@@ -32,6 +32,7 @@ function changebar(choice) {
             document.getElementById('verified').disabled = toDisable;
             document.getElementById('verified').checked = false;
             if (toSearch == " location"){
+                document.getElementById('numtweets').setAttribute('disabled', false);
                 document.getElementById('numtweets').value = min;
                 document.getElementById('numtweets').setAttribute('value', min);
                 document.getElementById('numtweets').min = "1";
@@ -39,11 +40,16 @@ function changebar(choice) {
                 document.getElementById('numtweetslabel').innerHTML = "Radius (in miles):";
             }
             else{
-                document.getElementById('numtweets').value = "25";
-                document.getElementById('numtweets').setAttribute('value', "25");
-                document.getElementById('numtweets').min = min;
-                document.getElementById('numtweets').max = "100";
-                document.getElementById('numtweetslabel').innerHTML = "Number:";
+                if (toSearch == " contest" || toSearch == " trivia"){
+                  document.getElementById('numtweets').setAttribute('disabled', true);
+                } else {
+                  document.getElementById('numtweets').setAttribute('disabled', false);
+                  document.getElementById('numtweets').value = "25";
+                  document.getElementById('numtweets').setAttribute('value', "25");
+                  document.getElementById('numtweets').min = min;
+                  document.getElementById('numtweets').max = "100";
+                  document.getElementById('numtweetslabel').innerHTML = "Number:";
+              }
             }
 
         }
@@ -56,6 +62,10 @@ function changebar(choice) {
             setValues("Hashtag ...","Hashtag", "javascript:hashtagTweet()", true, " hashtag", 10)
         } else if (choice == "location") {
             setValues("Location ...","Location" ,"javascript:locationTweet()", true, " location", 10);
+        } else if(choice == "contest") {
+            setValues("Contest ...", "Contest", "javascript:contestTweet()", true, " contest", 0);
+        } else if(choice == "trivia") {
+          setValues("Trivia ...", "Trivia", "javascript:triviaTweet()", true, " trivia", 0);
         }
     }
 }
@@ -72,6 +82,10 @@ window.onload = function () {
     var choice_text = document.getElementById('radio_textTweets');
     var choice_hashtag = document.getElementById('radio_hashtagTweets');
     var choice_location = document.getElementById('radio_location');
+    var choice_contest = document.getElementById('radio_contest');
+    var choice_trivia = document.getElementById('radio_trivia');
+    choice_contest.checked = false;
+    choice_trivia.checked = false;
     choice_text.checked = false;
     choice_hashtag.checked = false;
     choice_location.checked = false;
@@ -80,6 +94,8 @@ window.onload = function () {
     choice_text.addEventListener('click', changebar("text"), false);
     choice_hashtag.addEventListener('click', changebar("hashtag"), false);
     choice_location.addEventListener('click', changebar("location"), false);
+    choice_contest.addEventListener('click', changebar("contest"), false);
+    choice_trivia.addEventListener('click', changebar("trivia"), false);
     var choice_veri = document.getElementById('verified');
     var choice_geo = document.getElementById('check_geo');
     var choice_sent = document.getElementById('check_sent');
