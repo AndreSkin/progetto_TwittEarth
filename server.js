@@ -420,7 +420,17 @@ async function delete_rules(){
 }
 
 
+app.get('/stream/closing', async (req, res) => {
+  try {stream.close(); res.status(200).json("Closed")} catch { res.status(401).json("Closed too soon")}
+})
+
 app.get('/stream/tweets', async (req, res) => {
+  try{
+    stream.close()
+  }
+  catch{
+    console.log("No already opened straem found")
+  }
   try
   {
     //await delete_rules();
@@ -428,11 +438,12 @@ app.get('/stream/tweets', async (req, res) => {
      await client.v2.updateStreamRules({
       add: [
     { value: 'SOSigsw10', tag: 'SOS' },
-    { value: 'abcd', tag: 'ab' },
-    { value: 'efg', tag: 'ef' },
-    { value: 'hijk', tag: 'hi' },
-    { value: 'lmno', tag: 'kl' },
-    { value: 'pqrs', tag: 'op' }
+    { value: 'Incendio', tag: 'inc' },
+    { value: 'Terremoto', tag: 'ter' },
+    { value: 'Eruzione', tag: 'eru' },
+    { value: 'Alluvione', tag: 'all' },
+    { value: 'Tempesta', tag: 'tem' },
+    { value: 'Uragano', tag: 'ura'}
     ],
   });
 
@@ -541,7 +552,7 @@ app.get('/stream/tweets', async (req, res) => {
     console.log('IO connected...')
   });
 
-  setTimeout(function(stream){try {stream.close()} catch { res.status(401).json("Closed too soon")}}, 60000, stream);
+  //setTimeout(function(stream){try {stream.close()} catch { res.status(401).json("Closed too soon")}}, 60000, stream);
 });
 
 

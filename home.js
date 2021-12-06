@@ -27,6 +27,18 @@ async function ResetAllCharts(){
   ResetChart('#locationChartID');
 }
 
+
+function closeStream() {
+  $.ajax({
+    type: 'GET',
+    url: serverUrl + "stream/closing",
+    crossDomain: true,
+    success: function(){
+      console.log("Closed");
+    }
+  })
+}
+
 function callStream(){
   $.ajax({
     type: 'GET',
@@ -34,7 +46,7 @@ function callStream(){
     crossDomain: true,
     success: () => {console.log("Connected to Stream")}
   })
-  setTimeout(callStream, 65000);
+  //setTimeout(callStream, 65000);
 }
 
 function changebar(choice) {
@@ -103,6 +115,11 @@ function changebar(choice) {
           setValues("Trivia ...", "Trivia", "javascript:triviaTweet()", true, " trivia", 0);
         }
     }
+}
+
+
+window.onunload = function () {
+  closeStream();
 }
 window.onload = function () {
   $.when(
@@ -260,6 +277,10 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
         }
     }
 }
+
+/*async function triviaTweet() {
+  await ResetAllCharts();
+}*/
 
 async function contestTweet() {
   await ResetAllCharts();
