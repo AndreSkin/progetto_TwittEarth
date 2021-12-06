@@ -10,4 +10,4 @@ foo/
 svelte-app/
 .env
 sonar-scanner-4.6.2.2472-linux/
-coverage/
+inspect.html

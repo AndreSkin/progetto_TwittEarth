@@ -18,14 +18,14 @@ const io = require("socket.io") (httpServer, {cors:{origin:"*"}})
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport('smtps://' + process.env.MAIL + ':' + process.env.MAIL_PSW + '@smtp.gmail.com');
 
-async function sendmail()
+async function sendmail(from, to, subj, text, html)
 {
   var mailOptions = {
-      from: '"prova_team_10 👥" <team10igsw2021@gmail.com>', // sender address
-      to: 'team10igsw2021@gmail.com', // list of receivers
-      subject: 'Hello ✔', // Subject line
-      text: 'Hello world 🐴', // plaintext body
-      html: '<b>Hello world 🐴</b>' // html body
+      from: `'${from} <${process.env.MAIL}>'`, // sender address
+      to: `${to}`, // list of receivers
+      subject: `${subj}`, // Subject line
+      text: `${text}`, // plaintext body
+      html: `${html}` // html body
   };
 
   transporter.sendMail(mailOptions, function(error, info){
@@ -36,7 +36,7 @@ async function sendmail()
 });
 }
 
-//sendmail();
+//sendmail("prova","team10igsw2021@gmail.com","ciao","Hello world","<b>PROVA<b>");
 
 const b_token= process.env.BEARER_TOKEN;
 
@@ -54,6 +54,9 @@ var T = new Twit({
 //Istanzio client per twitter API
 const twitterClient = new TwitterApi(b_token);
 const client = twitterClient.readOnly;
+
+const twitterClientPRO = new TwitterApi(process.env.PRO_BEARER_TOKEN);
+const clientPRO = twitterClientPRO.readOnly;
 
 app.use(express.json());
 
@@ -294,12 +297,18 @@ app.get('/recents/:word', async(req, res) => {
 
   try{
     //Trovo i tweets
-    tweet = await client.v2.search(query, {'max_results':results, 'expansions':['geo.place_id', 'author_id']});
+    tweet = await clientPRO.v2.searchAll(query, {'max_results':results, 'expansions':['geo.place_id', 'author_id']});
+
+    if (tweet._realData == undefined) {
+      res.status(404).json("Nessun tweet trovato")
+      return;
+    }
 
     if (tweet._realData.data == undefined) {
       res.status(404).json("Nessun tweet trovato")
       return;
     }
+
   }
   catch(error){
     res.status(404).json(error);
@@ -454,6 +463,7 @@ app.get('/stream/tweets', async (req, res) => {
       () => console.log('Twitter has a keep-alive packet.'),
     );
     var emergencytweets=[];
+    var coords=[];
     stream.on(
       // Emitted when a Twitter payload (a tweet or not, given the endpoint).
       ETwitterStreamEvent.Data,
@@ -464,28 +474,49 @@ app.get('/stream/tweets', async (req, res) => {
             let location = await getGeo(eventData.data.geo.place_id);
             if (eventData.data.text.includes("SOSigsw10"))
             {
-              sendmail();
+              console.log("qui")
+              var html = `L'hashtag #SOSigsw10 è stato utilizzato! <hr>
+              Il testo del tweet è: ${eventData.data.text} <hr>
+              Presso le coordinate: ${location.coord_center[1]} ; ${location.coord_center[0]}`
+
+              sendmail("ET","team10igsw2021@gmail.com","Prova","Prova invio mail",html);
             }
             else {
-              emergencytweets.push(location);
+              emergencytweets.push({
+                "geo":location,
+                "text":eventData.data.text
+              });
               console.log("ET: ", emergencytweets)
-              if (emergencytweets.length == 5)
+              if (emergencytweets.length == 2)
               {
                 let removed = false;
-                console.log("Removed 1: " , removed);
                 for (var i = 0; i < emergencytweets.length; i++)
                 {
-                  if (await Math.abs(emergencytweets[0].coord_center[0] - emergencytweets[i].coord_center[0] > 1) ||
-                      (await Math.abs(emergencytweets[0].coord_center[1] - emergencytweets[i].coord_center[1] > 1)))
+                  if (await Math.abs(emergencytweets[0].geo.coord_center[0] - emergencytweets[i].geo.coord_center[0] > 1) ||
+                      (await Math.abs(emergencytweets[0].geo.coord_center[1] - emergencytweets[i].geo.coord_center[1] > 1)))
                   {
                     removed=true;
-                    console.log("Removed 2: " , removed);
                     await delete emergencytweets[i]
                   }
                 }
                 if (removed==false)
                 {
-                  sendmail();
+                  var EText=''
+                  ECoords=''
+                  for(ET of emergencytweets)
+                  {
+                    EText = EText + "<p>" + ET.text + "<\p>"
+                    ECoords = ECoords + "<p>" + ET.geo.coord_center[1] +", " + ET.geo.coord_center[0] + "<\p>"
+                  }
+                  var EHtml=`Cinque tweet contenenti parole inerenti le emergenze sono stati scritti! <hr>
+                  I testi sono: ${EText} <hr>
+                  Le coordinate sono: ${ECoords}`
+
+                  sendmail("ET","team10igsw2021@gmail.com","Prova","Prova invio mail",EHtml);
+                  EHtml = '';
+                  EText='';
+                  ECoords ='';
+
                 }
               }
             }
@@ -509,7 +540,7 @@ app.get('/stream/tweets', async (req, res) => {
     console.log('IO connected...')
   });
 
-  //setTimeout(function(stream){stream.close()}, 10000, stream);
+  setTimeout(function(stream){stream.close()}, 1000000, stream);
 });
 
 

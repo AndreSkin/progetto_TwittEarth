@@ -4,11 +4,11 @@ var nomedia = false;
 var veri = false;
 var nocont = false;
 var mymap = L.map('map').setView([0, 0], 2);
-var SentimetCtx = document.getElementById("SentimentChartID").getContext("2d");
-var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
-var BooksCtx = document.getElementById("BooksChart").getContext("2d");
-var BooksCtxTop = document.getElementById("BooksChartTop").getContext("2d");
-var PollCtx = document.getElementById("PollChart").getContext("2d");
+//var SentimetCtx = document.getElementById("SentimentChartID").getContext("2d");
+//var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
+
+//var BooksCtxTop = document.getElementById("booksChartTopID").getContext("2d");
+//var PollCtx = document.getElementById("PollChart").getContext("2d");
 var SentimentChart = null;
 var WordCloud = null;
 var bookChart = null;
@@ -17,6 +17,15 @@ const type = 'doughnut';
 
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
+
+async function ResetAllCharts(){
+  ResetMap(mymap);
+  ResetChart('#SentimentChartID');
+  ResetChart('#WordCloudID');
+  ResetChart('#booksChartID');
+  ResetChart('#booksChartTopID');
+  ResetChart('#locationChartID');
+}
 
 function changebar(choice) {
     return function () {
@@ -241,12 +250,8 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
     }
 }
 
-function contestTweet() {
-  ResetMap(mymap);
-  ResetChart(SentimentChart);
-  ResetChart(WordCloud);
-  ResetChart(bookChart);
-  ResetChart(bookChartTop);
+async function contestTweet() {
+  await ResetAllCharts();
   $("#base").empty();
   var contest = document.getElementById('searchbar').value;
   contest = contest.replace("#", "~");
@@ -292,9 +297,12 @@ function contestTweet() {
           topping.splice(index, 1);
           top.push(nowtop);
         }
+        GraphConteinerConstructor('booksChartID');
+        var BooksCtx = CtxConstructor('booksChartID');
         bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti"));
-        bookChartTop = new Chart(BooksCtxTop, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti"));
-        console.log(data)
+        GraphConteinerConstructor('booksChartTopID');
+        var BooksTopCtx = CtxConstructor('booksChartTopID');
+        bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti"));
         let title = $('<h1>');
         let titlediv = $('<div>');
         title.text("Concorso " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " bandito da " + data['bando'][0]['Banditore'])
@@ -320,12 +328,8 @@ function contestTweet() {
   })
 }
 
-function userTimeline() {
-    ResetMap(mymap);
-    ResetChart(SentimentChart);
-    ResetChart(WordCloud);
-    ResetChart(bookChart);
-    ResetChart(bookChartTop);
+async function userTimeline() {
+    await ResetAllCharts();
     $("#base").empty();
     var user = document.getElementById('searchbar').value;
     if (user[0] == '@') {
@@ -356,7 +360,7 @@ function userTimeline() {
               if((singleText['geo'] != null)  || (!only_geo))
                 TextTermCloud = TextTermCloud + singleText['Text'];
             }
-            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
+            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
         },
         error: function (err) {
             let newT = $("<div>");
@@ -370,12 +374,8 @@ function userTimeline() {
 }
 
 
-function hashtagTweet() {
-    ResetMap(mymap);
-    ResetChart(SentimentChart);
-    ResetChart(WordCloud);
-    ResetChart(bookChart);
-    ResetChart(bookChartTop);
+async function hashtagTweet() {
+  await ResetAllCharts();
     $("#base").empty();
     var tag = document.getElementById('searchbar').value;
     let err = new Boolean(false);
@@ -408,7 +408,7 @@ function hashtagTweet() {
               if((singleText['geo'] != null)  || (!only_geo))
                 TextTermCloud = TextTermCloud + singleText['Text'];
             }
-            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
+            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
         },
         error: function (err) {
             let newT = $("<div>");
@@ -422,12 +422,8 @@ function hashtagTweet() {
 }
 
 
-function textTweet() {
-    ResetMap(mymap);
-    ResetChart(SentimentChart);
-    ResetChart(WordCloud);
-    ResetChart(bookChart);
-    ResetChart(bookChartTop);
+async function textTweet() {
+    await ResetAllCharts();
     $("#base").empty();
     var frase = document.getElementById('searchbar').value
     let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
@@ -460,6 +456,8 @@ function textTweet() {
                 $('#base').append('<br>');
                 let NeutralWords = data['analysis_data']['Tot_words'] - data['analysis_data']['Tot_pos'] - data['analysis_data']['Tot_neg'];
                 let SData = [data['analysis_data']['Tot_neg'], data['analysis_data']['Tot_pos'], NeutralWords];
+                GraphConteinerConstructor('SentimentChartID');
+                var SentimetCtx = CtxConstructor('SentimentChartID')
                 SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
             }
             let TextTermCloud = '';
@@ -467,7 +465,7 @@ function textTweet() {
               if((singleText['geo'] != null)  || (!only_geo))
                 TextTermCloud = TextTermCloud + singleText['Text'];
             }
-            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg']);
+            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg'], 'WordCloudID');
             embedTweets(data, null, true);
             let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
             $("#base").append(scripting)
@@ -483,12 +481,8 @@ function textTweet() {
     });
 }
 
-function locationTweet() {
-    ResetMap(mymap);
-    ResetChart(SentimentChart);
-    ResetChart(WordCloud);
-    ResetChart(bookChart);
-    ResetChart(bookChartTop);
+async function locationTweet() {
+    await ResetAllCharts();
     $("#base").empty();
     var location = document.getElementById('searchbar').value
     let radius = document.getElementById('numtweets').value;
@@ -511,7 +505,41 @@ function locationTweet() {
                       if((singleText['place'] != null)  || (!only_geo))
                         TextTermCloud = TextTermCloud + singleText['Text'];
                     }
-                    WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
+                    WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
+                    let places = [];
+                    for(thisT of data['statuses']){
+                      if(thisT['place'] == undefined)
+                        continue
+                      else{
+                       if(thisT['place'] != null){
+                        if(thisT['place']['full_name'] != location){
+                          places[thisT['place']['full_name'].split(',')[0]] = 0;
+                          }
+                        }
+                      }
+                    }
+                    for(thisT of data['statuses']){
+                      if(thisT['place'] == undefined)
+                        continue
+                      else{
+                       if(thisT['place'] != null){
+                        if(thisT['place']['full_name'] != location){
+                          places[thisT['place']['full_name'].split(',')[0]]+= 1;
+                          }
+                        }
+                      }
+                    }
+                    let placesarray = []
+                    let j= 0
+                    for(place in places){
+                      placesarray[j] = places[place];
+                      j++;
+                    }
+                    GraphConteinerConstructor('locationChartID');
+                    var BooksTopCtx = CtxConstructor('locationChartID');
+                    bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(placesarray, Object.keys(places), "bar", "Città diverse da quella data"));
+                    console.log(Object.keys(places));
+                    console.log(placesarray);
                 },
                 error: function (err) {
                     let newT = $("<div>");
