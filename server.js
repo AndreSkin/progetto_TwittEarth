@@ -5,6 +5,7 @@ const cors = require('cors');
 const Twit = require('twit');
 const { TwitterApi, ETwitterStreamEvent, TweetStream, ETwitterApiError } = require('twitter-api-v2');
 var sentiment = require('multilang-sentiment');
+var stream = ''
 var langdetect = require('langdetect');
 
 const date_time = require('date-and-time');
@@ -420,7 +421,6 @@ async function delete_rules(){
 
 
 app.get('/stream/tweets', async (req, res) => {
-  let stream = '';
   try
   {
     //await delete_rules();
@@ -541,7 +541,7 @@ app.get('/stream/tweets', async (req, res) => {
     console.log('IO connected...')
   });
 
-  setTimeout(function(stream){stream.close()}, 60000, stream);
+  setTimeout(function(stream){try {stream.close()} catch { res.status(401).json("Closed too soon")}}, 60000, stream);
 });
 
 
