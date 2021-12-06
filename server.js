@@ -7,6 +7,8 @@ const { TwitterApi, ETwitterStreamEvent, TweetStream, ETwitterApiError } = requi
 var sentiment = require('multilang-sentiment');
 var langdetect = require('langdetect');
 
+const date_time = require('date-and-time');
+
 let httpServer = require("http").createServer(app);
 
 const path = require('path');
@@ -592,8 +594,10 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
       query = req.params.tagConcorso.substring(1);
     }
 
-    Bandoconcorso = await client.v2.search('#'+'bandiscoconcorso' + query, {'max_results':100,'expansions': 'author_id'});
+    Bandoconcorso = await client.v2.search('#'+'bandiscoconcorso' + query, {'max_results':100,'expansions': 'author_id','tweet.fields':'created_at'});
 
+    var dataBando = new Date(Bandoconcorso._realData.data[0].created_at);
+    var duration =60;
     if (Bandoconcorso._realData.data == undefined) {
       res.status(404).json("Nessun tweet trovato")
       return;
@@ -605,7 +609,7 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
     });
 
 
-    Partecipanti = await client.v2.search('#'+'partecipoconcorso' + query, {'max_results':100,'expansions': 'author_id'});
+    Partecipanti = await client.v2.search('#'+'partecipoconcorso' + query, {'max_results':100,'expansions': 'author_id','tweet.fields':'created_at'});
 
     if (Partecipanti._realData.data == undefined) {
       res.status(200).json(concorso);
@@ -614,10 +618,12 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
 
     const regExSpace = new RegExp(' ', "g");
     for(user of Partecipanti._realData.data){
-    concorso.partecipanti.push(user.text.replace('#'+'partecipoconcorso' + query, "").trim().replace(regExSpace,"_").toLowerCase())}
+    if (date_time.subtract(new Date(user.created_at), dataBando).toDays() < duration) {
+    concorso.partecipanti.push(user.text.replace('#'+'partecipoconcorso' + query, "").trim().replace(regExSpace,"_").toLowerCase())
+    }
+  }
 
-
-    Voters = await client.v2.search('#'+'votoconcorso' + query, {'max_results':100,'expansions': 'author_id'});
+    Voters = await client.v2.search('#'+'votoconcorso' + query, {'max_results':100,'expansions': 'author_id','tweet.fields':'created_at'});
 
     if (Voters._realData.data == undefined) {
       res.status(200).json(concorso);
@@ -629,24 +635,28 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
       var checkpartecipa = (element) => element==voto;
       var checkvoted = (element) => element==voter.author_id;
 
-      if (concorso.partecipanti.some(checkpartecipa)){
-        if (!votato.some(checkvoted)) {
-          concorso.votanti.push({
-            "Voto":voto,
-            "ID":voter.author_id
-          })
+      if (date_time.subtract(new Date(voter.created_at), dataBando).toDays() < duration){
+        if (concorso.partecipanti.some(checkpartecipa)){
+          if (!votato.some(checkvoted)){
+            concorso.votanti.push({
+              "Voto":voto,
+              "ID":voter.author_id
+            })
+          }
+        }
+        else {
+          console.log(voto + " non partecipa")
         }
           var checkvotanti = concorso.votanti.filter(elem => elem.ID==voter.author_id);
 
-          if (checkvotanti.length > 9)
-          {
-            if (!votato.some(checkvoted)) {
+          if (checkvotanti.length > 9){
+            if (!votato.some(checkvoted)){
               votato.push(voter.author_id);
             }
           }
       }
-      else {
-        console.log(voto + " non partecipa")
+      else{
+        console.log("Voto fuori tempo massimo")
       }
     }
 
