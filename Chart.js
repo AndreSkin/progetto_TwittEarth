@@ -1,3 +1,24 @@
+//Aggiorna il grafico cambiandone il tipo
+function ChartTypeUpdate(chart, NewType) {
+    chart.type = NewType;
+    chart.update();
+}
+
+function GraphConteinerConstructor(ChartID){
+  let mygraph = $('<canvas>');
+  mygraph.attr('id', ChartID);
+  $('#graphs').prepend(mygraph);
+}
+
+function CtxConstructor(ChartID){
+  let Ctx = document.getElementById(ChartID).getContext("2d");
+  return Ctx;
+}
+
+function ResetChart(ChartID){
+  $(ChartID).remove();
+}
+
 //Grafico per sentiment analysis
 function SentimentChartConstructor(SentimentData, ChartType){
   let SentimentChartStructure = {
@@ -36,12 +57,6 @@ function SentimentChartConstructor(SentimentData, ChartType){
 
 //var PollChart = new Chart(PollCtx, PollChartConstructor(PData, type));
 
-function ResetChart(Chart){
-  if (Chart != null){
-   Chart.destroy();
-   Chart = null;
-  }
-}
 
 //Grafico Risposte corrette Poll
 function PollChartConstructor(PollData, ChartType){
@@ -100,12 +115,6 @@ function RandomChartColorsGenerator(ListOfItems){
   return Colors;
 }
 
-//Aggiorna il grafico cambiandone il tipo
-function ChartTypeUpdate(chart, NewType) {
-    chart.type = NewType;
-    chart.update();
-}
-
 //Grafico di n elementi con n colori autogenerati
 function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
   let Colors = RandomChartColorsGenerator(Names)
@@ -158,7 +167,8 @@ function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function WordcloudBuilder(text, SentimentValue){
+
+function WordcloudBuilder(text, SentimentValue, ChartID){
   const RegEx_http = RegExp('https://t', "g");
   text = text.replace(RegEx_http, '');
   let WordCloudColors = [];
@@ -180,8 +190,10 @@ function WordcloudBuilder(text, SentimentValue){
     }
     return arr;
   }, []);
-
-  Highcharts.chart('SentimentWordcloud', {
+  let mygraph = $('<div>');
+  mygraph.attr('id', ChartID);
+  $('#graphs').prepend(mygraph);
+  Highcharts.chart(ChartID, {
     accessibility: {
       screenReaderSection: {
         beforeChartFormat: '<h5>{chartTitle}</h5>' +
