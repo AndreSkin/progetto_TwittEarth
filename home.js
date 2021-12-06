@@ -383,6 +383,14 @@ function hashtagTweet() {
             TextTermCloud = TextTermCloud + singleText['Text'];
             }
             WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
+        },
+        error: function (err) {
+            let newT = $("<div>");
+            let txt = $("<p>");
+            txt.text("Error: " + "Hashtag non trovato");
+            newT.append(txt);
+            $("#base").append(newT);
+            $("#base").append("<br>");
         }
     });
 }
