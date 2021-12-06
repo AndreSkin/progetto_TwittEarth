@@ -312,6 +312,7 @@ app.get('/recents/:word', async(req, res) => {
   }
   catch(error){
     res.status(404).json(error);
+    return;
   }
 
   //Tweet da analizzare
@@ -422,7 +423,7 @@ app.get('/stream/tweets', async (req, res) => {
   let stream = '';
   try
   {
-    await delete_rules();
+    //await delete_rules();
     /*const addedRules =*/
      await client.v2.updateStreamRules({
       add: [
@@ -540,7 +541,7 @@ app.get('/stream/tweets', async (req, res) => {
     console.log('IO connected...')
   });
 
-  setTimeout(function(stream){stream.close()}, 1000000, stream);
+  setTimeout(function(stream){stream.close()}, 60000, stream);
 });
 
 

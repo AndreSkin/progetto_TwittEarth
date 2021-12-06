@@ -15,8 +15,8 @@ var bookChart = null;
 var bookChartTop = null;
 const type = 'doughnut';
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 async function ResetAllCharts(){
   ResetMap(mymap);
@@ -25,6 +25,16 @@ async function ResetAllCharts(){
   ResetChart('#booksChartID');
   ResetChart('#booksChartTopID');
   ResetChart('#locationChartID');
+}
+
+function callStream(){
+  $.ajax({
+    type: 'GET',
+    url: serverUrl + "stream/tweets",
+    crossDomain: true,
+    success: () => {console.log("Connected to Stream")}
+  })
+  setTimeout(callStream, 65000);
 }
 
 function changebar(choice) {
@@ -100,6 +110,7 @@ window.onload = function () {
     $.getScript("Chart.js")
   ).done(myonload)
   function myonload() {
+    callStream();
     BlankMap(mymap);
     only_geo = false;
     sent_analyze = false;
@@ -162,7 +173,7 @@ window.onload = function () {
     }
     choice_geo.addEventListener('change', click_geo, false);
     choice_sent.addEventListener('change', click_sent , false);
-    choice_veri.addEventListener('change', () => {veri = !veri; changefilternumber(veri)}, false);
+    choice_veri.addEventListener('chanTimeoutge', () => {veri = !veri; changefilternumber(veri)}, false);
     choice_media.addEventListener('change', () => {nomedia = !nomedia; changefilternumber(nomedia)}, false)
     choice_nocont.addEventListener('input', click_nocont, false)
     //bottoni + e -
