@@ -15,8 +15,8 @@ var bookChart = null;
 var bookChartTop = null;
 const type = 'doughnut';
 
-serverUrl = "http://localhost:8000/";
-//serverUrl = "https://site202136.tw.cs.unibo.it/";
+//serverUrl = "http://localhost:8000/";
+serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 async function ResetAllCharts(){
   ResetMap(mymap);
