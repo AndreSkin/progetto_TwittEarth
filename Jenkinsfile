@@ -36,7 +36,7 @@ pipeline {
        stage ('Deploy') {
          when { changeset "*/**" }
          steps {
-               sshCommand remote: remote, command: "cd ../../web/site202136/html && git pull origin master"
+               sshCommand remote: remote, command: "cd ../../web/site202136/html && git pull origin master && npm i"
             }
          }
       }

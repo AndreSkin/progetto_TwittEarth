@@ -15,13 +15,13 @@ var bookChart = null;
 var bookChartTop = null;
 const type = 'doughnut';
 
-//prova
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
         function setValues(placeholder1, placeholder2, myfun, toDisable, toSearch, min) {
+            document.getElementById('input-end').setAttribute('placeholder', 0);
             document.getElementById('searchbar').setAttribute('placeholder', placeholder1);
             document.getElementById('searchbar').value = "";
             document.getElementById('searchby').setAttribute('placeholder', placeholder2);
@@ -36,6 +36,9 @@ function changebar(choice) {
             document.getElementById('containmedia').checked = false;
             document.getElementById('verified').disabled = toDisable;
             document.getElementById('verified').checked = false;
+            document.getElementById('check_geo').disabled = false;
+            document.getElementById('check_geo').checked = false;
+            only_geo = false;
             if (toSearch == " location"){
                 document.getElementById('plusbutton').disabled = false;
                 document.getElementById('minusbutton').disabled = false;
@@ -52,6 +55,7 @@ function changebar(choice) {
                   document.getElementById('numtweets').value = 0;
                   document.getElementById('plusbutton').disabled = true;
                   document.getElementById('minusbutton').disabled = true;
+                  document.getElementById('check_geo').disabled = true;
                 } else {
                   document.getElementById('plusbutton').disabled = false;
                   document.getElementById('minusbutton').disabled = false;
@@ -189,7 +193,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
         myId = "id_str";
         myGeo = "place";
     }
-    MulMapMarkers(mymap, data[attr], user);
+    MulMapMarkers(mymap, data[attr], user, !geo);
     for (let tweet of data[attr]) {
         if ((tweet[myGeo] == null && !only_geo) || (tweet[myGeo] != null)) {
             let embed = $("<blockquote>");
@@ -329,7 +333,8 @@ function userTimeline() {
             $("#base").append(scripting)
             let TextTermCloud = '';
             for (singleText of data['tweets']){
-            TextTermCloud = TextTermCloud + singleText['Text'];
+              if((singleText['geo'] != null)  || (!only_geo))
+                TextTermCloud = TextTermCloud + singleText['Text'];
             }
             WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
         },
@@ -380,7 +385,8 @@ function hashtagTweet() {
             $("#base").append(scripting)
             let TextTermCloud = '';
             for (singleText of data['data']){
-            TextTermCloud = TextTermCloud + singleText['Text'];
+              if((singleText['geo'] != null)  || (!only_geo))
+                TextTermCloud = TextTermCloud + singleText['Text'];
             }
             WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
         },
@@ -438,7 +444,8 @@ function textTweet() {
             }
             let TextTermCloud = '';
             for (singleText of data['data']){
-            TextTermCloud = TextTermCloud + singleText['Text'];
+              if((singleText['geo'] != null)  || (!only_geo))
+                TextTermCloud = TextTermCloud + singleText['Text'];
             }
             WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg']);
             embedTweets(data, null, true);
@@ -481,7 +488,8 @@ function locationTweet() {
                     $("#base").append(scripting)
                     let TextTermCloud = '';
                     for (singleText of data['statuses']){
-                    TextTermCloud = TextTermCloud + singleText['Text'];
+                      if((singleText['place'] != null)  || (!only_geo))
+                        TextTermCloud = TextTermCloud + singleText['Text'];
                     }
                     WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null);
                 },
