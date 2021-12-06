@@ -24,6 +24,7 @@ async function ResetAllCharts(){
   ResetChart('#WordCloudID');
   ResetChart('#booksChartID');
   ResetChart('#booksChartTopID');
+  ResetChart('#locationChartID');
 }
 
 function changebar(choice) {
@@ -302,7 +303,6 @@ async function contestTweet() {
         GraphConteinerConstructor('booksChartTopID');
         var BooksTopCtx = CtxConstructor('booksChartTopID');
         bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti"));
-        console.log(data)
         let title = $('<h1>');
         let titlediv = $('<div>');
         title.text("Concorso " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " bandito da " + data['bando'][0]['Banditore'])
@@ -506,6 +506,40 @@ async function locationTweet() {
                         TextTermCloud = TextTermCloud + singleText['Text'];
                     }
                     WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
+                    let places = [];
+                    for(thisT of data['statuses']){
+                      if(thisT['place'] == undefined)
+                        continue
+                      else{
+                       if(thisT['place'] != null){
+                        if(thisT['place']['full_name'] != location){
+                          places[thisT['place']['full_name'].split(',')[0]] = 0;
+                          }
+                        }
+                      }
+                    }
+                    for(thisT of data['statuses']){
+                      if(thisT['place'] == undefined)
+                        continue
+                      else{
+                       if(thisT['place'] != null){
+                        if(thisT['place']['full_name'] != location){
+                          places[thisT['place']['full_name'].split(',')[0]]+= 1;
+                          }
+                        }
+                      }
+                    }
+                    let placesarray = []
+                    let j= 0
+                    for(place in places){
+                      placesarray[j] = places[place];
+                      j++;
+                    }
+                    GraphConteinerConstructor('locationChartID');
+                    var BooksTopCtx = CtxConstructor('locationChartID');
+                    bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(placesarray, Object.keys(places), "bar", "Città diverse da quella data"));
+                    console.log(Object.keys(places));
+                    console.log(placesarray);
                 },
                 error: function (err) {
                     let newT = $("<div>");
