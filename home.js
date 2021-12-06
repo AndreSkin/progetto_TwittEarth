@@ -15,8 +15,8 @@ var bookChart = null;
 var bookChartTop = null;
 const type = 'doughnut';
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+serverUrl = "http://localhost:8000/";
+//serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function changebar(choice) {
     return function () {
@@ -294,7 +294,27 @@ function contestTweet() {
         }
         bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti"));
         bookChartTop = new Chart(BooksCtxTop, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti"));
-        console.log(top);
+        console.log(data)
+        let title = $('<h1>');
+        let titlediv = $('<div>');
+        title.text("Concorso " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " bandito da " + data['bando'][0]['Banditore'])
+        titlediv.append(title)
+        titlediv.addClass("titlediv")
+        let first = $('<h1>');
+        let second = $('<h2>');
+        let third = $('<h3>');
+        first.text("Primo: " + top[0]['part'] + " con " + top[0]['vote'] + " voto/i");
+        second.text("Secondo: " + top[1]['part'] + " con " + top[1]['vote'] + " voto/i");
+        third.text("Terzo: " + top[2]['part'] + " con " + top[2]['vote'] + " voto/i");
+        let leaders = $('<div>');
+        leaders.addClass("leaders");
+        leaders.append(first);
+        leaders.append(second);
+        leaders.append(third);
+        $("#base").append(titlediv);
+        $("#base").append("<br>");
+        $("#base").append("<br>");
+        $("#base").append(leaders);
       }
     }
   })

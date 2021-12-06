@@ -21,6 +21,17 @@ function ResetMap(Map){
   })
 }
 
+function removeMap(Map){
+  if(Map && Map.remove){
+    Map.off();
+    Map.remove();
+  }
+  $('#map').removeClass("leaflet-container");
+  $('#map').removeClass("leaflet-touch");
+  $('#map').removeClass("leaflet-fade-anim");
+  $('#map').removeAttr("tabindex")
+}
+
 function MulMapMarkers(Map, TweetsList, User = null, noLoc) {
     let MarkerGroup = [];
     //Elimina tutti i marker
