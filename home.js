@@ -193,7 +193,8 @@ window.onload = function () {
     choice_sent.addEventListener('change', click_sent , false);
     choice_veri.addEventListener('change', () => {veri = choice_veri.checked; changefilternumber(veri)}, false);
     choice_media.addEventListener('change', () => {nomedia = choice_media.checked; changefilternumber(nomedia)}, false)
-    choice_nocont.addEventListener('input', click_nocont, false)
+    choice_nocont.addEventListener('input', click_nocont, false);
+
     //bottoni + e -
     var plusbutton = document.getElementById('plusbutton');
     var minusbutton = document.getElementById('minusbutton');
@@ -205,20 +206,19 @@ window.onload = function () {
 
     function changeval(op){
       var val = parseInt(document.getElementById('numtweets').value)
-      var min = document.getElementById('numtweets').min;
+      var min = document.getElementById('numtweets').min; 
       var max = document.getElementById('numtweets').max;
       if (op == 'plus') val++;
       else if (op == 'minus') val--;
 
       if(val<=max && val>=min){
          document.getElementById('numtweets').setAttribute("value",val);
-         document.getElementById('numtweets').vPollChartIDalue=val;
+         document.getElementById('numtweets').value=val;
       }
       else {document.getElementById('numtweets').value=numtweets.getAttribute('value');}
     }
-  }
     ///////
-
+  }
 }
 
 async function embedTweets(data, user = null, sentiment = false, geo = false) {
