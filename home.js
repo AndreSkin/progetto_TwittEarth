@@ -26,6 +26,7 @@ async function ResetAllCharts(){
   ResetChart('#booksChartTopID');
   ResetChart('#locationChartID');
   ResetChart('#PollChartID');
+  ResetChart('#userTimeID')
 }
 
 
@@ -439,8 +440,8 @@ async function userTimeline() {
         url: url,
         crossDomain: true,
         success: function (data) {
-            if (data['tweets']) {
-                embedTweets(data, user);
+            if (data['timeline']['tweets']) {
+                embedTweets(data['timeline'], user);
             }
             else {
                 let newT = $('<div>');
@@ -453,11 +454,23 @@ async function userTimeline() {
             let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
             $("#base").append(scripting)
             let TextTermCloud = '';
-            for (singleText of data['tweets']){
+            for (singleText of data['timeline']['tweets']){
               if((singleText['geo'] != null)  || (!only_geo))
                 TextTermCloud = TextTermCloud + singleText['Text'];
             }
             WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
+            //GraphConteinerConstructor('booksChartID');
+            //var BooksCtx = CtxConstructor('booksChartID');
+            //bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti"));
+            let myDates = []
+            let myOccurs = []
+            for(occur of data['Occurrencies']){
+              myDates.push(occur['Date']);
+              myOccurs.push(occur['Times']);
+            }
+            GraphConteinerConstructor('userTimeID');
+            let UserCtx = CtxConstructor('userTimeID');
+            userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "bar", "Occorrenza Tweet"));
         },
         error: function (err) {
             let newT = $("<div>");
@@ -528,6 +541,8 @@ async function textTweet() {
 async function searchText(frase) {
   await ResetAllCharts();
   $("#base").empty();
+  document.getElementById('searchbar').value = frase.replace("~", "#");
+  frase = frase.replace("#", "~");
   let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
   let media = document.getElementById('containmedia').checked;
   let verified = document.getElementById('verified').checked;
