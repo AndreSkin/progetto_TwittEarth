@@ -520,62 +520,67 @@ async function hashtagTweet() {
 
 
 async function textTweet() {
-    await ResetAllCharts();
-    $("#base").empty();
     var frase = document.getElementById('searchbar').value
-    let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
-    let media = document.getElementById('containmedia').checked;
-    let verified = document.getElementById('verified').checked;
     frase = frase.replace("#", "~");
-    let numtweets = document.getElementById('numtweets').value;
-    var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze + "&notcontain=" + esclusi + "&hasmedia=" + media + "&numtweets=" + numtweets + "&verified=" + verified;
-    $.ajax({
-        type: 'GET',
-        url: url,
-        crossDomain: true,
-        success: function (data) {
-            if (data['analysis_data']['avg'] != null) {
-                let newS = $('<div>');
-                let p = $('<p>');
-                p.text("Il sentimento per questa stringa è: " + data['analysis_data']['avg']);
-                newS.append(p);
-                p = $('<p>');
-                p.text("Le parole totali analizzate sono: " + data['analysis_data']['Tot_words']);
-                newS.append(p);
-                p = $('<p>');
-                p.text("Le parole positive totali sono: " + data['analysis_data']['Tot_pos']);
-                newS.append(p);
-                p = $('<p>');
-                p.text("Le parole negative totali sono: " + data['analysis_data']['Tot_neg']);
-                newS.append(p);
-                $('#base').append('<br>');
-                $("#base").append(newS);
-                $('#base').append('<br>');
-                let NeutralWords = data['analysis_data']['Tot_words'] - data['analysis_data']['Tot_pos'] - data['analysis_data']['Tot_neg'];
-                let SData = [data['analysis_data']['Tot_neg'], data['analysis_data']['Tot_pos'], NeutralWords];
-                GraphConteinerConstructor('SentimentChartID');
-                var SentimetCtx = CtxConstructor('SentimentChartID')
-                SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
-            }
-            let TextTermCloud = '';
-            for (singleText of data['data']){
-              if((singleText['geo'] != null)  || (!only_geo))
-                TextTermCloud = TextTermCloud + singleText['Text'];
-            }
-            WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg'], 'WordCloudID');
-            embedTweets(data, null, true);
-            let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
-            $("#base").append(scripting)
-        },
-        error: function(err){
-          let newT = $("<div>");
-          let txt = $("<p>");
-          txt.text("Error: " + "Ricerca Errata");
-          newT.append(txt);
-          $("#base").append(newT);
-          $("#base").append("<br>");
-        }
-    });
+    await searchText(frase);
+}
+
+async function searchText(frase) {
+  await ResetAllCharts();
+  $("#base").empty();
+  let esclusi = document.getElementById('notcontain').value.replaceAll(" ", "");
+  let media = document.getElementById('containmedia').checked;
+  let verified = document.getElementById('verified').checked;
+
+  let numtweets = document.getElementById('numtweets').value;
+  var url = serverUrl + "recents/" + frase + "?sentiment=" + sent_analyze + "&notcontain=" + esclusi + "&hasmedia=" + media + "&numtweets=" + numtweets + "&verified=" + verified;
+  $.ajax({
+    type: 'GET',
+    url: url,
+    crossDomain: true,
+    success: function (data) {
+      if (data['analysis_data']['avg'] != null) {
+        let newS = $('<div>');
+        let p = $('<p>');
+        p.text("Il sentimento per questa stringa è: " + data['analysis_data']['avg']);
+        newS.append(p);
+        p = $('<p>');
+        p.text("Le parole totali analizzate sono: " + data['analysis_data']['Tot_words']);
+        newS.append(p);
+        p = $('<p>');
+        p.text("Le parole positive totali sono: " + data['analysis_data']['Tot_pos']);
+        newS.append(p);
+        p = $('<p>');
+        p.text("Le parole negative totali sono: " + data['analysis_data']['Tot_neg']);
+        newS.append(p);
+        $('#base').append('<br>');
+        $("#base").append(newS);
+        $('#base').append('<br>');
+        let NeutralWords = data['analysis_data']['Tot_words'] - data['analysis_data']['Tot_pos'] - data['analysis_data']['Tot_neg'];
+        let SData = [data['analysis_data']['Tot_neg'], data['analysis_data']['Tot_pos'], NeutralWords];
+        GraphConteinerConstructor('SentimentChartID');
+        var SentimetCtx = CtxConstructor('SentimentChartID');
+        SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
+      }
+      let TextTermCloud = '';
+      for (singleText of data['data']) {
+        if ((singleText['geo'] != null) || (!only_geo))
+          TextTermCloud = TextTermCloud + singleText['Text'];
+      }
+      WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), data['analysis_data']['avg'], 'WordCloudID');
+      embedTweets(data, null, true);
+      let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+      $("#base").append(scripting);
+    },
+    error: function (err) {
+      let newT = $("<div>");
+      let txt = $("<p>");
+      txt.text("Error: " + "Ricerca Errata");
+      newT.append(txt);
+      $("#base").append(newT);
+      $("#base").append("<br>");
+    }
+  });
 }
 
 async function locationTweet() {
