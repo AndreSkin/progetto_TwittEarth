@@ -165,13 +165,13 @@ window.onload = function () {
     choice_geo.checked = false;
 
     function click_geo() {
-      only_geo = !only_geo;
+      only_geo = choice_geo.checked;
       if($("#searchby").attr("placeholder") == "Text")
         choice_sent.disabled = !choice_sent.disabled
       changefilternumber(only_geo)
     }
     function click_sent() {
-      sent_analyze = !sent_analyze;
+      sent_analyze = choice_sent.checked;
       if($("#searchby").attr("placeholder") == "Text")
         choice_geo.disabled = !choice_geo.disabled
       changefilternumber(sent_analyze)
@@ -191,8 +191,8 @@ window.onload = function () {
     }
     choice_geo.addEventListener('change', click_geo, false);
     choice_sent.addEventListener('change', click_sent , false);
-    choice_veri.addEventListener('chanTimeoutge', () => {veri = !veri; changefilternumber(veri)}, false);
-    choice_media.addEventListener('change', () => {nomedia = !nomedia; changefilternumber(nomedia)}, false)
+    choice_veri.addEventListener('change', () => {veri = choice_veri.checked; changefilternumber(veri)}, false);
+    choice_media.addEventListener('change', () => {nomedia = choice_media.checked; changefilternumber(nomedia)}, false)
     choice_nocont.addEventListener('input', click_nocont, false)
     //bottoni + e -
     var plusbutton = document.getElementById('plusbutton');
