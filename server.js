@@ -95,9 +95,9 @@ app.get('/users/:name', async(req, res) => {
   let userTweets='';
   //Utilizzo l'ID trovato prima per ottenere la user timeline
   try{
-   userTweets = await client.v2.userTimeline(userID.data.id, {'max_results': results, 'expansions':'geo.place_id'});
+   userTweets = await client.v2.userTimeline(userID.data.id, {'max_results': results, 'expansions':'geo.place_id','tweet.fields':'created_at'});
    if (userTweets._realData.data == undefined) {
-     res.status(401).json("Questo utente non ha mai twittato")
+     res.status(404).json("Questo utente non ha mai twittato")
      return;
    }
   }
@@ -105,11 +105,11 @@ app.get('/users/:name', async(req, res) => {
     res.status(404).json(error);
   }
 
+  let dates= [];
   let timeline = {'tweets':[]};
   let geo=null;
   //Scorro tutti i tweets
   for(let singletweet of userTweets._realData.data){
-    //let tweetHtml = await embedTweet(singletweet.id);
     //geo torna null in modo da non conservarne il valore
     geo = null;
     try{
@@ -122,14 +122,32 @@ app.get('/users/:name', async(req, res) => {
         "Text":singletweet.text,
         "geo": geo,
         "id": singletweet.id
-        //"html": tweetHtml
       })
+
+      let formattedDate = singletweet.created_at.substring(0,10);
+      var checkinserted = (element) => element.Date==formattedDate;
+      if (!dates.some(checkinserted)){
+        dates.push({
+          "Date": formattedDate,
+          "Times":1
+        })
+      }
+      else
+      {
+        for(date of dates)
+        {
+          if (date.Date == formattedDate)
+          {
+            date.Times = date.Times +1;
+          }
+        }
+      }
     }
     catch (e){
       console.log("ERROR IN TIMELINE: ", e );
     }
   }
-  res.status(200).json(timeline);
+  res.status(200).json({timeline, "Occurrencies":dates});
 });
 
 
@@ -504,8 +522,8 @@ app.get('/stream/tweets', async (req, res) => {
                 let removed = false;
                 for (var i = 0; i < emergencytweets.length; i++)
                 {
-                  if (await Math.abs(emergencytweets[0].geo.coord_center[0] - emergencytweets[i].geo.coord_center[0] > 1) ||
-                      (await Math.abs(emergencytweets[0].geo.coord_center[1] - emergencytweets[i].geo.coord_center[1] > 1)))
+                  if ((await Math.abs(emergencytweets[0].geo.coord_center[0] - emergencytweets[i].geo.coord_center[0]) > 1) ||
+                      (await Math.abs(emergencytweets[0].geo.coord_center[1] - emergencytweets[i].geo.coord_center[1]) > 1))
                   {
                     removed=true;
                     await delete emergencytweets[i]
