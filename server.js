@@ -429,7 +429,7 @@ app.get('/stream/tweets', async (req, res) => {
     stream.close()
   }
   catch{
-    console.log("No already opened straem found")
+    console.log("No already opened stream found")
   }
   try
   {
