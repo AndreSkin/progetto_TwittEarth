@@ -66,7 +66,7 @@ function PollChartConstructor(PollData, ChartType){
           labels: ['Errate', 'Corrette'],
           datasets: [{
               label: 'Numero parole',
-              data: SentimentData,
+              data: PollData,
               backgroundColor: [
                   'rgba(255, 0, 0, 0.6)',
                   'rgba(0, 153, 0, 0.6)',
