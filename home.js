@@ -25,6 +25,7 @@ async function ResetAllCharts(){
   ResetChart('#booksChartID');
   ResetChart('#booksChartTopID');
   ResetChart('#locationChartID');
+  ResetChart('#PollChartID');
 }
 
 
@@ -211,7 +212,7 @@ window.onload = function () {
 
       if(val<=max && val>=min){
          document.getElementById('numtweets').setAttribute("value",val);
-         document.getElementById('numtweets').value=val;
+         document.getElementById('numtweets').vPollChartIDalue=val;
       }
       else {document.getElementById('numtweets').value=numtweets.getAttribute('value');}
     }
@@ -278,9 +279,72 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
     }
 }
 
-/*async function triviaTweet() {
+async function triviaTweet() {
   await ResetAllCharts();
-}*/
+  $("#base").empty();
+  var trivia = document.getElementById('searchbar').value;
+  trivia = trivia.replace("#", "~");
+  var url = serverUrl + "poll/" + trivia;
+  $.ajax({
+    type: 'GET',
+    url: url,
+    crossDomain: true,
+    success: function (data) {
+      if (data){
+        let total = 0;
+        let totalRight = 0;
+        for (singlePoll of data){
+          let embed = $("<blockquote>");
+          embed.addClass('twitter-tweet');
+          embed.addClass('ourTweets');
+          let atweet = $("<a>");
+          let myurl = "https://twitter.com/tweet/status/" + singlePoll['id'];
+          atweet.attr('href', myurl);
+          embed.append(atweet);
+          let newT = $("<div>");
+          newT.addClass("tweet");
+          newT.append(embed);
+          let correct = $("<div>");
+          correct.addClass("correct-poll");
+          if(singlePoll['Correct'])
+            correct.text("La risposta corretta è la " + singlePoll['Correct'] + "a");
+          else
+            correct.text("La rsiposta corretta non è ancora stata rivelata");
+          newT.append(correct);
+          $("#base").append(newT);
+          let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
+          $("#base").append(scripting)
+          if(singlePoll['Correct']){
+            let actCorrect = singlePoll['Correct'] - 1;
+            for (let i= 0; i < singlePoll['Poll']['options'].length; i++){
+              total+= singlePoll['Poll']['options'][i]['votes'];
+              if(i == actCorrect)
+                totalRight+= singlePoll['Poll']['options'][i]['votes'];
+            }
+          }
+        }
+        if(total > 0){
+          console.log(total);
+          let totalWrong = total - totalRight;
+          let graphAnswers = [totalRight, totalWrong];
+          GraphConteinerConstructor('PollChartID');
+          let newCtx = CtxConstructor('PollChartID');
+          PollChart = new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
+
+        }
+      } else {
+        let newErr = $("<p>");
+        newErr.text("Errore: Poll non trovato");
+        $("#base").append(newErr);
+      }
+    },
+    error: () => {
+      let errore = $("<div>")
+      errore.text("Errore: Poll non trovato");
+      $("#base").append(errore);
+    }
+  })
+}
 
 async function contestTweet() {
   await ResetAllCharts();
@@ -294,6 +358,7 @@ async function contestTweet() {
     crossDomain: true,
     success: function (data) {
       if (data['bando']){
+        let myreg = new RegExp("_", "g")
         let labels = []
         let votes = []
         let top = []
@@ -303,10 +368,10 @@ async function contestTweet() {
         let index;
         let j = 0;
         for (result of topping){
-          labels.push(result['Partecipante']);
+          labels.push(result['Partecipante'].replace(myreg, " "));
           votes.push(result['Voti']);
           if(result['Voti'] > nowtop['vote']){
-            nowtop['part'] = result['Partecipante'];
+            nowtop['part'] = result['Partecipante'].replace(myreg, " ");
             nowtop['vote'] = result['Voti'];
             index = j;
           }
@@ -320,7 +385,7 @@ async function contestTweet() {
           nowtop = {"part" : "", "vote": 0}
           for (result of topping){
             if(result['Voti'] > nowtop['vote']){
-              nowtop['part'] = result['Partecipante'];
+              nowtop['part'] = result['Partecipante'].replace(myreg, " ");
               nowtop['vote'] = result['Voti'];
               index = j
             }
@@ -570,8 +635,6 @@ async function locationTweet() {
                     GraphConteinerConstructor('locationChartID');
                     var BooksTopCtx = CtxConstructor('locationChartID');
                     bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(placesarray, Object.keys(places), "bar", "Città diverse da quella data"));
-                    console.log(Object.keys(places));
-                    console.log(placesarray);
                 },
                 error: function (err) {
                     let newT = $("<div>");

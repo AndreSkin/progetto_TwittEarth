@@ -97,7 +97,7 @@ app.get('/users/:name', async(req, res) => {
   try{
    userTweets = await client.v2.userTimeline(userID.data.id, {'max_results': results, 'expansions':'geo.place_id'});
    if (userTweets._realData.data == undefined) {
-     res.status(200).json("Questo utente non ha mai twittato")
+     res.status(401).json("Questo utente non ha mai twittato")
      return;
    }
   }
@@ -499,7 +499,7 @@ app.get('/stream/tweets', async (req, res) => {
                 "text":eventData.data.text
               });
               console.log("ET: ", emergencytweets)
-              if (emergencytweets.length == 2)
+              if (emergencytweets.length == 5)
               {
                 let removed = false;
                 for (var i = 0; i < emergencytweets.length; i++)
@@ -528,7 +528,7 @@ app.get('/stream/tweets', async (req, res) => {
                   EHtml = '';
                   EText='';
                   ECoords ='';
-
+                  emergencytweets= [];
                 }
               }
             }
@@ -580,6 +580,7 @@ app.get('/poll/:pollTag', async (req, res) => {
               singlepoll = included;
               polls.push({
                 "Text": poll.text,
+                "id": poll.id,
                 "Poll": singlepoll,
                 "Correct":null
               });
@@ -588,12 +589,14 @@ app.get('/poll/:pollTag', async (req, res) => {
         }
       }
       catch (error){
-        //console.log("ERROR IN FINDING POLLS: ", error)
+        console.log("ERROR IN POLL: ", error);
       }
     }
   }
   catch (e){
     console.log("ERROR IN POLL: ", e)
+    res.status(404).json("Errore");
+    return;
   }
 
 
