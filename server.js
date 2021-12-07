@@ -11,6 +11,7 @@ var langdetect = require('langdetect');
 const date_time = require('date-and-time');
 
 let httpServer = require("http").createServer(app);
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 const path = require('path');
 const Server = require("socket.io");
@@ -438,6 +439,30 @@ async function delete_rules(){
 }
 
 
+
+async function getPlace(place) {
+  var xhr = new XMLHttpRequest();
+
+  return new Promise((resolve, reject) => {
+
+    xhr.onreadystatechange = (e) => {
+      if (xhr.readyState !== 4) {
+        return;
+      }
+
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        console.warn('request_error');
+      }
+    };
+
+    xhr.open('GET', "https://nominatim.openstreetmap.org/search?format=json&q=%27" + place);
+    xhr.send();
+  });
+}
+
+
 app.get('/stream/closing', async (req, res) => {
   try {stream.close(); res.status(200).json("Closed")} catch { res.status(401).json("Closed too soon")}
 })
@@ -464,13 +489,6 @@ app.get('/stream/tweets', async (req, res) => {
     { value: 'Uragano', tag: 'ura'}
     ],
   });
-
-
-    /*
-    console.log("ADDED RULES: ", addedRules);
-    let rules = await client.v2.streamRules();
-    console.log("NEW RULES: ", rules)
-    */
 
     stream = await client.v2.searchStream({'expansions':['geo.place_id', 'author_id']});
 
@@ -499,21 +517,38 @@ app.get('/stream/tweets', async (req, res) => {
       ETwitterStreamEvent.Data,
       async eventData => {
         await io.emit('tweet', eventData);
+        //console.log(eventData)
         if (eventData.data.geo.place_id != undefined)
         {
-            let location = await getGeo(eventData.data.geo.place_id);
+            //let location = await getGeo(eventData.data.geo.place_id);
+            let author = eventData.includes.users[0]
+            let location = eventData.includes.places
+            let placecoords =''
+            await getPlace(location[0].full_name).then(res => placecoords = res);
+
+            console.log("INCLUDES: ", location)
+            console.log("PLACE: ", placecoords[0])
+            console.log("AUTHOR: ", author)
+
+
             if (eventData.data.text.includes("SOSigsw10"))
             {
-              console.log("qui")
               var html = `L'hashtag #SOSigsw10 è stato utilizzato! <hr>
-              Il testo del tweet è: ${eventData.data.text} <hr>
-              Presso le coordinate: ${location.coord_center[1]} ; ${location.coord_center[0]}`
+              <p> L'autore del Tweet è l'utente ${author.username}, con id: ${author.id} <\p>
+              <p>Il testo del tweet è: ${eventData.data.text} <\p>
+              <p>Nel seguente luogo: ${location[0].full_name} <\p>
+              <p>Presso le coordinate: ${placecoords[0].lat}, ${placecoords[0].lon}<\p> <hr>
+              Questa è una mail inviata automaticamente da TwittEarth `
 
               sendmail("ET","team10igsw2021@gmail.com","Prova","Prova invio mail",html);
             }
             else {
               emergencytweets.push({
-                "geo":location,
+                "geo":location[0].full_name,
+                "lat":placecoords[0].lat,
+                "lon":placecoords[0].lon,
+                "author":author.username,
+                "auth_id":author.id,
                 "text":eventData.data.text
               });
               console.log("ET: ", emergencytweets)
@@ -522,30 +557,28 @@ app.get('/stream/tweets', async (req, res) => {
                 let removed = false;
                 for (var i = 0; i < emergencytweets.length; i++)
                 {
-                  if ((await Math.abs(emergencytweets[0].geo.coord_center[0] - emergencytweets[i].geo.coord_center[0]) > 1) ||
-                      (await Math.abs(emergencytweets[0].geo.coord_center[1] - emergencytweets[i].geo.coord_center[1]) > 1))
+                  if ((await Math.abs(emergencytweets[0].lat - emergencytweets[i].lat) > 1) ||
+                      (await Math.abs(emergencytweets[0].lon - emergencytweets[i].lon) > 1))
                   {
                     removed=true;
-                    await delete emergencytweets[i]
+                    await emergencytweets.splice(i,1);
                   }
                 }
                 if (removed==false)
                 {
                   var EText=''
                   ECoords=''
+                  var EHtml= `Cinque tweet contenenti parole inerenti le emergenze sono stati scritti! <hr>`
+
                   for(ET of emergencytweets)
                   {
-                    EText = EText + "<p>" + ET.text + "<\p>"
-                    ECoords = ECoords + "<p>" + ET.geo.coord_center[1] +", " + ET.geo.coord_center[0] + "<\p>"
+                    EHtml = EHtml + `<p> Dall'utente: ${ET.author}, con id: ${ET.auth_id}<\p>
+                    <p>Con scritto: ${ET.text}<\p>
+                    <p>Presso: ${ET.geo}, con coordinate: ${ET.lat}, ${ET.lon}<\p> <hr>`
                   }
-                  var EHtml=`Cinque tweet contenenti parole inerenti le emergenze sono stati scritti! <hr>
-                  I testi sono: ${EText} <hr>
-                  Le coordinate sono: ${ECoords}`
-
+                  EHtml = EHtml + `Questa è una mail inviata automaticamente da TwittEarth`
                   sendmail("ET","team10igsw2021@gmail.com","Prova","Prova invio mail",EHtml);
                   EHtml = '';
-                  EText='';
-                  ECoords ='';
                   emergencytweets= [];
                 }
               }
@@ -568,6 +601,7 @@ app.get('/stream/tweets', async (req, res) => {
 
   io.on("connection", (socket) => {
     console.log('IO connected...')
+    resp = [];
   });
 
   //setTimeout(function(stream){try {stream.close()} catch { res.status(401).json("Closed too soon")}}, 60000, stream);
