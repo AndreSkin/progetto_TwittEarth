@@ -66,7 +66,7 @@ function PollChartConstructor(PollData, ChartType){
           labels: ['Errate', 'Corrette'],
           datasets: [{
               label: 'Numero parole',
-              data: PollData,
+              data: SentimentData,
               backgroundColor: [
                   'rgba(255, 0, 0, 0.6)',
                   'rgba(0, 153, 0, 0.6)',
@@ -202,6 +202,20 @@ function WordcloudBuilder(text, SentimentValue, ChartID){
           '<div>{viewTableButton}</div>'
       }
     },
+    plotOptions: {
+       series: {
+           cursor: 'pointer',
+           point: {
+               events: {
+                   click: function () {
+                     let point = this;
+                     searchText(point.name);
+                   }
+               }
+           }
+        }
+    },
+
     series: [{
       colors: WordCloudColors,
       type: 'wordcloud',
