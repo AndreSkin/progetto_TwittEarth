@@ -206,7 +206,7 @@ window.onload = function () {
 
     function changeval(op){
       var val = parseInt(document.getElementById('numtweets').value)
-      var min = document.getElementById('numtweets').min; 
+      var min = document.getElementById('numtweets').min;
       var max = document.getElementById('numtweets').max;
       if (op == 'plus') val++;
       else if (op == 'minus') val--;
