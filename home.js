@@ -15,6 +15,8 @@ var bookChart = null;
 var bookChartTop = null;
 const type = 'doughnut';
 
+const imagesvg = '<svg version="1.1"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 180 180" enable-background="new 0 0 180 180" xml:space="preserve"><path d="M124.6,90.1l4.2-0.3l0.1-4.3l4.2-0.9l-0.5-4.3l4.1-1.4l-1-4.2l3.9-1.9l-1.5-4l3.6-2.3l-2-3.8l3.3-2.8l-2.5-3.5l2.9-3.2l-2.9-3.2l2.5-3.5l-3.3-2.8l2-3.8l-3.6-2.4l1.5-4l-3.9-1.9l1-4.2l-4.1-1.4l0.5-4.3l-4.2-0.9l-0.1-4.3l-4.3-0.3l-0.6-4.3l-4.3,0.2l-1.1-4.2L114.4,9l-1.6-4l-4.1,1.3l-2.1-3.7l-3.9,1.8L100,0.8l-3.7,2.3l-3-3.1L90,2.7L86.7,0l-3,3.1L80,0.8l-2.6,3.4l-3.9-1.8l-2.1,3.7L67.3,5l-1.6,4l-4.2-0.8l-1.1,4.2L56,12.1l-0.6,4.3l-4.3,0.3L51.1,21l-4.2,0.9l0.5,4.3l-4.1,1.4l1,4.2l-3.9,1.9l1.5,4l-3.6,2.3l2,3.8l-3.3,2.8l2.5,3.5l-2.9,3.2l2.9,3.2l-2.5,3.5l3.3,2.8l-2,3.8l3.6,2.4l-1.5,4l3.9,1.9l-1,4.2l4.1,1.4l-0.5,4.3l4.2,0.9l0.1,4.3l4.3,0.3l-30.6,73.9l27.5-11.4L63.6,180L90,116.3l26.4,63.7l11.4-27.5l27.5,11.4L124.6,90.1z M90,18.9c19.1,0,34.5,15.5,34.5,34.6C124.5,72.5,109.1,88,90,88c-19.1,0-34.5-15.5-34.5-34.6C55.5,34.4,70.9,18.9,90,18.9z"/></svg>';
+
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
 
@@ -294,6 +296,14 @@ async function triviaTweet() {
       if (data){
         let total = 0;
         let totalRight = 0;
+
+        let title = $('<h1>');
+        let titlediv = $('<div>');
+        title.text("Trivia Contest " + trivia + " organized by " /*aggiungi*/);
+        titlediv.append(title);
+        titlediv.addClass("titlediv");
+        $("#base").append(titlediv);
+
         for (singlePoll of data){
           let embed = $("<blockquote>");
           embed.addClass('twitter-tweet');
@@ -308,9 +318,9 @@ async function triviaTweet() {
           let correct = $("<div>");
           correct.addClass("correct-poll");
           if(singlePoll['Correct'])
-            correct.text("La risposta corretta è la " + singlePoll['Correct'] + "a");
+            correct.text("The correct answer is: " + singlePoll['Correct']);
           else
-            correct.text("La rsiposta corretta non è ancora stata rivelata");
+            correct.text("The correct answer has not yet been revealed");
           newT.append(correct);
           $("#base").append(newT);
           let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
@@ -401,19 +411,49 @@ async function contestTweet() {
         GraphConteinerConstructor('booksChartTopID');
         var BooksTopCtx = CtxConstructor('booksChartTopID');
         bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti"));
+////////////////////////
         let title = $('<h1>');
         let titlediv = $('<div>');
-        title.text("Concorso " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " bandito da " + data['bando'][0]['Banditore'])
-        titlediv.append(title)
-        titlediv.addClass("titlediv")
-        let first = $('<h1>');
-        let second = $('<h2>');
-        let third = $('<h3>');
-        first.text("Primo: " + top[0]['part'] + " con " + top[0]['vote'] + " voto/i");
-        second.text("Secondo: " + top[1]['part'] + " con " + top[1]['vote'] + " voto/i");
-        third.text("Terzo: " + top[2]['part'] + " con " + top[2]['vote'] + " voto/i");
-        let leaders = $('<div>');
-        leaders.addClass("leaders");
+        title.text("Literary contest " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " organized by " + data['bando'][0]['Banditore'])
+        titlediv.append(title);
+        titlediv.addClass("titlediv");
+
+        let first = $('<li>');
+        let second = $('<li>');
+        let third = $('<li>');
+
+        let firstimage = $('<div>');
+        firstimage.append(imagesvg);
+        firstimage.addClass("place-1");
+        firstimage.addClass("image");
+        let firstcontent = $('<div>');
+        firstcontent.addClass("content");
+        firstcontent.append(("<h2>"+ top[0]['part']+"</h2>"+"<h3>is first</h3>"+"<p>"+top[0]['vote']+" point/s</p>").toUpperCase());
+        first.append(firstimage);
+        first.append(firstcontent);
+
+        let secondimage = $('<div>');
+        secondimage.append(imagesvg);
+        secondimage.addClass("place-2");
+        secondimage.addClass("image");
+        let secondcontent = $('<div>');
+        secondcontent.addClass("content");
+        secondcontent.append(("<h2>"+ top[1]['part']+"</h2>"+"<h3>is second</h3>"+"<p>"+top[1]['vote']+" point/s</p>").toUpperCase());
+        second.append(secondimage);
+        second.append(secondcontent);
+
+        let thirdimage = $('<div>');
+        thirdimage.append(imagesvg);
+        thirdimage.addClass("place-3");
+        thirdimage.addClass("image");
+        let thirdcontent = $('<div>');
+        thirdcontent.addClass("content");
+        thirdcontent.append(("<h2>"+ top[2]['part']+"</h2>"+"<h3>is third</h3>"+"<p>"+top[2]['vote']+" point/s</p>").toUpperCase());
+        third.append(thirdimage);
+        third.append(thirdcontent);
+
+        let leaders = $('<ol>');
+        leaders.addClass("podium-rank");
         leaders.append(first);
         leaders.append(second);
         leaders.append(third);
