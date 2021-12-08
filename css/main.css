@@ -224,3 +224,9 @@ POLL
   font-family: 'Staatliches', cursive !important;
 
 }
+
+@media (max-width: 767px) {
+  html {
+    overflow-y: scroll;
+  }
+}
