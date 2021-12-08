@@ -25,6 +25,11 @@
    #BUTTON
    ========================================================================== */
 
+.aParent div{
+  float: left;
+  clear: none;
+}
+
 #streamdiv{
   position: absolute;
   left: 90vw;

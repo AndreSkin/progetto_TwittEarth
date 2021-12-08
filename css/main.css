@@ -230,3 +230,5 @@ POLL
     overflow-y: scroll;
   }
 }
+
+@media (max-width: 767px) {    #map, #graphs, #base{     width: 100%;     min-width: 100%;   } }
