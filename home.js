@@ -296,6 +296,14 @@ async function triviaTweet() {
       if (data){
         let total = 0;
         let totalRight = 0;
+
+        let title = $('<h1>');
+        let titlediv = $('<div>');
+        title.text("Trivia Contest " + trivia + " organized by " /*aggiungi*/);
+        titlediv.append(title);
+        titlediv.addClass("titlediv");
+        $("#base").append(titlediv);
+
         for (singlePoll of data){
           let embed = $("<blockquote>");
           embed.addClass('twitter-tweet');
@@ -310,9 +318,9 @@ async function triviaTweet() {
           let correct = $("<div>");
           correct.addClass("correct-poll");
           if(singlePoll['Correct'])
-            correct.text("La risposta corretta è la " + singlePoll['Correct'] + "a");
+            correct.text("The correct answer is: " + singlePoll['Correct']);
           else
-            correct.text("La rsiposta corretta non è ancora stata rivelata");
+            correct.text("The correct answer has not yet been revealed");
           newT.append(correct);
           $("#base").append(newT);
           let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
@@ -406,7 +414,7 @@ async function contestTweet() {
 ////////////////////////
         let title = $('<h1>');
         let titlediv = $('<div>');
-        title.text("Concorso " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " bandito da " + data['bando'][0]['Banditore'])
+        title.text("Literary contest " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " organized by " + data['bando'][0]['Banditore'])
         titlediv.append(title);
         titlediv.addClass("titlediv");
 

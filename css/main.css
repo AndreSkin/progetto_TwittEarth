@@ -39,7 +39,9 @@
 }
 
 
-/*PODIUM*/
+/*//////////////////////////////////////
+PODIUM
+///////////////////////////*/
 
 .titlediv{
   font-size: 40px;
@@ -208,5 +210,17 @@ ol.podium-rank > li .content * {
         display: block;
         order: 1!important;
     }
+
+}
+
+/*///////////////////////////
+POLL
+//////////////////////////*/
+
+.correct-poll{
+  font-size: 32px;
+  text-align: center;
+  color: green;
+  font-family: 'Staatliches', cursive !important;
 
 }
