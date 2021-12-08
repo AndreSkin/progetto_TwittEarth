@@ -44,13 +44,15 @@ function MulMapMarkers(Map, TweetsList, User = null, noLoc) {
     for (let i = 0; i < TweetsList.length; i = i + 1) {
         if(!only_geo || noLoc){
           if (TweetsList[i]['geo'] != null) {
-              let tmp;
               if (User != null) {
-                  tmp = User
+                  let tmp = User
+                  L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
+                  MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
               }
-              else tmp = TweetsList[i]['Author'];
-              L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
-              MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
+              else {
+                L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup(TweetsList[i]['Text']);
+                MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
+              }
           }
         }else if(TweetsList[i]['place'] != null){
             console.log("ciao")
