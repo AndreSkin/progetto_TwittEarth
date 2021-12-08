@@ -17,6 +17,7 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">
     </script>
+    <link rel="icon" href="favicon.ico?" type="image/x-icon">
     <link rel="shortcut icon" href="#" />
     <link href="css/main.css" rel="stylesheet" media="all">
     <link href="css/searchbar.css" rel="stylesheet" media="all">
@@ -29,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
     <script src=" https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js" charset="utf-8">
     </script>
   <script src="https://code.highcharts.com/highcharts.js">
@@ -48,9 +49,15 @@
 
 <body class="overflow-hidden container-fluid">
   <div class="row d-flex p-2 justify-content-center">
-    <img src="twittearthicon.jpg"  width="100" alt="icon">
-    <div id="title">
-      TwittEarth
+    <div class="aParent">
+      <div>
+        <img src="twittearthicon.png" height="120" width="100" style="position:relative; top:1vw" alt="icon">
+      </div>
+      <div id="title">
+        TwittEarth
+      </div>
+    </div>
+    <div id="streamdiv">
     </div>
 <!--SEARCHBAR-->
     <div class="searchbar">
@@ -145,6 +152,7 @@
               </div>
         </div>
         <button class="btn-submit" type="submit" id="searchbutton">search</button>
+        <a class="btn-submit my_a" href="./stream.html">stream</a>
     </form>
     </div>
 

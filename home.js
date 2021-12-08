@@ -20,6 +20,14 @@ const imagesvg = '<svg version="1.1"  xmlns="http://www.w3.org/2000/svg" xmlns:x
 //serverUrl = "http://localhost:8000/";
 serverUrl = "https://site202136.tw.cs.unibo.it/";
 
+function resetFilters(){
+  only_geo = false;
+  sent_analyze = false;
+  nomedia = false;
+  veri = false;
+  nocont = false;
+}
+
 async function ResetAllCharts(){
   ResetMap(mymap);
   ResetChart('#SentimentChartID');
@@ -299,7 +307,7 @@ async function triviaTweet() {
 
         let title = $('<h1>');
         let titlediv = $('<div>');
-        title.text("Trivia Contest " + trivia + " organized by " /*aggiungi*/);
+        title.text("Trivia Contest " + trivia.replace("~", ""));
         titlediv.append(title);
         titlediv.addClass("titlediv");
         $("#base").append(titlediv);
@@ -335,7 +343,6 @@ async function triviaTweet() {
           }
         }
         if(total > 0){
-          console.log(total);
           let totalWrong = total - totalRight;
           let graphAnswers = [totalRight, totalWrong];
           GraphConteinerConstructor('PollChartID');

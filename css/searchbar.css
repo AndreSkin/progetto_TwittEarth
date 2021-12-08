@@ -24,6 +24,24 @@
 /* ==========================================================================
    #BUTTON
    ========================================================================== */
+
+
+
+.aParent div{
+  float: left;
+  clear: none;
+}
+
+#streamdiv{
+  position: absolute;
+  left: 90vw;
+  margin: 2vw;
+}
+
+.my_a:hover{
+  text-decoration: none;
+}
+
 .btn-submit {
   outline: none;
   border: none;
@@ -215,4 +233,9 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.my_a{
+  background-color: #212529;
+  color: white;
 }
