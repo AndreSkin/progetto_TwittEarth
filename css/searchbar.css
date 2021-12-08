@@ -24,6 +24,17 @@
 /* ==========================================================================
    #BUTTON
    ========================================================================== */
+
+#streamdiv{
+  position: absolute;
+  left: 90vw;
+  margin: 2vw;
+}
+
+.my_a:hover{
+  text-decoration: none;
+}
+
 .btn-submit {
   outline: none;
   border: none;

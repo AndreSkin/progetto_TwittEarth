@@ -79,7 +79,7 @@ function PollChartConstructor(PollData, ChartType){
           }]
       },
       options: {
-          responsive:false,
+          responsive:true,
           scales:  {
             yAxes: ChartType=='bar' ? [{
               ticks: {
@@ -208,6 +208,8 @@ function WordcloudBuilder(text, SentimentValue, ChartID){
            point: {
                events: {
                    click: function () {
+                     document.getElementById('radio_textTweets').click();
+                     resetFilters();
                      let point = this;
                      searchText(point.name);
                    }

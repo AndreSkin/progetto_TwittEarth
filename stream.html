@@ -58,10 +58,20 @@
         var my_pausa = document.getElementById('pausing');
         my_pausa.checked = false;
         my_pausa.addEventListener('click', () => pausing = !pausing);
+        closeStream();
+        callStream();
       }
       //serverUrl = "http://localhost:8000/";
       serverUrl = "https://site202136.tw.cs.unibo.it/";
-
+      function callStream(){
+        $.ajax({
+          type: 'GET',
+          url: serverUrl + "stream/tweets",
+          crossDomain: true,
+          success: () => {console.log("Connected to Stream")}
+        })
+        //setTimeout(callStream, 65000);
+      }
       getstream();
 
       async function getstream(){
