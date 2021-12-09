@@ -116,8 +116,10 @@ function RandomChartColorsGenerator(ListOfItems){
 }
 
 //Grafico di n elementi con n colori autogenerati
-function InfiniteElementsChartConstructor(Data, Names, ChartType, label){
-  let Colors = RandomChartColorsGenerator(Names)
+function InfiniteElementsChartConstructor(Data, Names, ChartType, label, Colors){
+  if (Colors == null){
+    Colors = RandomChartColorsGenerator(Names)
+  }
   let ChartStructure = {
       type: ChartType,
       data: {

@@ -412,12 +412,13 @@ async function contestTweet() {
           topping.splice(index, 1);
           top.push(nowtop);
         }
+        Colors = RandomChartColorsGenerator(labels);
         GraphConteinerConstructor('booksChartID');
         var BooksCtx = CtxConstructor('booksChartID');
-        bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti"));
+        bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti", Colors));
         GraphConteinerConstructor('booksChartTopID');
         var BooksTopCtx = CtxConstructor('booksChartTopID');
-        bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti"));
+        bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(votes, labels, "bar", "Numero Voti", Colors));
 ////////////////////////
         let title = $('<h1>');
         let titlediv = $('<div>');
@@ -517,7 +518,7 @@ async function userTimeline() {
             }
             GraphConteinerConstructor('userTimeID');
             let UserCtx = CtxConstructor('userTimeID');
-            userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "bar", "Occorrenza Tweet"));
+            userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "bar", "Occorrenza Tweet", null));
         },
         error: function (err) {
             let newT = $("<div>");
@@ -701,7 +702,7 @@ async function locationTweet() {
                     }
                     GraphConteinerConstructor('locationChartID');
                     var BooksTopCtx = CtxConstructor('locationChartID');
-                    bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(placesarray, Object.keys(places), "bar", "Città diverse da quella data"));
+                    bookChartTop = new Chart(BooksTopCtx, InfiniteElementsChartConstructor(placesarray, Object.keys(places), "bar", "Città diverse da quella data", null));
                 },
                 error: function (err) {
                     let newT = $("<div>");
