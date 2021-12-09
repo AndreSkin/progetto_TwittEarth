@@ -421,7 +421,7 @@ async function contestTweet() {
 ////////////////////////
         let title = $('<h1>');
         let titlediv = $('<div>');
-        title.text("Literary contest " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "") + " organized by " + data['bando'][0]['Banditore'])
+        title.text("Literary contest " + data['bando'][0]['Text'].replace("#bandiscoconcorso", "").split(" ")[0] + " organized by " + data['bando'][0]['Banditore'])
         titlediv.append(title);
         titlediv.addClass("titlediv");
 
