@@ -518,7 +518,7 @@ async function userTimeline() {
             }
             GraphConteinerConstructor('userTimeID');
             let UserCtx = CtxConstructor('userTimeID');
-            userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "bar", "Occorrenza Tweet", null));
+            userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs.reverse(), myDates.reverse(), "line", "Tweet Timeline", null));
         },
         error: function (err) {
             let newT = $("<div>");
@@ -606,15 +606,12 @@ async function searchText(frase) {
         let newS = $('<div>');
         let p = $('<p>');
         p.text("Il sentimento per questa stringa è: " + data['analysis_data']['avg']);
-        newS.append(p);
-        p = $('<p>');
-        p.text("Le parole totali analizzate sono: " + data['analysis_data']['Tot_words']);
-        newS.append(p);
-        p = $('<p>');
-        p.text("Le parole positive totali sono: " + data['analysis_data']['Tot_pos']);
-        newS.append(p);
-        p = $('<p>');
-        p.text("Le parole negative totali sono: " + data['analysis_data']['Tot_neg']);
+        if (data['analysis_data']['avg'] >= 1)
+          p.addClass('correct-poll');
+        else if (data['analysis_data']['avg'] <= -1)
+          p.addClass('correct-poll-bad');
+        else
+          p.addClass('correct-poll-neutral');
         newS.append(p);
         $('#base').append('<br>');
         $("#base").append(newS);

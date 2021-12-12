@@ -81,7 +81,7 @@ function PollChartConstructor(PollData, ChartType){
       options: {
           responsive:true,
           scales:  {
-            yAxes: ChartType=='bar' ? [{
+            yAxes: (ChartType=='bar' || ChartType=='line') ? [{
               ticks: {
                 beginAtZero: true
                 }
@@ -127,15 +127,15 @@ function InfiniteElementsChartConstructor(Data, Names, ChartType, label, Colors)
           datasets: [{
               label: label,
               data: Data,
-              backgroundColor: Colors[0],
-              borderColor: Colors[1],
+              backgroundColor: (ChartType == 'bar') ? Colors[0] : 'rgba(255,118,37,0.7)',
+              borderColor: (ChartType == 'bar') ? Colors[1] : 'rgba(255,118,37,1)',
               borderWidth: 3
           }]
       },
       options: {
           responsive:true,
           scales:  {
-            yAxes: ChartType=='bar' ? [{
+            yAxes: (ChartType=='bar' || ChartType=='line') ? [{
               ticks: {
                 beginAtZero: true
                 }
@@ -149,6 +149,7 @@ function InfiniteElementsChartConstructor(Data, Names, ChartType, label, Colors)
 function WordcloudBuilder(text, SentimentValue, ChartID){
   const RegEx_http = RegExp('https://t', "g");
   text = text.replace(RegEx_http, '');
+  text = text.split(' ').slice(0, 1000).join(' ');
   let WordCloudColors = [];
   if (SentimentValue >= 1) WordCloudColors = ['#00E500', '#00B200', '#00FF00', '#007F00', '#00B300'];
   else if (SentimentValue < 1 && SentimentValue > -1 && SentimentValue != null) WordCloudColors = ['#808080', '#8A8A8A', '#9D9D9D', '#A7A7A7', '#767676'];
