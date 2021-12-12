@@ -127,8 +127,8 @@ function InfiniteElementsChartConstructor(Data, Names, ChartType, label, Colors)
           datasets: [{
               label: label,
               data: Data,
-              backgroundColor: (ChartType == 'bar') ? Colors[0] : 'rgba(255,118,37,0.7)',
-              borderColor: (ChartType == 'bar') ? Colors[1] : 'rgba(255,118,37,1)',
+              backgroundColor: (ChartType == 'bar' || ChartType == 'doughnut') ? Colors[0] : 'rgba(255,118,37,0.7)',
+              borderColor: (ChartType == 'bar' || ChartType == 'doughnut') ? Colors[1] : 'rgba(255,118,37,1)',
               borderWidth: 3
           }]
       },
