@@ -112,6 +112,7 @@ function changebar(choice) {
             }
 
         }
+        resetFilters();
         $("#base").empty();
         if (choice == "user") {
             setValues("User name...","User", "javascript:userTimeline()", true, " user name", 5);
