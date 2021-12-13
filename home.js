@@ -557,7 +557,7 @@ async function hashtagTweet() {
       let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
       $("#base").append(scripting)
       let TextTermCloud = '';
-      for (singleText of data['data']) {
+      for (let singleText of data['data']) {
         if ((singleText['geo'] != null) || (!only_geo))
           TextTermCloud = TextTermCloud + singleText['Text'];
       }
