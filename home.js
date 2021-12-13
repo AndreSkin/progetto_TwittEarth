@@ -332,7 +332,7 @@ async function triviaTweet() {
           let graphAnswers = [totals.totalRight, totalWrong];
           GraphConteinerConstructor('PollChartID');
           let newCtx = CtxConstructor('PollChartID');
-          new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
+          let myChart = new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
 
         }
       } else {
@@ -513,7 +513,7 @@ async function userTimeline() {
       let UserCtx = CtxConstructor('userTimeID');
       myOccurs = myOccurs.reverse();
       myDates = myDates.reverse();
-      new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "line", "Tweet Timeline", null));
+      let myChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "line", "Tweet Timeline", null));
     },
     error: function (err) {
       let newT = $("<div>");
@@ -658,7 +658,7 @@ async function locationTweet() {
           let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
           $("#base").append(scripting)
           let TextTermCloud = '';
-          for (singleText of data['statuses']) {
+          for (let singleText of data['statuses']) {
             if ((singleText['place'] != null) || (!only_geo))
               TextTermCloud = TextTermCloud + singleText['Text'];
           }
