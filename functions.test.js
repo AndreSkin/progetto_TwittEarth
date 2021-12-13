@@ -15,7 +15,9 @@ describe("Testing GETs", () => {
       });
       test("Every returned tweet contains #nasa", () => {
         for(let i = 0; i < formattedTestHashtags.data.length; i++) {
-          expect(formattedTestHashtags.data[0].Text).toMatch(/#nasa/i);
+          //if(!formattedTestHashtags.data[i].Text.match(/RT/) && !formattedTestHashtags.data[i].Text.match(/t.co/))
+          if(!(new RegExp(/RT/)).test(formattedTestHashtags.data[i].Text) && !(new RegExp(/t.co/)).test(formattedTestHashtags.data[i].Text))
+            expect(formattedTestHashtags.data[i].Text).toMatch(/#nasa/i);
         }
     })
   })
@@ -28,8 +30,9 @@ describe("Testing GETs", () => {
       })
       test("Every returned tweet contains the word \"nasa\"", () => {
         for(let i = 0; i<formattedTestText.data.length; i++){
-          if(!formattedTestText.data[i].Text.match(/RT/))
-          expect(formattedTestText.data[i].Text).toMatch(/nasa/i);
+          //if(!formattedTestText.data[i].Text.match(/RT/))
+          if(!(new RegExp(/RT/)).test(formattedTestText.data[i].Text) && !(new RegExp(/t.co/)).test(formattedTestText.data[i].Text))
+            expect(formattedTestText.data[i].Text).toMatch(/nasa/i);
         }
       })
     })
@@ -41,7 +44,7 @@ describe("Testing GETs", () => {
           expect(testUsername.statusCode).toBe(200);
       })
       test("The only returned tweet has the expected text", () => {
-        expect(formattedTestUsername.tweets[0].Text).toMatch(/testing tweet uniboswe/i)
+        expect(formattedTestUsername.timeline.tweets[0].Text).toMatch(/testing tweet uniboswe/i)
       })
     })
     describe("with given default location", () => {
@@ -89,7 +92,7 @@ describe("Testing other functions", () =>{
       expect(formattedNumberTest.Tot_tweets).toBe(numberOfTweets);
     })
   })
-  describe("Testing tweets without media", () =>{
+  describe("Testing tweets without media", () =>{//Too many requests
     beforeAll(async() => {
       return noMediaTest = await request(external.httpServer).get('/recents/nasa?hasmedia=false'), formattedNoMediaTest = JSON.parse(noMediaTest.text);
     })
@@ -97,7 +100,7 @@ describe("Testing other functions", () =>{
       expect(noMediaTest.statusCode).toEqual(200);
     })
   })
-  describe("Testing tweet excluding some words", () => {
+  describe("Testing tweet excluding some words", () => {//Too many requests
     beforeAll(async() => {
       return testExcludingWords = await request(external.httpServer).get('/recents/nasa?sentiment=false&notcontain=space'), formattedTestExcludingWords = JSON.parse(testExcludingWords.text);
     })
@@ -122,11 +125,9 @@ describe("Testing other functions", () =>{
   })
   describe("Testing trivia", () => {
       beforeAll(async() => {
-        return testPoll = await request(external.httpServer).get('/poll/provapolligsw10'), formattedTestPoll = JSON.parse(testPoll.text)
+        return testPoll = await request(external.httpServer).get('/poll/triviapolligsw10'), formattedTestPoll = JSON.parse(testPoll.text)
       })
       test("Every tweet with the testing hashtag contains a poll", () => {
-        console.log(formattedTestPoll.length)
-        console.log(formattedTestPoll)
         for(let i = 0; i < formattedTestPoll.length; i++){
           expect(formattedTestPoll[i].Poll).toBeDefined();
         }
