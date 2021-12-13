@@ -3,7 +3,7 @@ var tweetcounter = 0;
 const onScreenTweets = 20;
 function resetpause() {
     pausing = !pausing;
-    if (pausing == false)
+    if (!pausing)
         tweetcounter = 0;
 }
 window.onload = function () {
@@ -13,8 +13,8 @@ window.onload = function () {
     closeStream();
     callStream();
 }
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+//var serverUrl = "http://localhost:8000/";
+var serverUrl = "https://site202136.tw.cs.unibo.it/";
 function callStream() {
     $.ajax({
         type: 'GET',
@@ -22,16 +22,13 @@ function callStream() {
         crossDomain: true,
         success: () => { console.log("Connected to Stream") }
     })
-    //setTimeout(callStream, 65000);
 }
 getstream();
 
 async function getstream() {
-    const tweetStream = document.getElementById('tweetStream');
     const socket = io(serverUrl);
     console.log(socket);
 
-    const tweets = []
 
     socket.on('connection', () => {
         console.log('Connected to server...')
@@ -47,10 +44,7 @@ async function getstream() {
             id: tweet.data.id,
             text: tweet.data.text,
         }
-
-        const tweetEl = document.createElement('div')
         let newT = $("<div>");
-        let scripting = ``;
         if (pausing == false) {
             let embed = $("<blockquote>");
             embed.addClass('twitter-tweet');
@@ -69,7 +63,7 @@ async function getstream() {
             tweetcounter = tweetcounter + 1;
         }
         if (tweetcounter >= onScreenTweets) {
-            for (i = 0; i < onScreenTweets; i++) {
+            for (let i = 0; i < onScreenTweets; i++) {
                 $("#tweetStream div").last().remove();
                 $("#tweetStream script").last().remove();
             }
