@@ -618,7 +618,7 @@ async function searchText(frase) {
         SentimentChart = new Chart(SentimetCtx, SentimentChartConstructor(SData, type));
       }
       let TextTermCloud = '';
-      for (singleText of data['data']) {
+      for (let singleText of data['data']) {
         if ((singleText['geo'] != null) || (!only_geo))
           TextTermCloud = TextTermCloud + singleText['Text'];
       }
