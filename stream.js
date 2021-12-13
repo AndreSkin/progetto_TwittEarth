@@ -45,7 +45,7 @@ async function getstream() {
             text: tweet.data.text,
         }
         let newT = $("<div>");
-        if (pausing == false) {
+        if (!pausing) {
             let embed = $("<blockquote>");
             embed.addClass('twitter-tweet');
             embed.addClass('ourTweets');

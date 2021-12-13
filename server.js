@@ -270,7 +270,7 @@ app.get('/users/:name', async (req, res) => {
       }
       //Altrimenti aggiorno il contatore delle occorrenze
       else {
-        for (date of dates) {
+        for (let date of dates) {
           if (date.Date == formattedDate) {
             date.Times = date.Times + 1;
           }
@@ -357,7 +357,7 @@ app.get('/recents/:word', async (req, res) => {
   }
 
   if (notcontain[0] != '') {
-    for (onenot of notcontain)
+    for (let onenot of notcontain)
       query = query + " -" + onenot;
   }
 
@@ -518,7 +518,6 @@ app.get('/stream/tweets', async (req, res) => {
     );
 
     var emergencytweets = [];
-    var coords = [];
     stream.on(
       // Emitted when a Twitter payload (a tweet or not, given the endpoint).
       ETwitterStreamEvent.Data,
@@ -559,25 +558,24 @@ app.get('/stream/tweets', async (req, res) => {
               let removed = false;
               for (var i = 0; i < emergencytweets.length; i++) {
                 //Prendo come riferimento il primo per le coordinate
-                if ((await Math.abs(emergencytweets[0].lat - emergencytweets[i].lat) > 1) ||
-                  (await Math.abs(emergencytweets[0].lon - emergencytweets[i].lon) > 1)) {
+                if ((Math.abs(emergencytweets[0].lat - emergencytweets[i].lat) > 1) ||
+                  (Math.abs(emergencytweets[0].lon - emergencytweets[i].lon) > 1)) {
                   removed = true;
                   //Se i tweet sono lontani dal primo li rimuovo
-                  await emergencytweets.splice(i, 1);
+                  emergencytweets.splice(i, 1);
                 }
               }
-              if (removed == false) {
+              if (!removed) {
                 //Se non ho rimosso tweets significa che sono tutti vicini, quindi invio la mail
                 var EHtml = `Cinque tweet contenenti parole inerenti le emergenze sono stati scritti! <hr>`
 
-                for (ET of emergencytweets) {
+                for (let ET of emergencytweets) {
                   EHtml = EHtml + `<p> Dall'utente: ${ET.author}, con id: ${ET.auth_id}<\p>
                     <p>Con scritto: ${ET.text}<\p>
                     <p>Presso: ${ET.geo}, con coordinate: ${ET.lat}, ${ET.lon}<\p> <hr>`
                 }
                 EHtml = EHtml + `Questa è una mail inviata automaticamente da TwittEarth`
                 sendmail("ET", "team10igsw2021@gmail.com", "Prova", "Prova invio mail", EHtml);
-                EHtml = '';
                 emergencytweets = [];
               }
             }
@@ -601,14 +599,13 @@ app.get('/stream/tweets', async (req, res) => {
     console.log('IO connected...')
   });
 
-  //setTimeout(function(stream){try {stream.close()} catch { res.status(401).json("Closed too soon")}}, 60000, stream);
 });
 
 //API per trivia tramite poll
 app.get('/poll/:pollTag', async (req, res) => {
   var PollTweets = '';
   try {
-    query = req.params.pollTag;
+    let query = req.params.pollTag;
 
     //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
     if (query[0] == '~') { //~ perchè è così che arrivano le richieste dato che # è un carattere vietato
@@ -622,10 +619,10 @@ app.get('/poll/:pollTag', async (req, res) => {
     PollTweets = await client.v2.search(query, { 'expansions': ['attachments.poll_ids', 'author_id'], 'poll.fields': 'duration_minutes,end_datetime,id,options,voting_status' });
     var polls = [];
     var singlepoll = '';
-    for (poll of PollTweets._realData.data) {
+    for (let poll of PollTweets._realData.data) {
       try {
         if (poll.attachments.poll_ids != undefined) {
-          for (included of PollTweets._realData.includes.polls) {
+          for (let included of PollTweets._realData.includes.polls) {
             if (included.id == poll.attachments.poll_ids) {
               singlepoll = included;
               polls.push({
@@ -712,7 +709,7 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
     }
 
     const regExSpace = new RegExp(' ', "g");
-    for (user of Partecipanti._realData.data) {
+    for (let user of Partecipanti._realData.data) {
       if (date_time.subtract(new Date(user.created_at), dataBando).toDays() < duration) {
         concorso.partecipanti.push(user.text.replace('#' + 'partecipoconcorso' + query, "").trim().replace(regExSpace, "_").toLowerCase())
       }
@@ -726,7 +723,7 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
       return;
     }
 
-    for (voter of Voters._realData.data) {
+    for (let voter of Voters._realData.data) {
       let voto = voter.text.replace('#' + 'votoconcorso' + query, "").trim().replace(regExSpace, "_").toLowerCase()
       var checkpartecipa = (element) => element == voto;
       var checkvoted = (element) => element == voter.author_id;
@@ -758,7 +755,7 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
     }
 
     //Creo il report libri - numero di voti
-    for (part of concorso.partecipanti) {
+    for (let part of concorso.partecipanti) {
       var contavoti = concorso.votanti.filter(elem => elem.Voto == part);
       concorso.results.push({
         "Partecipante": part,

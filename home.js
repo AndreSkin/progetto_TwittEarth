@@ -4,11 +4,7 @@ var nomedia = false;
 var veri = false;
 var nocont = false;
 var mymap = L.map('map').setView([0, 0], 2);
-//var SentimetCtx = document.getElementById("SentimentChartID").getContext("2d");
-//var LocalitiesCtx = document.getElementById("LocalitiesChart").getContext("2d");
 
-//var BooksCtxTop = document.getElementById("booksChartTopID").getContext("2d");
-//var PollCtx = document.getElementById("PollChart").getContext("2d");
 var SentimentChart = null;
 var WordCloud = null;
 var bookChart = null;
@@ -17,8 +13,8 @@ const type = 'doughnut';
 
 const imagesvg = '<svg version="1.1"  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 180 180" enable-background="new 0 0 180 180" xml:space="preserve"><path d="M124.6,90.1l4.2-0.3l0.1-4.3l4.2-0.9l-0.5-4.3l4.1-1.4l-1-4.2l3.9-1.9l-1.5-4l3.6-2.3l-2-3.8l3.3-2.8l-2.5-3.5l2.9-3.2l-2.9-3.2l2.5-3.5l-3.3-2.8l2-3.8l-3.6-2.4l1.5-4l-3.9-1.9l1-4.2l-4.1-1.4l0.5-4.3l-4.2-0.9l-0.1-4.3l-4.3-0.3l-0.6-4.3l-4.3,0.2l-1.1-4.2L114.4,9l-1.6-4l-4.1,1.3l-2.1-3.7l-3.9,1.8L100,0.8l-3.7,2.3l-3-3.1L90,2.7L86.7,0l-3,3.1L80,0.8l-2.6,3.4l-3.9-1.8l-2.1,3.7L67.3,5l-1.6,4l-4.2-0.8l-1.1,4.2L56,12.1l-0.6,4.3l-4.3,0.3L51.1,21l-4.2,0.9l0.5,4.3l-4.1,1.4l1,4.2l-3.9,1.9l1.5,4l-3.6,2.3l2,3.8l-3.3,2.8l2.5,3.5l-2.9,3.2l2.9,3.2l-2.5,3.5l3.3,2.8l-2,3.8l3.6,2.4l-1.5,4l3.9,1.9l-1,4.2l4.1,1.4l-0.5,4.3l4.2,0.9l0.1,4.3l4.3,0.3l-30.6,73.9l27.5-11.4L63.6,180L90,116.3l26.4,63.7l11.4-27.5l27.5,11.4L124.6,90.1z M90,18.9c19.1,0,34.5,15.5,34.5,34.6C124.5,72.5,109.1,88,90,88c-19.1,0-34.5-15.5-34.5-34.6C55.5,34.4,70.9,18.9,90,18.9z"/></svg>';
 
-//serverUrl = "http://localhost:8000/";
-serverUrl = "https://site202136.tw.cs.unibo.it/";
+//var serverUrl = "http://localhost:8000/";
+var serverUrl = "https://site202136.tw.cs.unibo.it/";
 
 function resetFilters() {
   only_geo = false;
@@ -131,6 +127,37 @@ function changebar(choice) {
 }
 
 
+function setPlusMinus(){
+  //bottoni + e -
+  var plusbutton = document.getElementById('plusbutton');
+  var minusbutton = document.getElementById('minusbutton');
+  var numtweets = document.getElementById('numtweets');
+
+  plusbutton.addEventListener("click", () => { changeval('plus'); })
+  minusbutton.addEventListener("click", () => { changeval('minus'); })
+  numtweets.addEventListener('change', () => { changeval('equal'); })
+
+  function changeval(op) {
+    var val = parseInt(document.getElementById('numtweets').value)
+    var min = document.getElementById('numtweets').min;
+    var max = document.getElementById('numtweets').max;
+    if (op == 'plus') val++;
+    else if (op == 'minus') val--;
+
+    if (val <= max && val >= min) {
+      document.getElementById('numtweets').setAttribute("value", val);
+      document.getElementById('numtweets').value = val;
+    }
+    else { document.getElementById('numtweets').value = numtweets.getAttribute('value'); }
+  }
+}
+
+function uncheckAndListen(id, myChangebar){
+  let choice = document.getElementById(id);
+  choice.checked = false;
+  choice.addEventListener('click', changebar(myChangebar), false);
+}
+
 window.onunload = function () {
   closeStream();
 }
@@ -142,31 +169,15 @@ window.onload = function () {
   function myonload() {
     callStream();
     BlankMap(mymap);
-    only_geo = false;
-    sent_analyze = false;
-    nomedia = false;
-    veri = false;
-    nocont = false;
+    resetFilters();
     document.getElementById('numtweets').value = 25;
     document.getElementById('searchbar').value = "";
-    var choice_user = document.getElementById('radio_userTimeline');
-    var choice_text = document.getElementById('radio_textTweets');
-    var choice_hashtag = document.getElementById('radio_hashtagTweets');
-    var choice_location = document.getElementById('radio_location');
-    var choice_contest = document.getElementById('radio_contest');
-    var choice_trivia = document.getElementById('radio_trivia');
-    choice_contest.checked = false;
-    choice_trivia.checked = false;
-    choice_text.checked = false;
-    choice_hashtag.checked = false;
-    choice_location.checked = false;
-    choice_user.checked = true;
-    choice_user.addEventListener('click', changebar("user"), false);
-    choice_text.addEventListener('click', changebar("text"), false);
-    choice_hashtag.addEventListener('click', changebar("hashtag"), false);
-    choice_location.addEventListener('click', changebar("location"), false);
-    choice_contest.addEventListener('click', changebar("contest"), false);
-    choice_trivia.addEventListener('click', changebar("trivia"), false);
+    uncheckAndListen('radio_userTimeline', "user");
+    uncheckAndListen('radio_textTweets', "text");
+    uncheckAndListen('radio_hashtagTweets', "hashtag");
+    uncheckAndListen('radio_location', "location");
+    uncheckAndListen('radio_contest', "contest");
+    uncheckAndListen('radio_trivia', "trivia");
     var choice_veri = document.getElementById('verified');
     var choice_geo = document.getElementById('check_geo');
     var choice_sent = document.getElementById('check_sent');
@@ -197,9 +208,9 @@ window.onload = function () {
     }
 
     function changefilternumber(filter) {
-      var filternumber = parseInt(document.getElementById('input-end').placeholder);
-      if (filter) document.getElementById('input-end').setAttribute('placeholder', ++filternumber);
-      else document.getElementById('input-end').setAttribute('placeholder', --filternumber);
+      let filternumber = parseInt(document.getElementById('input-end').placeholder);
+      if (filter) document.getElementById('input-end').setAttribute('placeholder', filternumber+1);
+      else document.getElementById('input-end').setAttribute('placeholder', filternumber-1);
     }
     choice_geo.addEventListener('change', click_geo, false);
     choice_sent.addEventListener('change', click_sent, false);
@@ -207,29 +218,7 @@ window.onload = function () {
     choice_media.addEventListener('change', () => { nomedia = choice_media.checked; changefilternumber(nomedia) }, false)
     choice_nocont.addEventListener('input', click_nocont, false);
 
-    //bottoni + e -
-    var plusbutton = document.getElementById('plusbutton');
-    var minusbutton = document.getElementById('minusbutton');
-    var numtweets = document.getElementById('numtweets');
-
-    plusbutton.addEventListener("click", () => { changeval('plus'); })
-    minusbutton.addEventListener("click", () => { changeval('minus'); })
-    numtweets.addEventListener('change', () => { changeval('equal'); })
-
-    function changeval(op) {
-      var val = parseInt(document.getElementById('numtweets').value)
-      var min = document.getElementById('numtweets').min;
-      var max = document.getElementById('numtweets').max;
-      if (op == 'plus') val++;
-      else if (op == 'minus') val--;
-
-      if (val <= max && val >= min) {
-        document.getElementById('numtweets').setAttribute("value", val);
-        document.getElementById('numtweets').value = val;
-      }
-      else { document.getElementById('numtweets').value = numtweets.getAttribute('value'); }
-    }
-    ///////
+    setPlusMinus();
   }
 }
 
@@ -258,37 +247,42 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
       newT.append(embed);
       if (sentiment) {
         if (data['analysis_data']['avg'] != null) {
-          let newSent = $('<div>')
-          newSent.addClass('sentiment');
-          let p = $("<p>");
-          p.text("Score: " + tweet['sentiment']['eval'][0]['Score']);
-          newSent.append(p);
-          p = $("<p>");
-          p.text("Numero di parole positive: " + tweet['sentiment']['eval'][0]['PosL']);
-          newSent.append(p);
-          let t = ""
-          for (let pos of tweet['sentiment']['eval'][0]['Pos']) {
-            t += pos + ", "
-          }
-          p = $("<p>");
-          p.text("Parole positive: " + t);
-          newSent.append(p);
-          p = $("<p>");
-          p.text("Numero di parole negative: " + tweet['sentiment']['eval'][0]['NegL']);
-          newSent.append(p);
-          let tn = ""
-          for (let pos of tweet['sentiment']['eval'][0]['Neg']) {
-            tn += pos + ", "
-          }
-          p = $("<p>");
-          p.text("Parole negative: " + tn);
-          newSent.append(p);
+          let newSent = sentimentize(tweet);
           newT.append(newSent);
         }
       }
       await $("#base").append(newT);
     }
   }
+}
+
+function sentimentize(tweet) {
+  let newSent = $('<div>');
+  newSent.addClass('sentiment');
+  let p = $("<p>");
+  p.text("Score: " + tweet['sentiment']['eval'][0]['Score']);
+  newSent.append(p);
+  p = $("<p>");
+  p.text("Numero di parole positive: " + tweet['sentiment']['eval'][0]['PosL']);
+  newSent.append(p);
+  let t = "";
+  for (let pos of tweet['sentiment']['eval'][0]['Pos']) {
+    t += pos + ", ";
+  }
+  p = $("<p>");
+  p.text("Parole positive: " + t);
+  newSent.append(p);
+  p = $("<p>");
+  p.text("Numero di parole negative: " + tweet['sentiment']['eval'][0]['NegL']);
+  newSent.append(p);
+  let tn = "";
+  for (let pos of tweet['sentiment']['eval'][0]['Neg']) {
+    tn += pos + ", ";
+  }
+  p = $("<p>");
+  p.text("Parole negative: " + tn);
+  newSent.append(p);
+  return newSent;
 }
 
 async function triviaTweet() {
@@ -303,9 +297,6 @@ async function triviaTweet() {
     crossDomain: true,
     success: function (data) {
       if (data) {
-        let total = 0;
-        let totalRight = 0;
-
         let title = $('<h1>');
         let titlediv = $('<div>');
         title.text("Trivia Contest " + trivia.replace("~", ""));
@@ -313,7 +304,7 @@ async function triviaTweet() {
         titlediv.addClass("titlediv");
         $("#base").append(titlediv);
 
-        for (singlePoll of data) {
+        for (let singlePoll of data) {
           let embed = $("<blockquote>");
           embed.addClass('twitter-tweet');
           embed.addClass('ourTweets');
@@ -334,21 +325,14 @@ async function triviaTweet() {
           $("#base").append(newT);
           let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
           $("#base").append(scripting)
-          if (singlePoll['Correct']) {
-            let actCorrect = singlePoll['Correct'] - 1;
-            for (let i = 0; i < singlePoll['Poll']['options'].length; i++) {
-              total += singlePoll['Poll']['options'][i]['votes'];
-              if (i == actCorrect)
-                totalRight += singlePoll['Poll']['options'][i]['votes'];
-            }
-          }
+          totals = countTotalAnswers(singlePoll, 0, 0);
         }
-        if (total > 0) {
-          let totalWrong = total - totalRight;
-          let graphAnswers = [totalRight, totalWrong];
+        if (totals.total > 0) {
+          let totalWrong = totals.total - totals.totalRight;
+          let graphAnswers = [totals.totalRight, totalWrong];
           GraphConteinerConstructor('PollChartID');
           let newCtx = CtxConstructor('PollChartID');
-          PollChart = new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
+          let PollChart = new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
 
         }
       } else {
@@ -363,6 +347,18 @@ async function triviaTweet() {
       $("#base").append(errore);
     }
   })
+}
+
+function countTotalAnswers(singlePoll, total, totalRight) {
+  if (singlePoll['Correct']) {
+    let actCorrect = singlePoll['Correct'] - 1;
+    for (let i = 0; i < singlePoll['Poll']['options'].length; i++) {
+      total += singlePoll['Poll']['options'][i]['votes'];
+      if (i == actCorrect)
+        totalRight += singlePoll['Poll']['options'][i]['votes'];
+    }
+  }
+  return { 'total': total, 'totalRight': totalRight };
 }
 
 async function contestTweet() {
@@ -382,7 +378,6 @@ async function contestTweet() {
         let votes = []
         let top = []
         let nowtop = { "part": "", "vote": 0 }
-        let topnames = []
         let topping = data['results'];
         let index;
         let j = 0;
@@ -402,7 +397,7 @@ async function contestTweet() {
         for (let i = 0; i < 2; i++) {
           j = 0
           nowtop = { "part": "", "vote": 0 }
-          for (result of topping) {
+          for (let result of topping) {
             if (result['Voti'] > nowtop['vote']) {
               nowtop['part'] = result['Partecipante'].replace(myreg, " ");
               nowtop['vote'] = result['Voti'];
@@ -413,7 +408,7 @@ async function contestTweet() {
           topping.splice(index, 1);
           top.push(nowtop);
         }
-        Colors = RandomChartColorsGenerator(labels);
+        let Colors = RandomChartColorsGenerator(labels);
         GraphConteinerConstructor('booksChartID');
         var BooksCtx = CtxConstructor('booksChartID');
         bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti", Colors));
@@ -503,14 +498,11 @@ async function userTimeline() {
       let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
       $("#base").append(scripting)
       let TextTermCloud = '';
-      for (singleText of data['timeline']['tweets']) {
+      for (let singleText of data['timeline']['tweets']) {
         if ((singleText['geo'] != null) || (!only_geo))
           TextTermCloud = TextTermCloud + singleText['Text'];
       }
       WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
-      //GraphConteinerConstructor('booksChartID');
-      //var BooksCtx = CtxConstructor('booksChartID');
-      //bookChart = new Chart(BooksCtx, InfiniteElementsChartConstructor(votes, labels, "doughnut", "Numero Voti"));
       let myDates = []
       let myOccurs = []
       for (occur of data['Occurrencies']) {
@@ -519,7 +511,9 @@ async function userTimeline() {
       }
       GraphConteinerConstructor('userTimeID');
       let UserCtx = CtxConstructor('userTimeID');
-      userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs.reverse(), myDates.reverse(), "line", "Tweet Timeline", null));
+      myOccurs = myOccurs.reverse();
+      myDates = myDates.reverse();
+      let userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "line", "Tweet Timeline", null));
     },
     error: function (err) {
       let newT = $("<div>");
@@ -537,9 +531,9 @@ async function hashtagTweet() {
   await ResetAllCharts();
   $("#base").empty();
   var tag = document.getElementById('searchbar').value;
-  let err = new Boolean(false);
+  let myErr = false;
   if (tag.includes(' ')) {
-    err = true;
+    myErr = true;
   }
   if (tag[0] != '#') {
     tag = "#" + tag;
@@ -547,7 +541,7 @@ async function hashtagTweet() {
   let numtweets = document.getElementById('numtweets').value;
   var url = serverUrl + "recents/" + tag.replace("#", "~") + "?numtweets=" + numtweets;
 
-  if (err == true) {
+  if (myErr) {
     let newT = $('<div>');
     newT.text(" Non un Hashtag");
     $("#base").append(newT);
@@ -670,7 +664,7 @@ async function locationTweet() {
           }
           WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
           let places = [];
-          for (thisT of data['statuses']) {
+          for (let thisT of data['statuses']) {
             if (thisT['place'] == undefined)
               continue
             else {
@@ -681,7 +675,7 @@ async function locationTweet() {
               }
             }
           }
-          for (thisT of data['statuses']) {
+          for (let thisT of data['statuses']) {
             if (thisT['place'] == undefined)
               continue
             else {
@@ -694,7 +688,7 @@ async function locationTweet() {
           }
           let placesarray = []
           let j = 0
-          for (place in places) {
+          for (let place in places) {
             placesarray[j] = places[place];
             j++;
           }

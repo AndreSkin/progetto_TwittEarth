@@ -33,20 +33,18 @@ function removeMap(Map) {
   $('#map').removeAttr("tabindex")
 }
 
-function MulMapMarkers(Map, TweetsList, User = null, noLoc) {
+function MulMapMarkers(Map, TweetsList, User, noLoc) {
   let MarkerGroup = [];
   //Elimina tutti i marker
-  Map.eachLayer(function (layer) {
-    if (!!layer.toGeoJSON) {
-      Map.removeLayer(layer);
-    }
-  })
+  ResetMap(Map);
   //Crea dei marker per ogni coordinata fornita
   for (let i = 0; i < TweetsList.length; i = i + 1) {
     if (!only_geo || noLoc) {
-      if (TweetsList[i]['geo'] != null) {
+      if (TweetsList[i]['geo'] != null || TweetsList[i]['place'] != null) {
         if (User != null) {
           let tmp = User
+          if(TweetsList[i]['place'] != null)
+            tmp = TweetsList[i]['Author'];
           L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
           MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
         }
@@ -55,11 +53,6 @@ function MulMapMarkers(Map, TweetsList, User = null, noLoc) {
           MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
         }
       }
-    } else if (TweetsList[i]['place'] != null) {
-      console.log("ciao")
-      let tmp = TweetsList[i]['Author'];
-      L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
-      MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
     }
   }
   let group = new L.featureGroup(MarkerGroup);
