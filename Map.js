@@ -43,7 +43,7 @@ function MulMapMarkers(Map, TweetsList, User, noLoc) {
       if (TweetsList[i]['geo'] != null || TweetsList[i]['place'] != null) {
         if (User != null) {
           let tmp = User
-          if(TweetsList[i]['place'] != null)
+          if (TweetsList[i]['place'] != null)
             tmp = TweetsList[i]['Author'];
           L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
           MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))

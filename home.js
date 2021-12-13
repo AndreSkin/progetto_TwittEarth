@@ -127,7 +127,7 @@ function changebar(choice) {
 }
 
 
-function setPlusMinus(){
+function setPlusMinus() {
   //bottoni + e -
   var plusbutton = document.getElementById('plusbutton');
   var minusbutton = document.getElementById('minusbutton');
@@ -152,7 +152,7 @@ function setPlusMinus(){
   }
 }
 
-function uncheckAndListen(id, myChangebar){
+function uncheckAndListen(id, myChangebar) {
   let choice = document.getElementById(id);
   choice.checked = false;
   choice.addEventListener('click', changebar(myChangebar), false);
@@ -209,8 +209,8 @@ window.onload = function () {
 
     function changefilternumber(filter) {
       let filternumber = parseInt(document.getElementById('input-end').placeholder);
-      if (filter) document.getElementById('input-end').setAttribute('placeholder', filternumber+1);
-      else document.getElementById('input-end').setAttribute('placeholder', filternumber-1);
+      if (filter) document.getElementById('input-end').setAttribute('placeholder', filternumber + 1);
+      else document.getElementById('input-end').setAttribute('placeholder', filternumber - 1);
     }
     choice_geo.addEventListener('change', click_geo, false);
     choice_sent.addEventListener('change', click_sent, false);
