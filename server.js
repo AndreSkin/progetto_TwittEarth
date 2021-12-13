@@ -530,7 +530,7 @@ app.get('/stream/tweets', async (req, res) => {
           let author = eventData.includes.users[0]
           let location = eventData.includes.places
           let placecoords = ''
-          await getPlace(location[0].full_name).then(res => placecoords = res);
+          await getPlace(location[0].full_name).then(resp => placecoords = resp);
 
           //Se è stato usato l'hashtag d'emergenza invio subito una mail
           if (eventData.data.text.includes("SOSigsw10")) {
@@ -679,7 +679,7 @@ app.get('/concorso/:tagConcorso', async (req, res) => {
   var concorso = { 'bando': [], 'partecipanti': [], 'votanti': [], 'results': [] }
 
   try {
-    query = req.params.tagConcorso;
+    let query = req.params.tagConcorso;
 
     //Se cerco un hashtag o uno user i relativi simboli devono essere codificati
     if (query[0] == '~') { //~ perchè è così che arrivano le richieste dato che # è un carattere vietato

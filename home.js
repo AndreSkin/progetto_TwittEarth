@@ -325,14 +325,14 @@ async function triviaTweet() {
           $("#base").append(newT);
           let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
           $("#base").append(scripting)
-          totals = countTotalAnswers(singlePoll, 0, 0);
+          var totals = countTotalAnswers(singlePoll, 0, 0);
         }
         if (totals.total > 0) {
           let totalWrong = totals.total - totals.totalRight;
           let graphAnswers = [totals.totalRight, totalWrong];
           GraphConteinerConstructor('PollChartID');
           let newCtx = CtxConstructor('PollChartID');
-          let PollChart = new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
+          new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
 
         }
       } else {
@@ -381,7 +381,7 @@ async function contestTweet() {
         let topping = data['results'];
         let index;
         let j = 0;
-        for (result of topping) {
+        for (let result of topping) {
           labels.push(result['Partecipante'].replace(myreg, " "));
           votes.push(result['Voti']);
           if (result['Voti'] > nowtop['vote']) {
@@ -505,7 +505,7 @@ async function userTimeline() {
       WordCloud = WordcloudBuilder(TextTermCloud.toLowerCase(), null, 'WordCloudID');
       let myDates = []
       let myOccurs = []
-      for (occur of data['Occurrencies']) {
+      for (let occur of data['Occurrencies']) {
         myDates.push(occur['Date']);
         myOccurs.push(occur['Times']);
       }
@@ -513,7 +513,7 @@ async function userTimeline() {
       let UserCtx = CtxConstructor('userTimeID');
       myOccurs = myOccurs.reverse();
       myDates = myDates.reverse();
-      let userChart = new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "line", "Tweet Timeline", null));
+      new Chart(UserCtx, InfiniteElementsChartConstructor(myOccurs, myDates, "line", "Tweet Timeline", null));
     },
     error: function (err) {
       let newT = $("<div>");
@@ -647,8 +647,8 @@ async function locationTweet() {
     type: 'GET',
     url: 'https://nominatim.openstreetmap.org/search?format=json&q=%27' + location,
     crossDomain: true,
-    success: function (data) {
-      var url = serverUrl + "geo/" + data[0]['lat'] + "x" + data[0]['lon'] + "?radius=" + radius;
+    success: function (geoloc) {
+      var url = serverUrl + "geo/" + geoloc[0]['lat'] + "x" + geoloc[0]['lon'] + "?radius=" + radius;
       $.ajax({
         type: 'GET',
         url: url,
