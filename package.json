@@ -3,7 +3,7 @@
     "test": "jest --testTimeout=30000 --coverage"
   },
   "devDependencies": {
-    "jest": "^27.3.1",
+    "jest": "^27.4.4",
     "supertest": "^6.1.6"
   },
   "dependencies": {
