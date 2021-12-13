@@ -91,7 +91,7 @@ function RandomChartColorsGenerator(ListOfItems) {
   let BackGroundChartColors = [];
   let BorederColors = [];
   let Colors = [];
-  for (item of ListOfItems) {
+  for (let item of ListOfItems) {
     let SliceColor = [];
     let r = Math.floor(Math.random() * 256);
     let g = Math.floor(Math.random() * 256);
