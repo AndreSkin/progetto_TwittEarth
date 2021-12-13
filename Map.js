@@ -1,28 +1,29 @@
 //Mappa
 //Costruisce una mappa vuota
 function BlankMap(Map) {
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        maxZoom: 18,
-        minZoom: 1,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox/streets-v11',
-        tileSize: 512,
-        zoomOffset: -1
-    }).addTo(Map);
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    maxZoom: 18,
+    minZoom: 1,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1
+  }).addTo(Map);
 }
 
-function ResetMap(Map){
+function ResetMap(Map) {
   Map.setView([0, 0], 2);
   //Elimina tutti i marker
-  Map.eachLayer(function(layer){
-    if(!!layer.toGeoJSON){Map.removeLayer(layer);
+  Map.eachLayer(function (layer) {
+    if (!!layer.toGeoJSON) {
+      Map.removeLayer(layer);
     }
   })
 }
 
-function removeMap(Map){
-  if(Map && Map.remove){
+function removeMap(Map) {
+  if (Map && Map.remove) {
     Map.off();
     Map.remove();
   }
@@ -33,34 +34,34 @@ function removeMap(Map){
 }
 
 function MulMapMarkers(Map, TweetsList, User = null, noLoc) {
-    let MarkerGroup = [];
-    //Elimina tutti i marker
-    Map.eachLayer(function (layer) {
-        if (!!layer.toGeoJSON) {
-            Map.removeLayer(layer);
-        }
-    })
-    //Crea dei marker per ogni coordinata fornita
-    for (let i = 0; i < TweetsList.length; i = i + 1) {
-        if(!only_geo || noLoc){
-          if (TweetsList[i]['geo'] != null) {
-              if (User != null) {
-                  let tmp = User
-                  L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
-                  MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
-              }
-              else {
-                L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup(TweetsList[i]['Text']);
-                MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
-              }
-          }
-        }else if(TweetsList[i]['place'] != null){
-            console.log("ciao")
-            let tmp = TweetsList[i]['Author'];
-            L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
-            MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
-          }
+  let MarkerGroup = [];
+  //Elimina tutti i marker
+  Map.eachLayer(function (layer) {
+    if (!!layer.toGeoJSON) {
+      Map.removeLayer(layer);
     }
-    let group = new L.featureGroup(MarkerGroup);
-    if (MarkerGroup.length != 0) Map.fitBounds(group.getBounds());
+  })
+  //Crea dei marker per ogni coordinata fornita
+  for (let i = 0; i < TweetsList.length; i = i + 1) {
+    if (!only_geo || noLoc) {
+      if (TweetsList[i]['geo'] != null) {
+        if (User != null) {
+          let tmp = User
+          L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
+          MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
+        }
+        else {
+          L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup(TweetsList[i]['Text']);
+          MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
+        }
+      }
+    } else if (TweetsList[i]['place'] != null) {
+      console.log("ciao")
+      let tmp = TweetsList[i]['Author'];
+      L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]).addTo(Map).bindPopup("<b>" + tmp + "</b>" + ": <br/>" + TweetsList[i]['Text']);
+      MarkerGroup.push(L.marker([TweetsList[i]['geo']['coord_center'][1], TweetsList[i]['geo']['coord_center'][0]]))
+    }
+  }
+  let group = new L.featureGroup(MarkerGroup);
+  if (MarkerGroup.length != 0) Map.fitBounds(group.getBounds());
 }

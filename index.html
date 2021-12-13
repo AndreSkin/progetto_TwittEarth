@@ -17,32 +17,32 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"
     integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">
     </script>
-    <link rel="icon" href="favicon.ico?" type="image/x-icon">
-    <link rel="shortcut icon" href="#" />
-    <link href="css/main.css" rel="stylesheet" media="all">
-    <link href="css/searchbar.css" rel="stylesheet" media="all">
+  <link rel="icon" href="favicon.ico?" type="image/x-icon">
+  <link rel="shortcut icon" href="#" />
+  <link href="css/main.css" rel="stylesheet" media="all">
+  <link href="css/searchbar.css" rel="stylesheet" media="all">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
-    <script src=" https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js" charset="utf-8">
-    </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+  <script src=" https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js" charset="utf-8">
+  </script>
   <script src="https://code.highcharts.com/highcharts.js">
-    </script>
+  </script>
   <script src="https://code.highcharts.com/modules/wordcloud.js">
-    </script>
+  </script>
   <script src="https://code.highcharts.com/modules/exporting.js">
-    </script>
+  </script>
   <script src="https://code.highcharts.com/modules/export-data.js">
-    </script>
+  </script>
   <script src="https://code.highcharts.com/modules/accessibility.js">
-    </script>
+  </script>
 
   <title>TwittEarth</title>
 </head>
@@ -59,24 +59,26 @@
     </div>
     <div id="streamdiv">
     </div>
-<!--SEARCHBAR-->
+    <!--SEARCHBAR-->
     <div class="searchbar">
       <form class="form" id="simpleform" action="javascript:userTimeline()" novalidate>
 
         <div class="input-group input--large">
-              <label class="label" id="searchhead">Insert user name</label>
-              <input id="searchbar" class="input--style-1" type="text" placeholder="Nome utente..." name="searchbar" required="true">
+          <label class="label" id="searchhead">Insert user name</label>
+          <input id="searchbar" class="input--style-1" type="text" placeholder="Nome utente..." name="searchbar"
+            required="true">
         </div>
-<!-- SEARCH BY-->
+        <!-- SEARCH BY-->
         <div class="input-group input--medium dropdown">
           <button type="button" class="dropdown-toggle" data-toggle="dropdown">
-              <label class="label">Search by</label>
-              <input id="searchby" class="input--style-1" type="text" name="checkin" placeholder="User" id="input-start">
+            <label class="label">Search by</label>
+            <input id="searchby" class="input--style-1" type="text" name="checkin" placeholder="User" id="input-start">
           </button>
 
           <div class="dropdown-menu">
             <div class="dropdown-item">
-              <input type="radio" id="radio_userTimeline" class="dropdown-box" name="search" value="byUser" checked="checked">
+              <input type="radio" id="radio_userTimeline" class="dropdown-box" name="search" value="byUser"
+                checked="checked">
               <label for="radio_userTimeline" class="dropdown-label">Search User Timeline</label><br>
             </div>
             <div class="dropdown-item">
@@ -89,71 +91,66 @@
             </div>
             <div class="dropdown-item">
               <input type="radio" id="radio_location" class="dropdown-box" name="search" value="byLocation">
-              <label for="radio_location" class="dropdown-label">Search Tweets of people living in a given Location</label><br>
+              <label for="radio_location" class="dropdown-label">Search Tweets of people living in a given
+                Location</label><br>
             </div>
             <div class="dropdown-item">
-                <input type="radio" id="radio_contest" class="dropdown-box" name="search" value="byContest">
-                <label for="radio_contest" class="dropdown-label">Search Tweets of Literary Contest</label><br>
+              <input type="radio" id="radio_contest" class="dropdown-box" name="search" value="byContest">
+              <label for="radio_contest" class="dropdown-label">Search Tweets of Literary Contest</label><br>
             </div>
             <div class="dropdown-item">
               <input type="radio" id="radio_trivia" class="dropdown-box" name="search" value="byTrivia">
               <label for="radio_trivia" class="dropdown-label">Search Tweets of Trivia Contest</label><br>
-          </div>
-          </div>
-
-      </div>
-<!-- FILTERS-->
-        <div class="input-group input--medium dropdown">
-            <button type="button" class="dropdown-toggle" data-toggle="dropdown">
-              <label class="label">Filters</label>
-              <input class="input--style-1" type="text" name="checkout" placeholder="0" id="input-end">
-            </button>
-
-            <div class="dropdown-menu">
-              <div class="dropdown-item">
-                <input type="checkbox"  class="dropdown-box" id="check_geo" name="geocheck" value="geocheck">
-                  <label for="check_geo" class="dropdown-label">Show only geolocalized Tweets</label>
-              </div>
-              <div class="dropdown-item">
-                <input type="checkbox" class="dropdown-box" id="check_sent" name="sentcheck" value="sentcheck" disabled>
-                  <label for="check_sent" class="dropdown-label">Show sentiment for word searching tweets</label><br>
-              </div>
-              <div class="dropdown-item">
-                <label for="notcontain" class="dropdown-label">Escludi Tweet con le date keyword (comma separated)</label>
-                  <input type="text" class="dropdown-item" id="notcontain" placeholder="Parole da non contenere..." name="notcontain" required="false" disabled>
-              </div>
-              <!--<div class="dropdown-item">
-                <label for="fromdate" class="dropdown-label">Prendi in considerazione solo tweet pubblicati dal giorno</label>
-                  <input type="date" class="dropdown-item" id="fromdate" name="fromdate" value="2008-03-22" min="2008-01-01">
-              </div>
-              <div class="dropdown-item">
-                  <label for="todate" class="dropdown-label">Prendi in considerazione solo tweet pubblicati fino al giorno</label>
-                    <input type="date" class="dropdown-item" id="todate" name="todate" value="2021-11-27" min="2008-01-01">
-              </div>-->
-              <div class="dropdown-item">
-                <input type="checkbox" class="dropdown-box" id="containmedia" name="mediacheck" value="mediacontain" disabled>
-                  <label for="containmedia" class="dropdown-label">Escludi tweet contenenti un'immagine o un video</label>
-              </div>
-              <div class="dropdown-item">
-                <input type="checkbox" class="dropdown-box" id="verified" name="onlyverified" value="verified" disabled>
-                  <label for="verified" class="dropdown-label">Ottieni solo tweet di account verificati</label>
-              </div>
             </div>
+          </div>
+
+        </div>
+        <!-- FILTERS-->
+        <div class="input-group input--medium dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <label class="label">Filters</label>
+            <input class="input--style-1" type="text" name="checkout" placeholder="0" id="input-end">
+          </button>
+
+          <div class="dropdown-menu">
+            <div class="dropdown-item">
+              <input type="checkbox" class="dropdown-box" id="check_geo" name="geocheck" value="geocheck">
+              <label for="check_geo" class="dropdown-label">Show only geolocalized Tweets</label>
+            </div>
+            <div class="dropdown-item">
+              <input type="checkbox" class="dropdown-box" id="check_sent" name="sentcheck" value="sentcheck" disabled>
+              <label for="check_sent" class="dropdown-label">Show sentiment for word searching tweets</label><br>
+            </div>
+            <div class="dropdown-item">
+              <label for="notcontain" class="dropdown-label">Escludi Tweet con le date keyword (comma separated)</label>
+              <input type="text" class="dropdown-item" id="notcontain" placeholder="Parole da non contenere..."
+                name="notcontain" required="false" disabled>
+            </div>
+            <div class="dropdown-item">
+              <input type="checkbox" class="dropdown-box" id="containmedia" name="mediacheck" value="mediacontain"
+                disabled>
+              <label for="containmedia" class="dropdown-label">Escludi tweet contenenti un'immagine o un video</label>
+            </div>
+            <div class="dropdown-item">
+              <input type="checkbox" class="dropdown-box" id="verified" name="onlyverified" value="verified" disabled>
+              <label for="verified" class="dropdown-label">Ottieni solo tweet di account verificati</label>
+            </div>
+          </div>
         </div>
         <div class="input-group input--medium">
-              <label class="label" id="numtweetslabel" for="numtweets">Number:</label>
-              <div class="input-group-icon js-number-input">
-                <div class="icon-con">
-                      <button type="button" class="plus" id="plusbutton">+</button>
-                      <button type="button" class="minus" id="minusbutton">-</button>
-                </div>
+          <label class="label" id="numtweetslabel" for="numtweets">Number:</label>
+          <div class="input-group-icon js-number-input">
+            <div class="icon-con">
+              <button type="button" class="plus" id="plusbutton">+</button>
+              <button type="button" class="minus" id="minusbutton">-</button>
+            </div>
 
-                <input id="numtweets" class="input--style-1" type="number" value="25" name="numtweets" min="5" max="100">
-              </div>
+            <input id="numtweets" class="input--style-1" type="number" value="25" name="numtweets" min="5" max="100">
+          </div>
         </div>
         <button class="btn-submit" type="submit" id="searchbutton">search</button>
         <a class="btn-submit my_a" href="./stream.html">stream</a>
-    </form>
+      </form>
     </div>
 
   </div>
@@ -169,67 +166,6 @@
 
 </body>
 
-
-<!--
-
-
-      <div id="radios">
-      SEARCH BY
-        <input type="radio" id="radio_userTimeline" name="search" value="byUser" checked="checked">
-        <label for="radio_userTimeline">Search User Timeline</label><br>
-        <input type="radio" id="radio_textTweets" name="search" value="byText">
-        <label for="radio_textTweets">Search Tweets with given Text</label><br>
-        <input type="radio" id="radio_hashtagTweets" name="search" value="byHashtag">
-        <label for="radio_hashtagTweets">Search Tweets with given Hashtag</label><br>
-        <input type="radio" id="radio_location" name="search" value="byLocation">
-        <label for="radio_location">Search Tweets of people living in a given Location</label><br>
-        <hr>
-      FILTERS
-        <input type="checkbox" id="check_geo" name="geocheck" value="geocheck">
-        <label for="check_geo">Show only geolocalized Tweets</label>
-        <input type="checkbox" id="check_sent" name="sentcheck" value="sentcheck" disabled>
-        <label for="check_sent">Show sentiment for word searching tweets</label><br>
-        <hr>
-        <h4>Funzionalità aggiuntive (solo per ricerca tramite Testo)</h4>
-        <label for="notcontain">Escludi Tweet con le date keyword (comma separated)</label>
-        <br>
-        <input type="text" id="notcontain" placeholder="Parole da non contenere..." name="notcontain" required="false" disabled><br>
-        <br>
-        <label for="fromdate">Prendi in considerazione solo tweet pubblicati dal giorno</label>
-        <input type="date" id="fromdate" name="fromdate" value="2008-03-22" min="2008-01-01">
-        <label for="todate">Prendi in considerazione solo tweet pubblicati fino al giorno</label>
-        <input type="date" id="todate" name="todate" value="2021-11-27" min="2008-01-01">
-        <br>
-        <br>
-        <input type="checkbox" id="containmedia" name="mediacheck" value="mediacontain" disabled>
-        <label for="containmedia">Escludi tweet contenenti un'immagine o un video</label>
-        <br>
-        <br>
-        <input type="checkbox" id="verified" name="onlyverified" value="verified" disabled>
-        <label for="verified">Ottieni solo tweet di account verificati</label>
-        <hr>
-      </div>
-    WHAT ARE YOU LOOKING FOR
-      <div id="searchDiv">
-        <h3 id="searchhead">Inserisci il nome utente</h3>
-        <form id="simpleform" action="javascript:userTimeline()">
-          <label id="numtweetslabel" for="numtweets">Numero di tweet:</label>
-          <br>
-          <input id="numtweets" type="number" value="25" name="numtweets" min="5" max="100">
-          <br>
-          <br>
-          <input id="searchbar" type="text" placeholder="Nome utente..." name="searchbar" required="true">
-          <button type="submit" id="searchbutton"><em class="fa fa-search"></em></button>
-        </form>
-      </div>
-
-      <div id="base"></div>
-    </div>
-    <div class="col r-col">
-    </div>
-  </div>
-</body>
-</html>
--->
 <script src="home.js"></script>
+
 </html>
