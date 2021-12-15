@@ -333,7 +333,7 @@ async function triviaTweet() {
         }
         if (totals.total > 0) {
           let totalWrong = totals.total - totals.totalRight;
-          let graphAnswers = [totals.totalRight, totalWrong];
+          let graphAnswers = [totalWrong, totals.totalRight];
           GraphConteinerConstructor('PollChartID');
           let newCtx = CtxConstructor('PollChartID');
           let myChart = new Chart(newCtx, PollChartConstructor(graphAnswers, "doughnut"));
