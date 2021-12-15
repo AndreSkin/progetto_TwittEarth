@@ -54,7 +54,6 @@ function callStream() {
     crossDomain: true,
     success: () => { console.log("Connected to Stream") }
   })
-  //setTimeout(callStream, 65000);
 }
 
 function changebar(choice) {
