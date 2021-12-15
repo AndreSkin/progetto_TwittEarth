@@ -39,7 +39,7 @@ function MulMapMarkers(Map, TweetsList, User, noLoc) {
   ResetMap(Map);
   //Crea dei marker per ogni coordinata fornita
   for (let i = 0; i < TweetsList.length; i = i + 1) {
-    if (!only_geo || noLoc) {
+    if (noLoc) {
       if (TweetsList[i]['geo'] != null || TweetsList[i]['place'] != null) {
         if (User != null) {
           let tmp = User

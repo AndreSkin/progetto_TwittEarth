@@ -178,6 +178,8 @@ window.onload = function () {
     uncheckAndListen('radio_location', "location");
     uncheckAndListen('radio_contest', "contest");
     uncheckAndListen('radio_trivia', "trivia");
+    let choice_first = document.getElementById('radio_userTimeline');
+    choice_first.checked = true;
     var choice_veri = document.getElementById('verified');
     var choice_geo = document.getElementById('check_geo');
     var choice_sent = document.getElementById('check_sent');
@@ -232,7 +234,7 @@ async function embedTweets(data, user = null, sentiment = false, geo = false) {
     myId = "id_str";
     myGeo = "place";
   }
-  MulMapMarkers(mymap, data[attr], user, !geo);
+  MulMapMarkers(mymap, data[attr], user, true);
   for (let tweet of data[attr]) {
     if ((tweet[myGeo] == null && !only_geo) || (tweet[myGeo] != null)) {
       let embed = $("<blockquote>");
