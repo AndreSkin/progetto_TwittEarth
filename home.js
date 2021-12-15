@@ -304,7 +304,8 @@ async function triviaTweet() {
         titlediv.append(title);
         titlediv.addClass("titlediv");
         $("#base").append(titlediv);
-
+        let total = 0;
+        let totalRight = 0;
         for (let singlePoll of data) {
           let embed = $("<blockquote>");
           embed.addClass('twitter-tweet');
@@ -326,7 +327,9 @@ async function triviaTweet() {
           $("#base").append(newT);
           let scripting = `<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"><\/script>`;
           $("#base").append(scripting)
-          var totals = countTotalAnswers(singlePoll, 0, 0);
+          var totals = countTotalAnswers(singlePoll, total, totalRight);
+          total = totals.total;
+          totalRight = totals.totalRight;
         }
         if (totals.total > 0) {
           let totalWrong = totals.total - totals.totalRight;
